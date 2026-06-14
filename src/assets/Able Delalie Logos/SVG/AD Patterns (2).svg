@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: 0em;
+      }
+
+      .cls-2 {
+        fill: #cd0b07;
+      }
+
+      .cls-3 {
+        font-family: Exo2-Medium, 'Exo 2';
+        font-weight: 500;
+      }
+
+      .cls-3, .cls-4 {
+        fill: #fff;
+        font-size: 40.09px;
+      }
+
+      .cls-5 {
+        letter-spacing: 0em;
+      }
+
+      .cls-6 {
+        fill: none;
+        stroke: #fff;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 14px;
+      }
+
+      .cls-7 {
+        letter-spacing: 0em;
+      }
+
+      .cls-4 {
+        font-family: Exo2-Bold, 'Exo 2';
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <rect class="cls-2" x="-4.42" y="-2.43" width="1084.86" height="1084.86"/>
+  <polyline class="cls-6" points="0 181.1 698.49 181.1 723.06 139.42 741.68 216.37 797.73 23.25 835.64 297.97 858.91 81.12 887 181.04 1076.02 181.68"/>
+  <polyline class="cls-6" points="1080 350.59 328.48 350.59 287.73 308.91 253.02 385.86 208.47 236.7 159.06 433.99 133.88 281.86 78.46 350.53 0 351.17"/>
+  <polyline class="cls-6" points="0 527.74 462.29 527.74 491.3 566.47 525.49 527.74 610.77 527.74 635.34 486.06 653.96 563.01 709.37 414.67 740.81 527.8 1076.02 528.31"/>
+  <g>
+    <text class="cls-4" transform="translate(82.52 136.46)"><tspan x="0" y="0">The Pulse in M</tspan><tspan class="cls-5" x="274.27" y="0">o</tspan><tspan x="297.84" y="0">tion</tspan></text>
+    <text class="cls-4" transform="translate(76.3 490.57)"><tspan x="0" y="0">The Pulse in M</tspan><tspan class="cls-5" x="274.27" y="0">o</tspan><tspan x="297.84" y="0">tion</tspan></text>
+    <text class="cls-3" transform="translate(446.9 306.09)"><tspan x="0" y="0">The Pulse in M</tspan><tspan class="cls-1" x="265.65" y="0">o</tspan><tspan class="cls-7" x="288.54" y="0">tion</tspan></text>
+    <text class="cls-4" transform="translate(585.44 667.67)"><tspan x="0" y="0">The Pulse in M</tspan><tspan class="cls-5" x="274.27" y="0">o</tspan><tspan x="297.84" y="0">tion</tspan></text>
+    <text class="cls-4" transform="translate(76.3 1019.44)"><tspan x="0" y="0">The Pulse in M</tspan><tspan class="cls-5" x="274.27" y="0">o</tspan><tspan x="297.84" y="0">tion</tspan></text>
+    <text class="cls-3" transform="translate(295.61 834.97)"><tspan x="0" y="0">The Pulse in M</tspan><tspan class="cls-1" x="265.65" y="0">o</tspan><tspan class="cls-7" x="288.54" y="0">tion</tspan></text>
+  </g>
+  <polyline class="cls-6" points="1076.02 709.97 377.53 709.97 352.97 668.29 334.34 745.25 278.29 552.12 240.38 826.84 217.11 609.99 189.02 709.91 0 710.55"/>
+  <polyline class="cls-6" points="0 879.46 751.52 879.46 792.27 837.78 826.98 914.74 871.53 765.58 920.94 962.87 946.12 810.73 1001.54 879.4 1080 880.04"/>
+  <polyline class="cls-6" points="0 1056.61 462.29 1056.61 491.3 1095.34 525.49 1056.61 610.77 1056.61 635.34 1014.93 653.96 1091.89 709.37 943.54 740.81 1056.68 1076.02 1057.19"/>
+</svg>

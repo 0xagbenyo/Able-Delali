@@ -1,0 +1,509 @@
+/* Homepage layout aligned to candicebrathwaite.com — scoped under .cb-site */
+
+.cb-site {
+  --ed-max: 1180px;
+  --cb-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+}
+
+.cb-site .ed-h2,
+.cb-site .ed-hero__title .ed-hero__name,
+.cb-site .ed-hero__title .ed-hero__name--italic {
+  font-family: var(--cb-serif);
+  font-weight: 600;
+}
+
+.cb-site .ed-work__title {
+  font-family: var(--cb-serif);
+  font-weight: 600;
+}
+
+.cb-site .ed-hero__social {
+  display: none;
+}
+
+.cb-book-star {
+  color: var(--ed-red, #cd0b07);
+  font-size: 0.85em;
+  margin-right: 0.15em;
+}
+
+/* —— Nav: centred logo, split clusters (desktop) —— */
+.ad-nav--cb .ad-nav__links {
+  display: none !important;
+}
+
+.ad-nav--cb .ad-nav__bar.cb-nav__bar {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+@media (min-width: 1024px) {
+  .ad-nav--cb .ad-nav__bar.cb-nav__bar {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px 24px;
+  }
+
+  .ad-nav--cb .ad-nav__menu-btn {
+    display: none !important;
+  }
+}
+
+.ad-nav--cb .cb-nav__left,
+.ad-nav--cb .cb-nav__right {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .ad-nav--cb .cb-nav__left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 4px;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .ad-nav--cb .cb-nav__right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 4px;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .ad-nav--cb .cb-nav__logo {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  .ad-nav--cb .cb-nav__spacer {
+    display: none;
+  }
+}
+
+.ad-nav--cb .cb-nav__menu {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+
+.ad-nav--cb .cb-nav__logo {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+}
+
+.ad-nav--cb .cb-nav__spacer {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.ad-nav--cb .cb-nav__link {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ad-ink-muted, rgba(22, 25, 45, 0.65));
+  padding: 10px 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ad-nav--cb .cb-nav__link:hover {
+  color: var(--ad-ink, #16192d);
+  border-bottom-color: var(--ad-red, #cd0b07);
+}
+
+.ad-nav--cb .cb-nav__right .ad-nav__cta {
+  margin-left: 8px;
+}
+
+@media (max-width: 1023px) {
+  .ad-nav--cb .ad-nav__menu-btn {
+    display: flex !important;
+  }
+}
+
+/* —— Hero: centred copy only —— */
+.cb-site .ed-hero {
+  padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(2rem, 4vw, 2.75rem);
+}
+
+.cb-site .ed-hero__grid {
+  display: block;
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cb-site .ed-hero__bio {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cb-site .ed-hero__actions {
+  justify-content: center;
+}
+
+.cb-site .ed-hero__social {
+  justify-content: center;
+}
+
+.cb-site .ed-hero__photo {
+  display: none;
+}
+
+/* —— Full-bleed portrait band —— */
+.cb-hero-band {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: #f4f2ee;
+  color: var(--ed-ink, #16192d);
+}
+
+.cb-hero-band__media {
+  max-height: min(72vh, 640px);
+  overflow: hidden;
+}
+
+.cb-hero-band__media img {
+  display: block;
+  width: 100%;
+  height: min(72vh, 640px);
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.cb-hero-band__caption {
+  max-width: var(--ed-max, 1120px);
+  margin: 0 auto;
+  padding: 1rem max(16px, env(safe-area-inset-left, 0px)) 1.35rem max(16px, env(safe-area-inset-right, 0px));
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(22, 25, 45, 0.72);
+  border-top: 1px solid rgba(22, 25, 45, 0.08);
+}
+
+/* —— Stats row (after About) —— */
+.cb-stats {
+  background: var(--ed-paper, #fafafa);
+  border-bottom: 1px solid rgba(22, 25, 45, 0.08);
+  padding: clamp(2rem, 5vw, 3rem) 0;
+}
+
+.cb-stats__inner {
+  max-width: var(--ed-max, 1120px);
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 1rem;
+  text-align: center;
+}
+
+@media (min-width: 720px) {
+  .cb-stats__inner {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+.cb-stats__label {
+  display: block;
+  font-family: var(--cb-serif, Georgia, serif);
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ed-ink, #16192d);
+  line-height: 1.05;
+  margin-bottom: 0.35rem;
+}
+
+.cb-stats__sub {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ed-muted, rgba(22, 25, 45, 0.58));
+}
+
+/* —— About: centred editorial block —— */
+.cb-site .cb-about .ed-about__grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2.5rem;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+.cb-site .cb-about .ed-about__grid > div {
+  max-width: 40rem;
+}
+
+.cb-site .cb-about .ed-about__figure {
+  margin: 0;
+  max-width: 320px;
+  width: 100%;
+  border: 1px solid rgba(22, 25, 45, 0.1);
+}
+
+.cb-site .cb-about .ed-about__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+.cb-site .cb-about .ed-link-arrow {
+  margin-top: 0.5rem;
+}
+
+/* —— Books: horizontal “strip” rows —— */
+.cb-site #home-books .ed-books-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cb-site #home-books .ed-book-card {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1.25rem 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(22, 25, 45, 0.1);
+  background: transparent;
+  box-shadow: none;
+}
+
+.cb-site #home-books .ed-book-card:first-of-type {
+  padding-top: 0.5rem;
+}
+
+.cb-site #home-books .ed-book-card:last-of-type {
+  border-bottom: none;
+}
+
+.cb-site #home-books .ed-book-card__cover {
+  flex: 0 0 108px;
+  width: 108px;
+  min-height: 0;
+  align-self: flex-start;
+}
+
+.cb-site #home-books .ed-book-card__cover img {
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.cb-site #home-books .ed-book-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.cb-site #home-books .ed-book-card__title {
+  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+}
+
+@media (max-width: 520px) {
+  .cb-site #home-books .ed-book-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cb-site #home-books .ed-book-card__cover {
+    flex-basis: auto;
+    width: 140px;
+  }
+}
+
+/* —— Speaking pills —— */
+.cb-speaking__lead {
+  max-width: 38rem;
+  margin-bottom: 2rem;
+}
+
+.cb-speaking__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 14px;
+}
+
+@media (min-width: 768px) {
+  .cb-speaking__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.cb-speaking__pill {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.1rem 1rem;
+  border: 1px solid rgba(22, 25, 45, 0.14);
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  min-height: 5.5rem;
+}
+
+.cb-speaking__pill:hover {
+  border-color: var(--ed-ink, #16192d);
+  background: rgba(22, 25, 45, 0.02);
+}
+
+.cb-speaking__pill-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cb-speaking__pill-sub {
+  font-size: 13px;
+  color: var(--ed-muted, rgba(22, 25, 45, 0.58));
+  line-height: 1.45;
+}
+
+/* —— Journal / podcast block —— */
+.cb-podcast__split {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .cb-podcast__split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 3rem;
+  }
+}
+
+.cb-podcast__visual {
+  margin: 0;
+  border: 1px solid rgba(22, 25, 45, 0.1);
+  background: #fff;
+  aspect-ratio: 4 / 5;
+  max-height: 420px;
+  overflow: hidden;
+}
+
+.cb-podcast__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cb-podcast__visual--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  color: rgba(22, 25, 45, 0.12);
+  letter-spacing: -0.04em;
+}
+
+.cb-podcast__intro-text {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--ed-muted, rgba(22, 25, 45, 0.58));
+  max-width: 36rem;
+}
+
+.cb-podcast__platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-bottom: 1rem;
+}
+
+.cb-podcast__platforms a {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ed-ink, #16192d);
+  padding: 10px 14px;
+  border: 1px solid rgba(22, 25, 45, 0.2);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.cb-podcast__platforms a:hover {
+  border-color: var(--ed-ink, #16192d);
+  background: rgba(22, 25, 45, 0.04);
+}
+
+/* —— Journal block: stacked display title (podcast-style) —— */
+.cb-podcast__h2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.02em;
+  line-height: 1.05;
+  margin-bottom: 1.75rem;
+}
+
+.cb-podcast__h2-line1 {
+  display: block;
+  font-family: var(--cb-serif, Georgia, serif);
+  font-size: clamp(2.1rem, 4.8vw, 3.1rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.cb-podcast__h2-line2 {
+  display: block;
+  font-family: var(--cb-serif, Georgia, serif);
+  font-size: clamp(1.85rem, 4vw, 2.65rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.cb-podcast__h2-line2 em {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.cb-podcast__status {
+  margin: 0.5rem 0 0;
+  color: var(--ed-muted, rgba(22, 25, 45, 0.55));
+  font-size: 14px;
+}
+
+.cb-podcast__visit {
+  display: inline-block;
+  margin-top: 1.25rem;
+}
