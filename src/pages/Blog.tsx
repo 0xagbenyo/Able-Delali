@@ -4,6 +4,7 @@ import useResponsive from "../hooks/useResponsive";
 import PageChrome from "../components/PageChrome";
 import { erpnextPublicOrigin } from "../config/erpnextPublic";
 import { COLORS, FONT } from "../config/brand";
+import { apiUrl } from "../lib/apiUrl";
 
 type BlogPost = {
   name: string;
@@ -41,15 +42,18 @@ export default function Blog() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const postsRes = await fetch("/api/blog");
-        if (!postsRes.ok) throw new Error("Failed to fetch blog posts");
+        const postsRes = await fetch(apiUrl("/api/blog"));
+        const ct = postsRes.headers.get("content-type") || "";
+        if (!postsRes.ok || !ct.includes("application/json")) {
+          throw new Error("Failed to fetch blog posts");
+        }
         const postsData = await postsRes.json();
         const list: BlogPost[] = Array.isArray(postsData.posts) ? postsData.posts : [];
         setPosts(list);
 
         let categoryNames: string[] = [];
         try {
-          const categoriesRes = await fetch("/api/blog/categories");
+          const categoriesRes = await fetch(apiUrl("/api/blog/categories"));
           if (categoriesRes.ok) {
             const categoriesData = await categoriesRes.json();
             categoryNames = Array.isArray(categoriesData.categories) ? categoriesData.categories : [];

@@ -6,6 +6,7 @@ import aboutContent from "../content/aboutintro.json";
 import { ablePortrait, rhodaImage1, rhodaImage2, patternTexture } from "../config/brand";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { pickCms } from "../lib/cmsPick";
+import { apiUrl } from "../lib/apiUrl";
 
 const DEFAULT_SLIDES = [ablePortrait, rhodaImage1, rhodaImage2, patternTexture] as const;
 
@@ -68,7 +69,7 @@ export default function About() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/about/sections", { cache: "no-store" });
+        const res = await fetch(apiUrl("/api/about/sections"), { cache: "no-store" });
         const data = (await res.json()) as { sections?: SectionPayload[] };
         if (cancelled) return;
         const rows = Array.isArray(data.sections) ? data.sections : [];

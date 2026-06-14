@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { socialLinks } from "../config/social";
+import { apiUrl } from "../lib/apiUrl";
 
 const workLinks = [
   { id: "work-speaker", label: "Book as speaker", to: "/contact" },
@@ -19,7 +20,7 @@ export default function Footer() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/newsletter/subscribe", {
+      const res = await fetch(apiUrl("/api/newsletter/subscribe"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

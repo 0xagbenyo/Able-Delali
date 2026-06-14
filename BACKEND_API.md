@@ -68,7 +68,7 @@ Match **Web Template** titles to section keys (spaces → underscores, lowercase
 | Books | `books` | `description` (optional intro under the heading). Headings: `heading_line_1` / `heading_emphasis` if added. |
 | Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
 | Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. |
-| Latest Articles | `latest_articles` | `description` (intro under the heading) |
+| Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the dark journal band), overlay lines `overlay_line_1` … `overlay_line_3`. |
 | Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. |
 
 Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).
@@ -492,6 +492,8 @@ This stores book information and file URLs:
 Used by **`/books`**, **`GET /api/books/catalog`**, **`GET /api/books/footer/latest`**, and the free-gift flow. Override the doctype name with **`ERPNEXT_BOOKS_DOCTYPE`** if yours differs from `Books`.
 
 - **`ERPNEXT_BOOKS_LIST_FIELDS`** (optional) — comma-separated column names for the ERPNext **list** API. Use this if the default list returns **417** (unknown or non-list field such as `title` / `description` on your form).
+
+- **`ERPNEXT_BOOKS_CATALOG_CONCURRENCY`** (optional) — max parallel **per-book** ERPNext merges when building **`GET /api/books/catalog`** (integer **1–25**, default **8**). The catalog loads list rows then merges each document for flags not always present on list views; a strict sequential loop can **time out** on serverless hosts when there are many books—raise this cautiously if ERPNext tolerates more concurrent requests.
 
 - Name: `Books` (or your custom name in env)
 - Fields (align API field names with your form; the app maps common variants):

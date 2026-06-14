@@ -105,6 +105,7 @@ const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
       { label: "Overlay line 1", fieldname: "overlay_line_1", fieldtype: "Data" },
       { label: "Overlay line 2", fieldname: "overlay_line_2", fieldtype: "Data" },
       { label: "Overlay line 3", fieldname: "overlay_line_3", fieldtype: "Data" },
+      { label: "Recent list heading", fieldname: "panel_label", fieldtype: "Data" },
     ],
   },
 ];
@@ -191,6 +192,7 @@ function seedPageBlocks(): { web_template: string; web_template_values: string }
         heading_line_1: "Notes from the",
         heading_emphasis: "journal",
         description: LATEST_ARTICLES_INTRO,
+        panel_label: "From the journal",
       }),
     },
   ];

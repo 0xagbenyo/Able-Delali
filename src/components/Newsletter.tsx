@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { bookPlaceholder } from "../config/brand";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
+import { apiUrl } from "../lib/apiUrl";
 
 type GiftBook = {
   bookName: string;
@@ -94,7 +95,7 @@ export default function Newsletter() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/books/footer/latest", { cache: "no-store" });
+        const res = await fetch(apiUrl("/api/books/footer/latest"), { cache: "no-store" });
         if (!res.ok) {
           if (!cancelled) setGiftBook(null);
           return;
@@ -117,7 +118,7 @@ export default function Newsletter() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/books/gift-signup", {
+      const res = await fetch(apiUrl("/api/books/gift-signup"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

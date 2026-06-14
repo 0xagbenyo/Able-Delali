@@ -799,6 +799,98 @@ button.cb-ref-btn {
   color: var(--ref-muted);
 }
 
+/* Recent posts list (same dark band as journal) */
+.cb-ref-journal__recent {
+  margin-top: clamp(2rem, 4vw, 2.75rem);
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+  border-top: 1px solid var(--ref-line);
+}
+
+.cb-ref-journal__recent-heading {
+  margin: 0 0 1rem;
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ref-muted);
+}
+
+.cb-ref-journal__recent-status,
+.cb-ref-journal__recent-empty {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ref-muted);
+}
+
+.cb-ref-journal__recent-inline {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cb-ref-journal__recent-inline:hover {
+  color: #fff;
+}
+
+.cb-ref-journal__recent-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cb-ref-journal__recent-list li {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cb-ref-journal__recent-list li:first-child {
+  border-top: none;
+}
+
+.cb-ref-journal__recent-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin: 0 -0.25rem;
+  padding: 0.85rem 0.25rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
+
+.cb-ref-journal__recent-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cb-ref-journal__recent-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.94);
+  flex: 1 1 12rem;
+  min-width: 0;
+  transition: color 0.15s ease;
+}
+
+.cb-ref-journal__recent-row:hover .cb-ref-journal__recent-title {
+  color: var(--ref-red, #cd0b07);
+}
+
+.cb-ref-journal__recent-date {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+  flex-shrink: 0;
+}
+
 /* —— Outreach / press (compact) —— */
 .adv-outreach {
   background: #f6f4f0;

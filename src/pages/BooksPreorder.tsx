@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import useResponsive from "../hooks/useResponsive";
 import { COLORS, FONT } from "../config/brand";
+import { apiUrl } from "../lib/apiUrl";
 
 const ink = COLORS.deepNavy;
 const muted = "rgba(22, 25, 45, 0.52)";
@@ -41,7 +42,7 @@ export default function BooksPreorder() {
     (async () => {
       try {
         const res = await fetch(
-          `/api/books/catalog/${encodeURIComponent(bookId)}`,
+          apiUrl(`/api/books/catalog/${encodeURIComponent(bookId)}`),
           { cache: "no-store" }
         );
         if (res.status === 404) {
@@ -90,7 +91,7 @@ export default function BooksPreorder() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/books/preorder", {
+      const res = await fetch(apiUrl("/api/books/preorder"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

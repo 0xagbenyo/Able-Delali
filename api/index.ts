@@ -59,11 +59,19 @@ let isInitialized = false;
  * restore the prefix when missing.
  */
 function ensureApiUrlForExpress(req: Request): void {
-  const raw = req.url ?? "";
-  const q = raw.indexOf("?");
-  const pathname = q === -1 ? raw : raw.slice(0, q);
-  const search = q === -1 ? "" : raw.slice(q);
-  if (pathname.startsWith("/api")) return;
+  let pick = req.url ?? "";
+  const orig = (req as unknown as { originalUrl?: string }).originalUrl;
+  if ((!pick || pick === "/") && typeof orig === "string" && orig.length > 0) {
+    pick = orig;
+  }
+  const q = pick.indexOf("?");
+  const pathname = q === -1 ? pick : pick.slice(0, q);
+  const search = q === -1 ? "" : pick.slice(q);
+
+  if (pathname.startsWith("/api")) {
+    req.url = pick;
+    return;
+  }
   if (!pathname || pathname === "/") {
     req.url = `/api${search}`;
     return;

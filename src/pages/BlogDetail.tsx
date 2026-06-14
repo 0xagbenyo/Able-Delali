@@ -4,6 +4,7 @@ import useResponsive from "../hooks/useResponsive";
 import PageChrome from "../components/PageChrome";
 import { erpnextPublicOrigin } from "../config/erpnextPublic";
 import { COLORS, FONT } from "../config/brand";
+import { apiUrl } from "../lib/apiUrl";
 
 type BlogPost = {
   name: string;
@@ -43,7 +44,7 @@ export default function BlogDetail() {
 
       try {
         const res = await fetch(
-          `/api/blog/${encodeURIComponent(blogName)}`,
+          apiUrl(`/api/blog/${encodeURIComponent(blogName)}`),
         );
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
@@ -68,7 +69,7 @@ export default function BlogDetail() {
         // Read-count API expects the internal document id, not the blog URL slug.
         const docName = encodeURIComponent(loaded.name);
 
-        const readsRes = await fetch(`/api/blog/${docName}/reads`);
+        const readsRes = await fetch(apiUrl(`/api/blog/${docName}/reads`));
         if (readsRes.ok) {
           const readsData = await readsRes.json();
           setReads(readsData.reads || 0);
@@ -78,7 +79,7 @@ export default function BlogDetail() {
         const alreadyRead = sessionStorage.getItem(sessionKey);
 
         if (!alreadyRead) {
-          await fetch(`/api/blog/${docName}/reads`, { method: "POST" });
+          await fetch(apiUrl(`/api/blog/${docName}/reads`), { method: "POST" });
           sessionStorage.setItem(sessionKey, "true");
         }
       } catch (err) {

@@ -7,6 +7,8 @@ import {
   type ReactNode,
 } from "react";
 
+import { apiUrl } from "../lib/apiUrl";
+
 export type HomepageSectionPayload = {
   template: string;
   key: string;
@@ -39,7 +41,7 @@ export function HomepageCMSProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/homepage/sections", { cache: "no-store" });
+        const res = await fetch(apiUrl("/api/homepage/sections"), { cache: "no-store" });
         const data = (await res.json()) as ApiResponse;
         if (cancelled) return;
         const m = new Map<string, Record<string, string>>();

@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import useResponsive from "../hooks/useResponsive";
 import { COLORS, FONT } from "../config/brand";
+import { apiUrl } from "../lib/apiUrl";
 
 function BookPdfViewerLoadFailed() {
   return (
@@ -60,7 +61,7 @@ export default function BookRead() {
     (async () => {
       try {
         const res = await fetch(
-          `/api/books/catalog/${encodeURIComponent(bookId)}`,
+          apiUrl(`/api/books/catalog/${encodeURIComponent(bookId)}`),
           { cache: "no-store" }
         );
         if (res.status === 404) {
@@ -122,7 +123,7 @@ export default function BookRead() {
     /^https?:\/\//i.test(book.bookUrl.trim());
 
   const streamPath =
-    allowed ? `/api/books/read/${encodeURIComponent(book.id)}/stream` : "";
+    allowed ? apiUrl(`/api/books/read/${encodeURIComponent(book.id)}/stream`) : "";
 
   const notFound = book === null;
   const gated = book !== null && !allowed;

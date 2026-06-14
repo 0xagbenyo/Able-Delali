@@ -72,9 +72,9 @@ function Home() {
           <Newsletter />
 
           <HomeFacebookAdvocacy />
-        </main>
 
-        <Footer />
+          <Footer />
+        </main>
       </div>
     </HomepageCMSProvider>
   );

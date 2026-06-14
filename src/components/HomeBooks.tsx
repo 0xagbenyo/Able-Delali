@@ -5,6 +5,7 @@ import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import useResponsive from "../hooks/useResponsive";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
+import { apiUrl } from "../lib/apiUrl";
 
 /** Homepage preview: four most recent catalog rows (API is `modified desc`). */
 const HOME_BOOKS_COUNT = 4;
@@ -57,8 +58,9 @@ export default function HomeBooks() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/books/catalog");
-        if (!res.ok) throw new Error("catalog");
+        const res = await fetch(apiUrl("/api/books/catalog"));
+        const ct = res.headers.get("content-type") || "";
+        if (!res.ok || !ct.includes("application/json")) throw new Error("catalog");
         const data = (await res.json()) as { books?: SiteBook[] };
         const list = Array.isArray(data.books) ? data.books : [];
         if (!cancelled) setBooks(list.slice(0, HOME_BOOKS_COUNT));

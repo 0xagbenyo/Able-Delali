@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
+import { apiUrl } from "../lib/apiUrl";
+
 const TOPICS = [
   { value: "general", label: "General enquiry" },
   { value: "pastor", label: "Leadership & voice" },
@@ -79,7 +81,7 @@ export default function EnquiryForm() {
     }
 
     try {
-      const res = await fetch("/api/enquiry", {
+      const res = await fetch(apiUrl("/api/enquiry"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
 import PageChrome from "../components/PageChrome";
 import { COLORS, FONT, bookPlaceholder } from "../config/brand";
+import { apiUrl } from "../lib/apiUrl";
 
 const ink = COLORS.deepNavy;
 const paper = COLORS.neutralGray;
@@ -39,8 +40,11 @@ export default function Books() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/books/catalog");
-        if (!res.ok) throw new Error("Failed to load books");
+        const res = await fetch(apiUrl("/api/books/catalog"));
+        const ct = res.headers.get("content-type") || "";
+        if (!res.ok || !ct.includes("application/json")) {
+          throw new Error("Failed to load books");
+        }
         const data = (await res.json()) as { books?: SiteBook[] };
         if (!cancelled) setBooks(Array.isArray(data.books) ? data.books : []);
       } catch (e) {

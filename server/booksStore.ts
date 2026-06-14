@@ -253,6 +253,42 @@ function booksListFieldsForCatalog(): string[] {
   return [...BOOKS_LIST_FIELDS_DEFAULT];
 }
 
+/** Max in-flight per-doc merges when building the public catalog (default 8, max 25). */
+function booksCatalogMergeConcurrency(): number {
+  const raw = process.env.ERPNEXT_BOOKS_CATALOG_CONCURRENCY?.trim();
+  if (!raw) return 8;
+  const n = parseInt(raw, 10);
+  if (!Number.isFinite(n) || n < 1) return 8;
+  return Math.min(25, n);
+}
+
+/**
+ * Run async work on items with a bounded number of in-flight promises. Strict sequential
+ * N+1 ERPNext calls often exceed serverless timeouts when many Books rows exist.
+ */
+async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  concurrency: number,
+  mapper: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  if (items.length === 0) return [];
+  const limit = Math.max(1, Math.min(25, Math.floor(concurrency)));
+  const results: R[] = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    for (;;) {
+      const i = nextIndex++;
+      if (i >= items.length) return;
+      results[i] = await mapper(items[i], i);
+    }
+  }
+
+  const pool = Math.min(limit, items.length);
+  await Promise.all(Array.from({ length: pool }, () => worker()));
+  return results;
+}
+
 /**
  * All rows from the **Books** doctype (override with `ERPNEXT_BOOKS_DOCTYPE`),
  * newest first — for the public books index page.
@@ -266,19 +302,20 @@ export async function getAllBooksFromSiteCatalog(): Promise<FooterLatestBook[]> 
     { orderBy: "modified desc", limit: 200 }
   );
 
-  const books: FooterLatestBook[] = [];
-  for (const doc of result.data ?? []) {
-    const row = doc as Record<string, unknown>;
+  const rows = (result.data ?? []) as Record<string, unknown>[];
+  const concurrency = booksCatalogMergeConcurrency();
+
+  const maybeBooks = await mapWithConcurrency(rows, concurrency, async (row) => {
     const id = String(row.name ?? "").trim();
-    if (!id) continue;
+    if (!id) return null;
+    const merged = await mergeBooksDocFromErp(doctype, id, row);
+    return mapMergedRowToFooterBook(merged);
+  });
 
-    let merged = row;
-    merged = await mergeBooksDocFromErp(doctype, id, row);
-
-    const b = mapMergedRowToFooterBook(merged);
+  const books: FooterLatestBook[] = [];
+  for (const b of maybeBooks) {
     if (b) books.push(b);
   }
-
   return books;
 }
 

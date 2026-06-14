@@ -4,6 +4,7 @@ import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { socialLinks } from "../config/social";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
+import { apiUrl } from "../lib/apiUrl";
 
 type BlogPostApi = {
   name: string;
@@ -20,12 +21,31 @@ type LeadPost = {
   image: string;
 };
 
+type RecentRow = {
+  slug: string;
+  title: string;
+  date: string;
+};
+
 const DEFAULT_INTRO =
   "The place where essays go a little deeper — practice, policy, faith, and menstrual health equity. New pieces land here first.";
+
+const RECENT_POSTS_COUNT = 4;
+
+function formatDate(dateString?: string) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 export default function LatestArticles() {
   const v = useHomepageSectionValues("latest_articles");
   const [posts, setPosts] = useState<LeadPost[]>([]);
+  const [recentRows, setRecentRows] = useState<RecentRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const kicker = pickCms(v, "kicker", "eyebrow") || "Journal";
@@ -36,15 +56,16 @@ export default function LatestArticles() {
   const overlay1 = pickCms(v, "overlay_line_1") || "Notes";
   const overlay2 = pickCms(v, "overlay_line_2") || "from the";
   const overlay3 = pickCms(v, "overlay_line_3") || "journal";
+  const panelLabel = pickCms(v, "panel_label", "list_heading", "recent_heading") || "From the journal";
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const blogRes = await fetch("/api/blog");
-        const blogData = await blogRes.json().catch(() => ({}));
+        const blogRes = await fetch(apiUrl("/api/blog"));
+        const blogData = (await blogRes.json().catch(() => ({}))) as { posts?: BlogPostApi[] };
         const raw: BlogPostApi[] = Array.isArray(blogData.posts) ? blogData.posts : [];
-        const one = raw.slice(0, 1).map((p) => {
+        const lead = raw.slice(0, 1).map((p) => {
           const img = resolveErpPublicUrl(p.meta_image || "");
           return {
             slug: p.name,
@@ -52,10 +73,21 @@ export default function LatestArticles() {
             image: img || "",
           };
         });
-        if (!cancelled) setPosts(one);
+        const recent = raw.slice(0, RECENT_POSTS_COUNT).map((p) => ({
+          slug: p.name,
+          title: p.title || p.name,
+          date: formatDate(p.published_on) || "Recent",
+        }));
+        if (!cancelled) {
+          setPosts(lead);
+          setRecentRows(recent);
+        }
       } catch (error) {
         console.error("Failed to fetch blog posts:", error);
-        if (!cancelled) setPosts([]);
+        if (!cancelled) {
+          setPosts([]);
+          setRecentRows([]);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -131,6 +163,32 @@ export default function LatestArticles() {
               </Link>
             )}
           </div>
+        </div>
+
+        <div className="cb-ref-journal__recent">
+          <h3 className="cb-ref-journal__recent-heading">{panelLabel}</h3>
+          {loading ? (
+            <p className="cb-ref-journal__recent-status">Loading…</p>
+          ) : recentRows.length === 0 ? (
+            <p className="cb-ref-journal__recent-empty">
+              Nothing here yet.{" "}
+              <Link className="cb-ref-journal__recent-inline" to="/blog">
+                Open the journal
+              </Link>
+              .
+            </p>
+          ) : (
+            <ul className="cb-ref-journal__recent-list">
+              {recentRows.map((row) => (
+                <li key={row.slug}>
+                  <Link to={`/blog/${encodeURIComponent(row.slug)}`} className="cb-ref-journal__recent-row">
+                    <span className="cb-ref-journal__recent-title">{row.title}</span>
+                    <span className="cb-ref-journal__recent-date">{row.date}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </section>
