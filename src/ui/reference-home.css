@@ -123,7 +123,7 @@ button.cb-ref-btn {
 
 .ad-home-landing__menu-btn {
   appearance: none;
-  border: none;
+  border: 1px solid var(--ref-red, #cd0b07);
   cursor: pointer;
   font-family: "Exo 2", system-ui, sans-serif;
   font-size: 12px;
@@ -131,15 +131,16 @@ button.cb-ref-btn {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
-  background: #6b5a9e;
+  background: var(--ref-red, #cd0b07);
   padding: 14px 28px;
   border-radius: 6px;
   min-width: 140px;
-  transition: background 0.18s ease, transform 0.15s ease;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease, opacity 0.15s ease;
 }
 
 .ad-home-landing__menu-btn:hover {
-  background: #5a4a88;
+  background: #a80806;
+  border-color: #a80806;
 }
 
 .ad-home-landing__menu-btn:active {
@@ -177,15 +178,18 @@ button.cb-ref-btn {
 
 .cb-ref-hero__grid {
   display: grid;
-  max-width: 1240px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   min-height: min(88vh, 820px);
   grid-template-columns: 1fr;
 }
 
 @media (min-width: 900px) {
   .cb-ref-hero__grid {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: stretch;
+    /* Copy stays readable; portrait column grows with the viewport (full-bleed to the right edge). */
+    grid-template-columns: minmax(0, min(580px, 46vw)) minmax(0, 1fr);
   }
 }
 
@@ -263,20 +267,42 @@ button.cb-ref-btn {
 }
 
 .cb-ref-hero__visual {
-  background: var(--ref-cream);
+  background: var(--ref-navy);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  min-height: 380px;
-  padding: clamp(1.5rem, 4vw, 2.75rem);
+  min-height: 320px;
+  padding: 0 env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
 }
 
 .cb-ref-hero__portrait {
   max-width: 100%;
-  width: min(420px, 100%);
+  width: 100%;
+  max-height: min(72vh, 620px);
   height: auto;
   object-fit: contain;
-  object-position: bottom center;
+  object-position: center center;
+  display: block;
+}
+
+@media (min-width: 900px) {
+  /* Full height of the hero row; portrait aligned to the section’s right edge (cascade: after base portrait). */
+  .cb-ref-hero__visual {
+    min-height: 0;
+    align-self: stretch;
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+
+  .cb-ref-hero__portrait {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    object-fit: contain;
+    object-position: right center;
+  }
 }
 
 /* —— Marquee (brand bar) —— */
