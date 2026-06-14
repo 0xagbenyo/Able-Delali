@@ -15,7 +15,30 @@ const DEFAULT_FAMILY_INTRO =
 
 const DEFAULT_SLIDES = [ablePortrait, rhodaImage1, rhodaImage2, patternTexture] as const;
 
-type SectionPayload = { key: string; values: Record<string, string> };
+/** Align with `server/webPageSectionsStore.parseTemplateValues` — CMS may send JSON as string. */
+function coerceWebTemplateValues(raw: unknown): Record<string, string> {
+  if (raw == null) return {};
+  if (typeof raw === "string") {
+    const t = raw.trim();
+    if (!t) return {};
+    try {
+      return coerceWebTemplateValues(JSON.parse(t) as unknown);
+    } catch {
+      return {};
+    }
+  }
+  if (typeof raw === "object" && !Array.isArray(raw)) {
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+      if (v == null) continue;
+      if (typeof v === "string") out[k] = v;
+      else if (typeof v === "number" || typeof v === "boolean") out[k] = String(v);
+      else out[k] = JSON.stringify(v);
+    }
+    return out;
+  }
+  return {};
+}
 
 function parseSlideUrls(raw: string | undefined): string[] {
   if (!raw?.trim()) return [];
@@ -54,10 +77,16 @@ function collectAttachImagePaths(values: Record<string, string>): string[] {
   return out;
 }
 
-function mergeIntroValues(sections: SectionPayload[]): Record<string, string> {
+function mergeIntroValues(sections: unknown[]): Record<string, string> {
   const m = new Map<string, Record<string, string>>();
   for (const row of sections) {
-    m.set(row.key, row.values);
+    if (!row || typeof row !== "object") continue;
+    const r = row as Record<string, unknown>;
+    const keyRaw = r.key;
+    const key = typeof keyRaw === "string" ? keyRaw.trim() : String(keyRaw ?? "").trim();
+    if (!key) continue;
+    const rawVals = r.values ?? r.web_template_values;
+    m.set(key, coerceWebTemplateValues(rawVals));
   }
   const about = m.get("about") ?? {};
   const intro = m.get("about_intro") ?? {};
@@ -78,12 +107,17 @@ export default function About() {
         assertApiJsonResponse(res, "About sections");
         const data = (await res.json()) as {
           ok?: boolean;
-          sections?: SectionPayload[];
+          sections?: unknown[];
           error?: string;
         };
         if (cancelled) return;
         const rows = Array.isArray(data.sections) ? data.sections : [];
-        setIntroValues(mergeIntroValues(rows));
+        try {
+          setIntroValues(mergeIntroValues(rows));
+        } catch (parseErr) {
+          console.warn("[About] Unrecognized sections shape from /api/about/sections:", parseErr);
+          setIntroValues({});
+        }
       } catch (e) {
         console.warn("[About] /api/about/sections failed, using built-in copy:", e);
         if (!cancelled) setIntroValues({});
