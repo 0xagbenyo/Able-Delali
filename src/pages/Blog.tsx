@@ -114,7 +114,7 @@ export default function Blog() {
   if (error) {
     return (
       <PageChrome style={{ background: paper, fontFamily: FONT }}>
-        <div className="ad-container ad-section" style={{ textAlign: "center", color: "#b54a4a" }}>
+        <div className="ad-container ad-section" style={{ textAlign: "center", color: "var(--ad-life-red, #cd0b07)" }}>
           {error}
         </div>
       </PageChrome>

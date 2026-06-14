@@ -30,7 +30,16 @@ type Ctx = {
 
 const HomepageCMSContext = createContext<Ctx | null>(null);
 
-export function HomepageCMSProvider({ children }: { children: ReactNode }) {
+const DEFAULT_SECTIONS_URL = "/api/homepage/sections";
+
+export function HomepageCMSProvider({
+  children,
+  /** e.g. `/api/public-voice/sections` for the standalone speaking & media Web Page in ERPNext. */
+  sectionsUrl = DEFAULT_SECTIONS_URL,
+}: {
+  children: ReactNode;
+  sectionsUrl?: string;
+}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [map, setMap] = useState<ReadonlyMap<string, Record<string, string>>>(
@@ -41,7 +50,7 @@ export function HomepageCMSProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(apiUrl("/api/homepage/sections"), { cache: "no-store" });
+        const res = await fetch(apiUrl(sectionsUrl), { cache: "no-store" });
         const data = (await res.json()) as ApiResponse;
         if (cancelled) return;
         const m = new Map<string, Record<string, string>>();
@@ -63,7 +72,7 @@ export function HomepageCMSProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [sectionsUrl]);
 
   const value = useMemo<Ctx>(
     () => ({ loading, error, valuesByKey: map }),

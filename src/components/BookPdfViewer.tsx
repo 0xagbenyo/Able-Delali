@@ -278,7 +278,7 @@ export default function BookPdfViewer({ url }: BookPdfViewerProps) {
           style={{
             padding: "32px 16px",
             textAlign: "center",
-            color: "#8a4a4a",
+            color: "var(--ad-life-red, #cd0b07)",
             fontSize: "14px",
             margin: 0,
             lineHeight: 1.5,

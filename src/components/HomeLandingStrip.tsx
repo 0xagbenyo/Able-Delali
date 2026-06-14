@@ -28,8 +28,6 @@ export default function HomeLandingStrip() {
   const vFallback = useHomepageSectionValues("hero");
   const v = useMemo(() => ({ ...vFallback, ...vPrimary }), [vPrimary, vFallback]);
 
-  const nameFirst = pickCms(v, "name_first", "first_name", "given_name") || "Able";
-  const nameSecond = pickCms(v, "name_second", "last_name", "surname") || "Delalie";
   const bio = pickCms(v, "description", "bio", "intro", "body", "text") || DEFAULT_BIO;
   const tagline =
     pickCms(v, "landing_tagline", "tagline", "strapline", "subtitle", "kicker_line") || bio;
@@ -45,11 +43,9 @@ export default function HomeLandingStrip() {
           aria-hidden
         />
 
-        <h1 id="ad-home-landing-title" className="ad-home-landing__name">
-          {nameFirst} {nameSecond}
+        <h1 id="ad-home-landing-title" className="ad-home-landing__tagline">
+          {tagline}
         </h1>
-
-        <p className="ad-home-landing__tagline">{tagline}</p>
 
         <button type="button" className="ad-home-landing__menu-btn" onClick={openMenuOrScrollToHero}>
           Menu +

@@ -36,13 +36,16 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 
 # Web Page route for React /about copy (Page Builder). Default: about-page
 # ERPNEXT_ABOUT_ROUTE=about-page
+
+# Web Page route for React /speaking-and-media (Outreach block). Default: public-voice-page
+# ERPNEXT_PUBLIC_VOICE_ROUTE=public-voice-page
 ```
 
 ### Deploying to Vercel
 
 1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, **`ERPNEXT_API_SECRET`**, and **`VITE_ERPNEXT_PUBLIC_URL`** (same values as local `.env`) for **Production** and **Preview**. The serverless **`/api/*`** handlers need these at runtime; missing values cause empty blog lists or failed loads.
 2. **Routing order** — In **`vercel.json`**, **`/api/*`** is sent to **`api/index.ts`** **before** the static filesystem and **before** the SPA fallback to **`index.html`**. That way **`GET /api/blog`** returns JSON, not the React shell. If **`/api/blog`** in the browser shows HTML, the deployment root is probably wrong (Vercel **Root Directory** should be the folder that contains **`package.json`** and **`vercel.json`**, not a parent download folder).
-3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`**, **`/blog/:slug`**, **`/press-kit`**, **`/public-voice`**, etc. work on full refresh.
+3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`**, **`/blog/:slug`**, **`/press-kit`**, **`/speaking-and-media`** (legacy **`/public-voice`** redirects in-app), etc. work on full refresh.
 4. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
 5. **API responses** — Some gateways return JSON with a minimal or missing **`Content-Type`** header. The site treats **HTML** responses as misconfiguration; it does **not** require an exact **`application/json`** header so normal JSON payloads still parse.
 6. **Browser caching (`304`)** — Some hosts cache **`GET /api/blog`** or **`GET /api/books/catalog`**. In the browser **`fetch` API**, **`response.ok` is `false` for HTTP 304**, so client code that only accepts “OK” responses would treat a valid cache hit as a failure. The app uses **`cache: "no-store"`** on those reads (including **`GET /api/blog/:slug`** on the article page) so production gets a normal **200** body. If you fork the client, keep that pattern for every JSON **`fetch`** you parse.
@@ -63,9 +66,13 @@ If your **Web Templates only expose one field**, name it **`description`** in Cu
 npm run provision:homepage
 # Replace all Page Building Blocks on the existing homepage route:
 npm run provision:homepage -- --force
+# Push Web Template field definitions (Desk) to match this repo when templates already exist:
+npm run provision:homepage -- --sync-templates
 ```
 
-Match **Web Template** titles to section keys (spaces → underscores, lowercased):
+After a successful homepage run, the script **also creates** the dedicated **public voice / speaking-and-media** Web Page (route **`ERPNEXT_PUBLIC_VOICE_ROUTE`**, default **`public-voice-page`**) when it does not exist yet — same idea as **`npm run provision:press-kit`**, but chained so one command sets up both. Use **`npm run provision:public-voice`** (or **`-- --force`**) to create or refresh **only** that page. Use **`-- --sync-templates`** on **`provision:homepage`** or **`provision:public-voice`** when **Web Template** field lists in Desk are out of date (see **Public voice** below).
+
+If you already ran **`provision:homepage`** before this behavior existed, run **`npm run provision:public-voice`** once (with `.env` set) to create the Web Page in ERPNext.
 
 | Web Template (your list) | `key` | Main CMS field |
 |--------------------------|--------|----------------|
@@ -74,14 +81,13 @@ Match **Web Template** titles to section keys (spaces → underscores, lowercase
 | About teaser | `about_teaser` | `description` (body; blank lines = paragraphs). Headlines still use `headline_line_1` / `headline_line_2` if you add them. |
 | Books | `books` | `description` (optional intro under the heading). Headings: `heading_line_1` / `heading_emphasis` if added. |
 | Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
-| Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. **Rendered on `/public-voice`** (not on the homepage). |
-| Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the journal band), overlay lines `overlay_line_1` … `overlay_line_3`. |
+| Outreach | `outreach` | `description` (intro lede). **`documented_work_label`**, **`context_label`**. **Documented work:** numbered fields **`ext_1_title`** … **`ext_6_title`** with matching **`ext_N_url`**, **`ext_N_note`**, **`ext_N_source`** (outlet badge). **Context links:** **`ctx_1_label`** / **`ctx_1_url`** … up to **8**. **`linkedin_note`**, **`aside_json`** (sidebar). Optional legacy **`highlights_json`** / **`press_links_json`** (Text) apply only when every slot row is empty. Shown as an **embed** on the **homepage**; **`/speaking-and-media`** reads a **separate** Web Page (`ERPNEXT_PUBLIC_VOICE_ROUTE`, default **`public-voice-page`**) — see **Public voice** below. |
+| Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the journal band), overlay lines `overlay_line_1` … `overlay_line_3`, **`journal_cta`** (button label; used on **`/speaking-and-media`** for the journal footer link). |
 | Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. Optional **`landing_tagline`** / **`tagline`** — serif line under the name on the **white landing strip** above the split hero; defaults to the bio if empty. |
 
 Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).
 
-**`highlights_json` / `press_links_json` (Outreach)** — JSON arrays, e.g.  
-`[{"title":"…","url":"https://…","source":"Site","note":"…"}]` and `[{"label":"…","url":"https://…"}]`.
+**Outreach — documented work & context (flat fields)** — For each external card, fill **Title** + **URL** (required); **Short note** and **Outlet / source** are optional. Up to **6** cards (`ext_1_*` … `ext_6_*`). Context bullets: **Label** + **URL** for up to **8** rows (`ctx_1_*` … `ctx_8_*`). If **all** documented-work title/URL pairs are empty, the app falls back to optional **`highlights_json`** / **`press_links_json`** (same JSON shape as before).
 
 **`aside_json` (Outreach)** — partial override of the Rhoda sidebar object: `displayName`, `nameNote`, `roleLine`, `summary`, `linkedin`, `links` (array of `{title,url}`).
 
@@ -123,6 +129,30 @@ npm run provision:press-kit -- --force
 ```
 
 Shared default copy for ERP seed and the React fallback lives in **`src/content/pressKitCopy.ts`**. Align wording with **Able Delalie Brand Guide.pdf** when you have the file.
+
+### Public voice / Speaking and media (`/speaking-and-media`) — ERPNext Web Page (Page Builder)
+
+The React **`/speaking-and-media`** page loads **two** Page Builder blocks from its **own** Web Page (so editors can mirror everything that appears on the site, including journal band copy). **`route`** matches **`ERPNEXT_PUBLIC_VOICE_ROUTE`** (default **`public-voice-page`** — different from the in-app legacy path **`/public-voice`**, which redirects to **`/speaking-and-media`**).
+
+| Web Template | `key` | Purpose |
+|--------------|--------|---------|
+| **Outreach** | `outreach` | **`desk_guide`** (Desk-only). Intro, section labels, **flat `ext_N_*` / `ctx_N_*` fields** for external cards and context links (see homepage table). **`linkedin_note`**, **`aside_json`**. Optional **`highlights_json`** / **`press_links_json`** if slots are unused. |
+| **Latest Articles** | `latest_articles` | **`panel_label`** (journal section heading), **`description`** (lede under it), **`journal_cta`** (footer link label). Live post rows still come from **`GET /api/blog`** in React. |
+
+- **API:** `GET /api/public-voice/sections` → `{ ok, route, web_page, sections: [{ template, key, values }] }` (two sections when provisioned with this repo).
+- **Client:** `HomepageCMSProvider` is mounted with **`sectionsUrl="/api/public-voice/sections"`** on this route only; the homepage still uses **`GET /api/homepage/sections`**.
+- **Journal on the page:** The standalone route also lists recent **Blog Post** rows via **`GET /api/blog`** (internal links to **`/blog/:slug`**), alongside the external **documented work** / **context** fields above.
+
+**Where are the external page links in Desk?** Page Builder lists **Outreach** and **Latest Articles**. Open **Outreach → Edit values**: use **Documented work N — Title / URL / Short note / Outlet** and **Context link N — Label / URL** (no JSON required). **Aside JSON** is still JSON for the Rhoda sidebar. After deleting the Web Page, run **`npm run provision:public-voice -- --force`** to recreate blocks; if the **Outreach** template already existed without the new fields, run **`-- --sync-templates`** once. **`--force`** only replaces **Web Page** block values, not the template schema. **`npm run provision:homepage -- --sync-templates`** syncs **all** homepage-related **Web Templates** plus the public-voice stack.
+
+**Provision from your machine** (ensures **Outreach** + **Latest Articles** Web Templates if missing, then creates or replaces blocks on the public voice Web Page):
+
+```bash
+npm run provision:public-voice
+npm run provision:public-voice -- --force
+npm run provision:public-voice -- --sync-templates
+npm run provision:public-voice -- --force --sync-templates
+```
 
 ### Required ERPNext Doctypes
 

@@ -1,8 +1,19 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import content, { linkedinProfileUrl, rhodaDelaliAgbenyo } from "../content/facebookPublicThemes";
+import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { socialLinks } from "../config/social";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
+import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
+import {
+  parseHighlightsJson,
+  parsePressLinksJson,
+  readContextLinksFromSlots,
+  readDocWorkFromSlots,
+  type ContextPressLink,
+  type DocWorkHighlight,
+} from "../lib/outreachCmsSlots";
 
 const fb = socialLinks.find((s) => s.label === "Facebook");
 const ig = socialLinks.find((s) => s.label === "Instagram");
@@ -13,48 +24,26 @@ const linkedin = linkedinProfileUrl?.trim();
 const OUTREACH_HIGHLIGHTS_MAX = 3;
 const OUTREACH_PRESS_LINKS_MAX = 5;
 
-type HighlightRow = { title: string; note: string; url: string; source: string };
-type PressRow = { label: string; url: string };
+/** Recent posts on the standalone speaking & media page (internal `/blog` links). */
+const PAGE_JOURNAL_POSTS_MAX = 8;
 
-function parseJsonArray<T>(raw: string | undefined, guard: (row: unknown) => T | null): T[] | null {
-  if (!raw?.trim()) return null;
-  try {
-    const j = JSON.parse(raw) as unknown;
-    if (!Array.isArray(j) || j.length === 0) return null;
-    const out: T[] = [];
-    for (const row of j) {
-      const item = guard(row);
-      if (item) out.push(item);
-    }
-    return out.length ? out : null;
-  } catch {
-    return null;
-  }
-}
+const DEFAULT_JOURNAL_SECTION_TITLE = "From this site's journal";
+const DEFAULT_JOURNAL_SECTION_LEDE =
+  "Essays and updates published here — alongside the external outlets and context above.";
+const DEFAULT_JOURNAL_FOOTER_CTA = "Browse the full journal →";
 
-function parseHighlights(raw: string | undefined): HighlightRow[] | null {
-  return parseJsonArray(raw, (row) => {
-    if (!row || typeof row !== "object") return null;
-    const o = row as Record<string, unknown>;
-    const title = String(o.title ?? "").trim();
-    const url = String(o.url ?? "").trim();
-    const source = String(o.source ?? "").trim();
-    const note = String(o.note ?? "").trim();
-    if (!title || !url) return null;
-    return { title, url, source: source || "Link", note: note || "" };
-  });
-}
+type BlogPostApi = {
+  name: string;
+  title: string;
+  published_on?: string;
+  blog_category?: string;
+  meta_image?: string;
+};
 
-function parsePressLinks(raw: string | undefined): PressRow[] | null {
-  return parseJsonArray(raw, (row) => {
-    if (!row || typeof row !== "object") return null;
-    const o = row as Record<string, unknown>;
-    const label = String(o.label ?? o.title ?? "").trim();
-    const url = String(o.url ?? "").trim();
-    if (!label || !url) return null;
-    return { label, url };
-  });
-}
+type AsideLinkRow = { title: string; url: string; note?: string; source?: string };
+
+type HighlightRow = DocWorkHighlight;
+type PressRow = ContextPressLink;
 
 function parseAside(raw: string | undefined): Partial<typeof rhodaDelaliAgbenyo> | null {
   if (!raw?.trim()) return null;
@@ -100,17 +89,18 @@ export default function HomeFacebookAdvocacy({
 }: {
   /** When true (standalone page), show all highlights and press links from CMS / defaults. */
   fullList?: boolean;
-  /** `page` = standalone `/public-voice`: stronger hierarchy, roomier layout, full notes. */
+  /** `page` = standalone `/speaking-and-media`: stronger hierarchy, roomier layout, full notes. */
   variant?: "embed" | "page";
 }) {
   const v = useHomepageSectionValues("outreach");
+  const latestArticles = useHomepageSectionValues("latest_articles");
 
   const highlightsMax = fullList ? 999 : OUTREACH_HIGHLIGHTS_MAX;
   const pressLinksMax = fullList ? 999 : OUTREACH_PRESS_LINKS_MAX;
 
   const eyebrow = pickCms(v, "eyebrow", "kicker") || "Outreach";
-  const titleMain = pickCms(v, "title_line_1", "heading", "title") || "Public voice &";
-  const titleEm = pickCms(v, "title_emphasis", "heading_emphasis", "accent") || "press";
+  const titleMain = pickCms(v, "title_line_1", "heading", "title") || "Speaking and ";
+  const titleEm = pickCms(v, "title_emphasis", "heading_emphasis", "accent") || "media";
   const intro = pickCms(v, "description", "intro", "lede", "body", "text") || content.intro;
   const linkedinNote = pickCms(v, "linkedin_note", "linkedin_hint") || content.linkedinNote;
 
@@ -118,12 +108,21 @@ export default function HomeFacebookAdvocacy({
     pickCms(v, "documented_work_label", "highlights_heading") || "Documented work";
   const contextLabel = pickCms(v, "context_label", "press_heading") || "Context";
 
+  const pickField = (field: string) => pickCms(v, field);
+
+  const highlightsFromSlots = readDocWorkFromSlots(pickField);
+  const highlightsFromJson = parseHighlightsJson(pickCms(v, "highlights_json", "highlights"));
   const highlights: HighlightRow[] =
-    parseHighlights(pickCms(v, "highlights_json", "highlights")) ??
-    (content.highlights as unknown as HighlightRow[]);
+    highlightsFromSlots.length > 0
+      ? highlightsFromSlots
+      : (highlightsFromJson ?? (content.highlights as unknown as HighlightRow[]));
+
+  const pressFromSlots = readContextLinksFromSlots(pickField);
+  const pressFromJson = parsePressLinksJson(pickCms(v, "press_links_json", "press_links"));
   const pressLinks: PressRow[] =
-    parsePressLinks(pickCms(v, "press_links_json", "press_links")) ??
-    (content.pressLinks as unknown as PressRow[]);
+    pressFromSlots.length > 0
+      ? pressFromSlots
+      : (pressFromJson ?? (content.pressLinks as unknown as PressRow[]));
 
   const asidePatch = parseAside(pickCms(v, "aside_json", "profile_json"));
   const aside = (() => {
@@ -137,6 +136,45 @@ export default function HomeFacebookAdvocacy({
   })();
 
   const isPage = variant === "page";
+  const journalSectionTitle =
+    pickCms(latestArticles, "panel_label", "list_heading", "recent_heading") || DEFAULT_JOURNAL_SECTION_TITLE;
+  const journalSectionLede =
+    pickCms(latestArticles, "description", "intro", "lede", "body", "text") || DEFAULT_JOURNAL_SECTION_LEDE;
+  const journalFooterCta =
+    pickCms(latestArticles, "journal_cta", "button_text", "cta_label") || DEFAULT_JOURNAL_FOOTER_CTA;
+  const [journalPosts, setJournalPosts] = useState<
+    { slug: string; title: string; date: string; category: string; imageUrl: string }[]
+  >([]);
+  const [journalLoading, setJournalLoading] = useState(isPage);
+
+  useEffect(() => {
+    if (!isPage) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(apiUrl("/api/blog"), { cache: "no-store" });
+        assertApiJsonResponse(res, "Journal (speaking & media page)");
+        const data = (await res.json()) as { posts?: BlogPostApi[] };
+        const raw = Array.isArray(data.posts) ? data.posts : [];
+        const rows = raw.slice(0, PAGE_JOURNAL_POSTS_MAX).map((p) => ({
+          slug: p.name,
+          title: (p.title || p.name).trim(),
+          date: formatBlogListDate(p.published_on),
+          category: (p.blog_category || "").trim(),
+          imageUrl: resolveErpPublicUrl(p.meta_image || "") || "",
+        }));
+        if (!cancelled) setJournalPosts(rows);
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) setJournalPosts([]);
+      } finally {
+        if (!cancelled) setJournalLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPage]);
   const sectionClass = ["adv-outreach", isPage ? "adv-outreach--page" : ""].filter(Boolean).join(" ");
   const TitleTag: "h1" | "h2" = isPage ? "h1" : "h2";
   const SectionLabelTag: "h2" | "h3" = isPage ? "h2" : "h3";
@@ -201,17 +239,82 @@ export default function HomeFacebookAdvocacy({
               LinkedIn
             </a>
             <ul className="adv-outreach__aside-links">
-              {aside.links.map((item) => (
+              {(aside.links as readonly AsideLinkRow[]).map((item) => (
                 <li key={item.url}>
                   <a href={item.url} target="_blank" rel="noopener noreferrer">
                     {item.title}
                   </a>
+                  {isPage && item.source ? (
+                    <span className="adv-outreach__aside-link-source">{item.source}</span>
+                  ) : null}
+                  {isPage && item.note ? (
+                    <p className="adv-outreach__aside-link-note">{item.note}</p>
+                  ) : null}
                 </li>
               ))}
             </ul>
           </aside>
         </div>
+
+        {isPage ? (
+          <div className="adv-outreach__on-site" aria-labelledby="adv-outreach-onsite-heading">
+            <h3 id="adv-outreach-onsite-heading" className="adv-outreach__section-label adv-outreach__on-site-heading">
+              {journalSectionTitle}
+            </h3>
+            <p className="adv-outreach__on-site-lede">{journalSectionLede}</p>
+            {journalLoading ? (
+              <p className="adv-outreach__on-site-status">Loading journal…</p>
+            ) : journalPosts.length === 0 ? (
+              <p className="adv-outreach__on-site-empty">
+                No posts yet.{" "}
+                <Link className="adv-outreach__on-site-inline" to="/blog">
+                  Open the journal
+                </Link>
+                .
+              </p>
+            ) : (
+              <ul className="adv-outreach__blog-list">
+                {journalPosts.map((row) => {
+                  const letter = row.title?.trim().slice(0, 1).toUpperCase() || "·";
+                  return (
+                    <li key={row.slug}>
+                      <Link to={`/blog/${encodeURIComponent(row.slug)}`} className="adv-outreach__blog-row">
+                        <div className="adv-outreach__blog-thumb" aria-hidden>
+                          {row.imageUrl ? (
+                            <img src={row.imageUrl} alt="" loading="lazy" decoding="async" />
+                          ) : (
+                            <span className="adv-outreach__blog-thumb-letter">{letter}</span>
+                          )}
+                        </div>
+                        <div className="adv-outreach__blog-text">
+                          <span className="adv-outreach__blog-title">{row.title}</span>
+                          <span className="adv-outreach__blog-meta">
+                            {row.date}
+                            {row.category ? ` · ${row.category}` : ""}
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <Link to="/blog" className="adv-outreach__blog-all">
+              {journalFooterCta}
+            </Link>
+          </div>
+        ) : null}
       </div>
     </section>
   );
+}
+
+function formatBlogListDate(dateString?: string): string {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }

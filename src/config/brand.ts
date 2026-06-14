@@ -9,8 +9,8 @@ export const COLORS = {
   /** Primary light UI fill — keeps most of the page off full navy */
   surface: "#FAFAFA",
   surfaceElevated: "#FFFFFF",
-  /** Dark footer / rare bands — neutral charcoal, less “blue” than Deep Navy */
-  charcoal: "#2a2a2e",
+  /** Dark surfaces — same as Deep Navy (Brand Book) */
+  charcoal: "#16192D",
   textMuted: "rgba(22, 25, 45, 0.62)",
   white: "#ffffff",
 } as const;

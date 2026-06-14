@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -21,8 +21,7 @@ import Books from "./pages/Books";
 import BookRead from "./pages/BookRead";
 import BooksPreorder from "./pages/BooksPreorder";
 import Contact from "./pages/Contact";
-import PublicVoice from "./pages/PublicVoice";
-import PressKit from "./pages/PressKit";
+import SpeakingAndMedia from "./pages/SpeakingAndMedia";
 import RotatingFavicon from "./components/RotatingFavicon";
 import { HomepageCMSProvider } from "./context/HomepageCMSProvider";
 
@@ -98,8 +97,10 @@ export default function App() {
         <Route path="/books/:bookId/read" element={<BookRead />} />
         <Route path="/books" element={<Books />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/public-voice" element={<PublicVoice />} />
-        <Route path="/press-kit" element={<PressKit />} />
+        <Route path="/speaking-and-media" element={<SpeakingAndMedia />} />
+        <Route path="/public-voice" element={<Navigate to="/speaking-and-media" replace />} />
+        {/* Press kit hidden for now — direct links redirect home */}
+        <Route path="/press-kit" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

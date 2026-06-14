@@ -128,6 +128,90 @@
   margin-left: 8px;
 }
 
+@media (min-width: 1024px) {
+  .ad-nav--cb .cb-nav__dropdown {
+    position: relative;
+  }
+
+  .ad-nav--cb .cb-nav__dropdown-panel {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    min-width: 220px;
+    padding: 8px 0;
+    background: var(--ad-card, #fff);
+    border: 1px solid rgba(22, 25, 45, 0.1);
+    box-shadow: 0 14px 36px rgba(22, 25, 45, 0.12);
+    border-radius: 2px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition:
+      opacity 0.18s ease,
+      visibility 0.18s ease,
+      transform 0.18s ease;
+    z-index: 30;
+  }
+
+  .ad-nav--cb .cb-nav__dropdown:hover .cb-nav__dropdown-panel,
+  .ad-nav--cb .cb-nav__dropdown:focus-within .cb-nav__dropdown-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .ad-nav--cb .cb-nav__dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+  }
+
+  .ad-nav--cb .cb-nav__dropdown-caret {
+    font-size: 0.68em;
+    opacity: 0.72;
+    letter-spacing: normal;
+    text-transform: none;
+    font-weight: 700;
+  }
+
+  .ad-nav--cb .cb-nav__dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 12px 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ad-ink-muted, rgba(22, 25, 45, 0.65));
+    transition:
+      color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .ad-nav--cb .cb-nav__dropdown-item:hover,
+  .ad-nav--cb .cb-nav__dropdown-item:focus-visible {
+    color: var(--ad-ink, #16192d);
+    background: var(--ad-paper, #faf9f6);
+    outline: none;
+  }
+
+  .ad-nav--cb .cb-nav__dropdown--active .cb-nav__dropdown-trigger {
+    color: var(--ad-ink, #16192d);
+    border-bottom-color: var(--ad-red, #cd0b07);
+  }
+}
+
+@media (max-width: 1023px) {
+  .ad-nav--cb .cb-nav__dropdown-panel {
+    display: none;
+  }
+}
+
 @media (max-width: 1023px) {
   .ad-nav--cb .ad-nav__menu-btn {
     display: flex !important;

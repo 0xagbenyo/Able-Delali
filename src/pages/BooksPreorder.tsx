@@ -387,7 +387,7 @@ export default function BooksPreorder() {
               <p
                 style={{
                   marginBottom: "16px",
-                  color: message.ok ? ink : "#b54a4a",
+                  color: message.ok ? ink : "var(--ad-life-red, #cd0b07)",
                   lineHeight: 1.6,
                   fontSize: "14px",
                 }}

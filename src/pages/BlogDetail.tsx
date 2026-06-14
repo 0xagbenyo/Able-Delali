@@ -127,7 +127,7 @@ export default function BlogDetail() {
     return (
       <PageChrome style={{ background: paper, fontFamily: FONT }}>
         <div className="ad-container ad-section" style={{ textAlign: "center" }}>
-          <p style={{ fontSize: "16px", color: "#b54a4a", marginBottom: "24px" }}>
+          <p style={{ fontSize: "16px", color: "var(--ad-life-red, #cd0b07)", marginBottom: "24px" }}>
             {error || "This article could not be found."}
           </p>
           <Link
@@ -224,6 +224,8 @@ export default function BlogDetail() {
                   height: "100%",
                   maxHeight: isMobile ? "320px" : "440px",
                   objectFit: "cover",
+                  /* Shallow band + cover — anchor to top so faces aren’t cropped at the forehead */
+                  objectPosition: "center top",
                   display: "block",
                 }}
                 onError={(e) => {

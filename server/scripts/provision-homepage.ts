@@ -6,9 +6,12 @@
  * Usage (repo root, `.env` with ERPNEXT_*):
  *   npm run provision:homepage
  *   npm run provision:homepage -- --force
+ *   npm run provision:homepage -- --sync-templates
+ *   npm run provision:homepage -- --force --sync-templates
  *
  * Requires: ERPNEXT_API_URL, ERPNEXT_API_KEY, ERPNEXT_API_SECRET
- * Optional: ERPNEXT_HOMEPAGE_ROUTE
+ * Optional: `ERPNEXT_HOMEPAGE_ROUTE`
+ * Optional: `ERPNEXT_PUBLIC_VOICE_ROUTE` — Web Page for **`/speaking-and-media`** (default `public-voice-page`). Created when missing at the end of this script; use **`npm run provision:public-voice`** to update that page only.
  */
 import "dotenv/config";
 import {
@@ -21,17 +24,22 @@ import {
   DEFAULT_ROLE_TAGS,
   DEFAULT_HERO_BIO,
   ABOUT_PARAGRAPHS,
-  OUTREACH_INTRO,
-  OUTREACH_HIGHLIGHTS,
-  OUTREACH_PRESS_LINKS,
-  LINKEDIN_NOTE,
   LATEST_ARTICLES_INTRO,
 } from "./homepageSeedData.js";
+import {
+  getPublicVoiceWebPageRoute,
+  OUTREACH_WEB_TEMPLATE_FIELDS,
+  LATEST_ARTICLES_WEB_TEMPLATE_FIELDS,
+  provisionPublicVoiceStack,
+  buildPublicVoiceOutreachWebTemplateValues,
+} from "./ensurePublicVoiceWebPage.js";
+import { syncWebTemplateFieldsIfNeeded } from "./webTemplateSync.js";
 
 const ROUTE = (process.env.ERPNEXT_HOMEPAGE_ROUTE || "homepage").trim().replace(/^\//, "");
 const FORCE = process.argv.includes("--force");
+const SYNC_TEMPLATES = process.argv.includes("--sync-templates");
 
-type FieldRow = { label: string; fieldname: string; fieldtype: string };
+type FieldRow = { label: string; fieldname: string; fieldtype: string; description?: string };
 
 const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
   {
@@ -86,28 +94,11 @@ const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
   },
   {
     name: "Outreach",
-    fields: [
-      { label: "Eyebrow", fieldname: "eyebrow", fieldtype: "Data" },
-      { label: "Title line 1", fieldname: "title_line_1", fieldtype: "Data" },
-      { label: "Title emphasis", fieldname: "title_emphasis", fieldtype: "Data" },
-      { label: "Intro", fieldname: "description", fieldtype: "Text" },
-      { label: "Highlights JSON", fieldname: "highlights_json", fieldtype: "Text" },
-      { label: "Press links JSON", fieldname: "press_links_json", fieldtype: "Text" },
-      { label: "LinkedIn note", fieldname: "linkedin_note", fieldtype: "Text" },
-    ],
+    fields: OUTREACH_WEB_TEMPLATE_FIELDS,
   },
   {
     name: "Latest Articles",
-    fields: [
-      { label: "Kicker", fieldname: "kicker", fieldtype: "Data" },
-      { label: "Heading line 1", fieldname: "heading_line_1", fieldtype: "Data" },
-      { label: "Heading emphasis", fieldname: "heading_emphasis", fieldtype: "Data" },
-      { label: "Intro", fieldname: "description", fieldtype: "Text" },
-      { label: "Overlay line 1", fieldname: "overlay_line_1", fieldtype: "Data" },
-      { label: "Overlay line 2", fieldname: "overlay_line_2", fieldtype: "Data" },
-      { label: "Overlay line 3", fieldname: "overlay_line_3", fieldtype: "Data" },
-      { label: "Recent list heading", fieldname: "panel_label", fieldtype: "Data" },
-    ],
+    fields: LATEST_ARTICLES_WEB_TEMPLATE_FIELDS,
   },
 ];
 
@@ -124,7 +115,11 @@ async function ensureWebTemplate(def: { name: string; fields: FieldRow[] }): Pro
     { limit: 1 },
   );
   if (existing.data?.length) {
-    console.log(`Web Template "${def.name}" exists — skip.`);
+    if (SYNC_TEMPLATES) {
+      await syncWebTemplateFieldsIfNeeded(def.name, def.fields);
+    } else {
+      console.log(`Web Template "${def.name}" exists — skip.`);
+    }
     return;
   }
   await createERPNextDocument("Web Template", {
@@ -179,12 +174,7 @@ function seedPageBlocks(): { web_template: string; web_template_values: string }
     { web_template: "Newsletter", web_template_values: JSON.stringify({}) },
     {
       web_template: "Outreach",
-      web_template_values: JSON.stringify({
-        description: OUTREACH_INTRO,
-        highlights_json: JSON.stringify([...OUTREACH_HIGHLIGHTS]),
-        press_links_json: JSON.stringify([...OUTREACH_PRESS_LINKS]),
-        linkedin_note: LINKEDIN_NOTE,
-      }),
+      web_template_values: JSON.stringify(buildPublicVoiceOutreachWebTemplateValues("", false)),
     },
     {
       web_template: "Latest Articles",
@@ -239,11 +229,25 @@ async function ensureWebPage(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log(`Homepage Web Page route: ${ROUTE}  |  force: ${FORCE}`);
+  console.log(`Homepage Web Page route: ${ROUTE}  |  force: ${FORCE}  |  syncTemplates: ${SYNC_TEMPLATES}`);
   for (const def of SECTION_TEMPLATE_DEFS) {
     await ensureWebTemplate(def);
   }
   await ensureWebPage();
+
+  const voiceRoute = getPublicVoiceWebPageRoute();
+  try {
+    await provisionPublicVoiceStack({ force: FORCE, syncTemplates: SYNC_TEMPLATES });
+    console.log(
+      `Public voice / speaking-and-media Web Page (route "${voiceRoute}") ${FORCE ? "updated (--force)" : "created if missing"}${SYNC_TEMPLATES ? "; Web Templates synced (--sync-templates)" : ""} for GET /api/public-voice/sections. Use \`npm run provision:public-voice\` to refresh only that page without re-seeding the full homepage.`,
+    );
+  } catch (e) {
+    console.warn(
+      "[provision:homepage] Optional: could not create/update the public voice Web Page:",
+      e instanceof Error ? e.message : e,
+    );
+  }
+
   console.log("Done.");
 }
 

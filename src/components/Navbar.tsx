@@ -12,22 +12,69 @@ function isAtDocumentTop(): boolean {
   return window.scrollY < TOP_THRESHOLD_PX;
 }
 
-type NavItem = { label: string } & ({ id: string } | { path: string });
+type SimpleNav = { kind: "simple"; label: string } & ({ id: string } | { path: string });
+type DropdownNav = {
+  kind: "dropdown";
+  label: string;
+  items: { label: string; path: string }[];
+};
 
-const navLeft: readonly NavItem[] = [
-  { label: "Home", id: "home" },
-  { label: "About", path: "/about" },
-  { label: "Press kit", path: "/press-kit" },
-  { label: "Public voice", path: "/public-voice" },
-  { label: "Books", path: "/books" },
+type LeftNavItem = SimpleNav | DropdownNav;
+
+const navLeft: LeftNavItem[] = [
+  { kind: "simple", label: "Home", id: "home" },
+  { kind: "simple", label: "About", path: "/about" },
+  { kind: "simple", label: "Speaking and media", path: "/speaking-and-media" },
+  { kind: "simple", label: "Books", path: "/books" },
 ];
 
-const navRight: readonly NavItem[] = [
+type SheetRow = {
+  key: string;
+  label: string;
+  nested?: boolean;
+} & ({ id: string; path?: never } | { path: string; id?: never });
+
+const navRight: readonly ({ label: string } & ({ id: string } | { path: string }))[] = [
   { label: "Journal", path: "/blog" },
   { label: "Newsletter", path: "/#newsletter" },
 ];
 
-const sheetNavItems: NavItem[] = [...navLeft, ...navRight];
+function buildSheetRows(): SheetRow[] {
+  const rows: SheetRow[] = [];
+  for (const item of navLeft) {
+    if (item.kind === "simple") {
+      rows.push(
+        "path" in item
+          ? { key: item.path, label: item.label, path: item.path }
+          : { key: item.id, label: item.label, id: item.id },
+      );
+    } else {
+      for (let i = 0; i < item.items.length; i++) {
+        const sub = item.items[i]!;
+        rows.push({
+          key: sub.path,
+          label: sub.label,
+          path: sub.path,
+          nested: i > 0,
+        });
+      }
+    }
+  }
+  for (const item of navRight) {
+    rows.push(
+      "path" in item
+        ? { key: item.path, label: item.label, path: item.path }
+        : { key: item.id, label: item.label, id: item.id },
+    );
+  }
+  return rows;
+}
+
+const sheetNavItems: SheetRow[] = buildSheetRows();
+
+function isAboutDropdownActive(pathname: string): boolean {
+  return pathname === "/about";
+}
 
 export default function Navbar() {
   const { isDesktop } = useResponsive();
@@ -174,17 +221,17 @@ export default function Navbar() {
             </button>
           </div>
           <div className="ad-nav__sheet-list">
-            {sheetNavItems.map((item) => (
+            {sheetNavItems.map((row) => (
               <button
-                key={"path" in item ? item.path : item.id}
+                key={row.key}
                 type="button"
-                className="ad-nav__sheet-item"
+                className={`ad-nav__sheet-item${row.nested ? " ad-nav__sheet-item--nested" : ""}`}
                 onClick={() => {
-                  goToSection("id" in item ? item.id : undefined, "path" in item ? item.path : undefined);
+                  goToSection("id" in row ? row.id : undefined, "path" in row ? row.path : undefined);
                   closeMenu();
                 }}
               >
-                {item.label}
+                {row.label}
               </button>
             ))}
           </div>
@@ -202,6 +249,8 @@ export default function Navbar() {
       </>
     ) : null;
 
+  const pathname = location.pathname;
+
   return (
     <header className={`ad-nav ad-nav--editorial ad-nav--cb${hidden ? " ad-nav--hidden" : ""}`} aria-hidden={hidden}>
       <div className="ad-container ad-nav__bar cb-nav__bar">
@@ -218,17 +267,55 @@ export default function Navbar() {
         </button>
 
         <nav className="cb-nav__left" aria-label="Primary">
-          {navLeft.map((item) => (
-            <button
-              key={"path" in item ? item.path : item.id}
-              type="button"
-              className="cb-nav__link"
-              tabIndex={hidden ? -1 : 0}
-              onClick={() => goToSection("id" in item ? item.id : undefined, "path" in item ? item.path : undefined)}
-            >
-              {item.label}
-            </button>
-          ))}
+          {navLeft.map((item) => {
+            if (item.kind === "simple") {
+              return (
+                <button
+                  key={"path" in item ? item.path : item.id}
+                  type="button"
+                  className="cb-nav__link"
+                  tabIndex={hidden ? -1 : 0}
+                  onClick={() => goToSection("id" in item ? item.id : undefined, "path" in item ? item.path : undefined)}
+                >
+                  {item.label}
+                </button>
+              );
+            }
+            const aboutActive = isAboutDropdownActive(pathname);
+            return (
+              <div
+                key={item.label}
+                className={`cb-nav__dropdown${aboutActive ? " cb-nav__dropdown--active" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="cb-nav__link cb-nav__dropdown-trigger"
+                  aria-haspopup="true"
+                  tabIndex={hidden ? -1 : 0}
+                >
+                  {item.label}
+                  <span className="cb-nav__dropdown-caret" aria-hidden>
+                    {" "}
+                    ▾
+                  </span>
+                </button>
+                <div className="cb-nav__dropdown-panel" role="menu" aria-label={`${item.label} links`}>
+                  {item.items.map((sub) => (
+                    <button
+                      key={sub.path}
+                      type="button"
+                      role="menuitem"
+                      className="cb-nav__dropdown-item"
+                      tabIndex={hidden ? -1 : 0}
+                      onClick={() => goToSection(undefined, sub.path)}
+                    >
+                      {sub.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </nav>
 
         <button

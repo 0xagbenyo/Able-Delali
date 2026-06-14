@@ -283,6 +283,12 @@
   background: var(--ad-paper);
 }
 
+.ad-nav__sheet-item--nested {
+  padding-left: 32px;
+  font-weight: 500;
+  color: var(--ad-ink-muted);
+}
+
 .ad-nav__sheet-cta {
   margin: 16px 20px max(20px, env(safe-area-inset-bottom, 0px));
   padding: 16px;
@@ -303,7 +309,7 @@
   flex-shrink: 0;
   position: relative;
   z-index: 30;
-  background: #2a2a2e;
+  background: var(--ad-ink);
   color: #fff;
   font-family: "Exo 2", system-ui, sans-serif;
   border-top: 3px solid var(--ad-red);
@@ -484,7 +490,7 @@
 }
 
 .ad-footer__msg--err {
-  color: #ffb4b4;
+  color: var(--ad-red, #cd0b07);
 }
 
 .ad-footer__social {

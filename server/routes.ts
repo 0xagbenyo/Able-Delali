@@ -37,6 +37,7 @@ import {
 import { getHomepageSectionsFromERPNext } from "./homepageStore.js";
 import { getAboutSectionsFromERPNext } from "./aboutPageStore.js";
 import { getPressKitSectionsFromERPNext } from "./pressKitStore.js";
+import { getPublicVoiceSectionsFromERPNext } from "./publicVoicePageStore.js";
 
 function applyNoStoreCache(res: Response): void {
   res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
@@ -184,6 +185,16 @@ export async function registerRoutes(
     asyncHandler(async (_req: Request, res: Response) => {
       applyNoStoreCache(res);
       const payload = await getPressKitSectionsFromERPNext();
+      res.json(payload);
+    }),
+  );
+
+  /** Web Page (Page Builder) `public-voice-page` (default) → **Outreach** copy for React `/speaking-and-media`. */
+  router.get(
+    "/public-voice/sections",
+    asyncHandler(async (_req: Request, res: Response) => {
+      applyNoStoreCache(res);
+      const payload = await getPublicVoiceSectionsFromERPNext();
       res.json(payload);
     }),
   );

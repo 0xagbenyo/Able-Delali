@@ -12,7 +12,7 @@ function BookPdfViewerLoadFailed() {
       style={{
         padding: "32px 20px",
         textAlign: "center",
-        color: "#8a4a4a",
+        color: "var(--ad-life-red, #cd0b07)",
         fontSize: "14px",
         lineHeight: 1.55,
         maxWidth: "28rem",
@@ -106,7 +106,7 @@ export default function BookRead() {
       >
         <Navbar />
         <div className="book-read-message" style={{ paddingTop: 48 }}>
-          <p style={{ color: "#8a4a4a" }}>{error}</p>
+          <p style={{ color: "var(--ad-life-red, #cd0b07)" }}>{error}</p>
           <p style={{ margin: 0 }}>
             <Link to="/books">All books</Link>
           </p>

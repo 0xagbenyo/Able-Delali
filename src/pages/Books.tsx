@@ -75,7 +75,7 @@ export default function Books() {
       <PageChrome className="books-page" style={{ background: paper, fontFamily: FONT }}>
         <div className="ad-container ad-section">
           <div className="book-read-message">
-            <p style={{ color: "#8a4a4a" }}>{error}</p>
+            <p style={{ color: "var(--ad-life-red, #cd0b07)" }}>{error}</p>
           </div>
         </div>
       </PageChrome>
