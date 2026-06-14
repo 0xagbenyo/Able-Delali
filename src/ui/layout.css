@@ -302,7 +302,7 @@
   margin-top: auto;
   flex-shrink: 0;
   position: relative;
-  z-index: 2;
+  z-index: 30;
   background: #2a2a2e;
   color: #fff;
   font-family: "Exo 2", system-ui, sans-serif;

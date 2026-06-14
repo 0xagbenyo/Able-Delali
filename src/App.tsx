@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import HomeMarquee from "./components/HomeMarquee";
 import HomeBooks from "./components/HomeBooks";
-import HomeFacebookAdvocacy from "./components/HomeFacebookAdvocacy";
 import AboutTeaser from "./components/AboutTeaser";
 import LatestArticles from "./components/LatestArticles";
 import Newsletter from "./components/Newsletter";
@@ -21,6 +20,7 @@ import Books from "./pages/Books";
 import BookRead from "./pages/BookRead";
 import BooksPreorder from "./pages/BooksPreorder";
 import Contact from "./pages/Contact";
+import PublicVoice from "./pages/PublicVoice";
 import RotatingFavicon from "./components/RotatingFavicon";
 import { HomepageCMSProvider } from "./context/HomepageCMSProvider";
 
@@ -65,13 +65,11 @@ function Home() {
 
           <AboutTeaser />
 
-          <HomeBooks />
-
           <LatestArticles />
 
           <Newsletter />
 
-          <HomeFacebookAdvocacy />
+          <HomeBooks />
 
           <Footer />
         </main>
@@ -97,6 +95,7 @@ export default function App() {
         <Route path="/books/:bookId/read" element={<BookRead />} />
         <Route path="/books" element={<Books />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/public-voice" element={<PublicVoice />} />
       </Routes>
     </>
   );

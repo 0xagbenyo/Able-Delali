@@ -38,8 +38,10 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 ### Deploying to Vercel
 
 1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, **`ERPNEXT_API_SECRET`**, and **`VITE_ERPNEXT_PUBLIC_URL`** (same values as local `.env`) for **Production** and **Preview**. The serverless **`/api/*`** handlers need these at runtime; missing values cause empty blog lists or failed loads.
-2. **SPA routing** — `vercel.json` serves **static files first**, then **`/api/*`** to **`api/index.ts`**, then falls through to **`/index.html`** so routes like **`/blog`** and **`/blog/:slug`** work on full page refresh.
-3. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
+2. **Routing order** — In **`vercel.json`**, **`/api/*`** is sent to **`api/index.ts`** **before** the static filesystem and **before** the SPA fallback to **`index.html`**. That way **`GET /api/blog`** returns JSON, not the React shell. If **`/api/blog`** in the browser shows HTML, the deployment root is probably wrong (Vercel **Root Directory** should be the folder that contains **`package.json`** and **`vercel.json`**, not a parent download folder).
+3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`** and **`/blog/:slug`** work on full refresh.
+4. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
+5. **API responses** — Some gateways return JSON with a minimal or missing **`Content-Type`** header. The site treats **HTML** responses as misconfiguration; it does **not** require an exact **`application/json`** header so normal JSON payloads still parse.
 
 ### Homepage copy (ERPNext Web Page — Page Builder)
 
@@ -67,8 +69,8 @@ Match **Web Template** titles to section keys (spaces → underscores, lowercase
 | About teaser | `about_teaser` | `description` (body; blank lines = paragraphs). Headlines still use `headline_line_1` / `headline_line_2` if you add them. |
 | Books | `books` | `description` (optional intro under the heading). Headings: `heading_line_1` / `heading_emphasis` if added. |
 | Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
-| Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. |
-| Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the dark journal band), overlay lines `overlay_line_1` … `overlay_line_3`. |
+| Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. **Rendered on `/public-voice`** (not on the homepage). |
+| Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the journal band), overlay lines `overlay_line_1` … `overlay_line_3`. |
 | Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. |
 
 Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).

@@ -9,7 +9,7 @@ const ig = socialLinks.find((s) => s.label === "Instagram");
 const x = socialLinks.find((s) => s.label === "X");
 const linkedin = linkedinProfileUrl?.trim();
 
-/** Homepage only — keeps the outreach band from growing too tall when CMS has many rows. */
+/** Default caps when embedded on the homepage; standalone page uses `fullList`. */
 const OUTREACH_HIGHLIGHTS_MAX = 3;
 const OUTREACH_PRESS_LINKS_MAX = 5;
 
@@ -94,8 +94,16 @@ function ChannelLinks() {
   );
 }
 
-export default function HomeFacebookAdvocacy() {
+export default function HomeFacebookAdvocacy({
+  fullList = false,
+}: {
+  /** When true (standalone page), show all highlights and press links from CMS / defaults. */
+  fullList?: boolean;
+}) {
   const v = useHomepageSectionValues("outreach");
+
+  const highlightsMax = fullList ? 999 : OUTREACH_HIGHLIGHTS_MAX;
+  const pressLinksMax = fullList ? 999 : OUTREACH_PRESS_LINKS_MAX;
 
   const eyebrow = pickCms(v, "eyebrow", "kicker") || "Outreach";
   const titleMain = pickCms(v, "title_line_1", "heading", "title") || "Public voice &";
@@ -142,7 +150,7 @@ export default function HomeFacebookAdvocacy() {
           <div className="adv-outreach__main">
             <h3 className="adv-outreach__section-label">{documentedLabel}</h3>
             <ul className="adv-outreach__cards">
-              {highlights.slice(0, OUTREACH_HIGHLIGHTS_MAX).map((h) => (
+              {highlights.slice(0, highlightsMax).map((h) => (
                 <li key={`${h.title}-${h.url}`}>
                   <article className="adv-card">
                     <a className="adv-card__target" href={h.url} target="_blank" rel="noopener noreferrer">
@@ -157,7 +165,7 @@ export default function HomeFacebookAdvocacy() {
 
             <h3 className="adv-outreach__section-label adv-outreach__section-label--spaced">{contextLabel}</h3>
             <ul className="adv-outreach__links">
-              {pressLinks.slice(0, OUTREACH_PRESS_LINKS_MAX).map((p) => (
+              {pressLinks.slice(0, pressLinksMax).map((p) => (
                 <li key={p.url}>
                   <a href={p.url} target="_blank" rel="noopener noreferrer">
                     {p.label}

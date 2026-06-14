@@ -51,6 +51,28 @@ app.use((req, res, next) => {
   next();
 });
 
+/**
+ * Normalize `req.url` / `originalUrl` to pathname + query (handles absolute URLs on
+ * some serverless hosts).
+ */
+function pathnameAndSearchFrom(raw: string): { pathname: string; search: string } {
+  const trimmed = (raw || "").trim();
+  if (!trimmed) return { pathname: "/", search: "" };
+  try {
+    if (/^https?:\/\//i.test(trimmed)) {
+      const u = new URL(trimmed);
+      return { pathname: u.pathname || "/", search: u.search || "" };
+    }
+  } catch {
+    /* ignore */
+  }
+  const hash = trimmed.indexOf("#");
+  const withoutHash = hash === -1 ? trimmed : trimmed.slice(0, hash);
+  const q = withoutHash.indexOf("?");
+  if (q === -1) return { pathname: withoutHash || "/", search: "" };
+  return { pathname: withoutHash.slice(0, q) || "/", search: withoutHash.slice(q) };
+}
+
 let isInitialized = false;
 
 /**
@@ -59,17 +81,16 @@ let isInitialized = false;
  * restore the prefix when missing.
  */
 function ensureApiUrlForExpress(req: Request): void {
-  let pick = req.url ?? "";
+  let pick = typeof req.url === "string" ? req.url : "";
   const orig = (req as unknown as { originalUrl?: string }).originalUrl;
-  if ((!pick || pick === "/") && typeof orig === "string" && orig.length > 0) {
+  if ((!pick || pick === "/") && typeof orig === "string" && orig.trim().length > 0) {
     pick = orig;
   }
-  const q = pick.indexOf("?");
-  const pathname = q === -1 ? pick : pick.slice(0, q);
-  const search = q === -1 ? "" : pick.slice(q);
+
+  const { pathname, search } = pathnameAndSearchFrom(pick);
 
   if (pathname.startsWith("/api")) {
-    req.url = pick;
+    req.url = `${pathname}${search}`;
     return;
   }
   if (!pathname || pathname === "/") {

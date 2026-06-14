@@ -3,6 +3,9 @@
 .cb-site {
   --ref-red: #cd0b07;
   --ref-navy: #16192d;
+  /* Journal band: same hue as Deep Navy, slightly lifted / deepened for depth */
+  --ref-journal-band-top: #1e2238;
+  --ref-journal-band-bottom: #12152a;
   --ref-cream: #f4f0e8;
   --ref-pitch: #0a0a0b;
   --ref-line: rgba(255, 255, 255, 0.14);
@@ -629,9 +632,14 @@ button.cb-ref-btn {
   font-size: 12px;
 }
 
-/* —— Journal / podcast (dark) —— */
+/* —— Journal (brand Deep Navy band — same family as --ref-navy / #16192D) —— */
 .cb-ref-journal {
-  background: var(--ref-pitch);
+  background: linear-gradient(
+    165deg,
+    var(--ref-journal-band-top, #1e2238) 0%,
+    var(--ref-navy, #16192d) 45%,
+    var(--ref-journal-band-bottom, #12152a) 100%
+  );
   color: #fff;
   padding: clamp(3.5rem, 8vw, 6.25rem) 0;
 }
@@ -699,8 +707,8 @@ button.cb-ref-btn {
   justify-content: center;
   font-size: 4rem;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.08);
-  background: #111;
+  color: rgba(255, 255, 255, 0.12);
+  background: rgba(22, 25, 45, 0.55);
 }
 
 .cb-ref-journal__overlay {
@@ -711,7 +719,7 @@ button.cb-ref-btn {
   justify-content: flex-end;
   padding: 1.75rem;
   pointer-events: none;
-  background: rgba(0, 0, 0, 0.42);
+  background: rgba(22, 25, 45, 0.48);
 }
 
 .cb-ref-journal__overlay-line {
@@ -851,16 +859,44 @@ button.cb-ref-btn {
 
 .cb-ref-journal__recent-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.35rem 1rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
   margin: 0 -0.25rem;
-  padding: 0.85rem 0.25rem;
+  padding: 0.75rem 0.25rem;
   text-decoration: none;
   color: inherit;
   border-radius: 2px;
   transition: background 0.15s ease;
+}
+
+.cb-ref-journal__recent-thumb {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(22, 25, 45, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cb-ref-journal__recent-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cb-ref-journal__recent-thumb-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .cb-ref-journal__recent-row:hover {
@@ -873,9 +909,13 @@ button.cb-ref-btn {
   font-weight: 600;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.94);
-  flex: 1 1 12rem;
+  flex: 1 1 auto;
   min-width: 0;
   transition: color 0.15s ease;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .cb-ref-journal__recent-row:hover .cb-ref-journal__recent-title {
@@ -1245,6 +1285,27 @@ a.gift-band__cover:hover {
   border-radius: 2px;
   background: rgba(22, 25, 45, 0.06);
   border: 1px solid rgba(22, 25, 45, 0.08);
+}
+
+.gift-band__coming-soon-visual {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 2 / 3;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  border: 1px solid rgba(22, 25, 45, 0.12);
+  background: rgba(22, 25, 45, 0.04);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-weight: 600;
+  font-style: italic;
+  color: rgba(22, 25, 45, 0.45);
+  text-align: center;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .gift-band__skeleton--text {

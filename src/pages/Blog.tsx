@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
 import PageChrome from "../components/PageChrome";
-import { erpnextPublicOrigin } from "../config/erpnextPublic";
+import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { COLORS, FONT } from "../config/brand";
-import { apiUrl } from "../lib/apiUrl";
+import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
 
 type BlogPost = {
   name: string;
@@ -23,12 +23,8 @@ const muted = "rgba(22, 25, 45, 0.52)";
 const paper = COLORS.neutralGray;
 
 function getImageUrl(imagePath?: string) {
-  if (!imagePath) return null;
-  if (imagePath.startsWith("http")) return imagePath;
-  if (!erpnextPublicOrigin) {
-    return imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
-  }
-  return `${erpnextPublicOrigin}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+  const resolved = resolveErpPublicUrl(imagePath);
+  return resolved || null;
 }
 
 export default function Blog() {
@@ -43,10 +39,7 @@ export default function Blog() {
     const fetchData = async () => {
       try {
         const postsRes = await fetch(apiUrl("/api/blog"));
-        const ct = postsRes.headers.get("content-type") || "";
-        if (!postsRes.ok || !ct.includes("application/json")) {
-          throw new Error("Failed to fetch blog posts");
-        }
+        assertApiJsonResponse(postsRes, "Journal list");
         const postsData = await postsRes.json();
         const list: BlogPost[] = Array.isArray(postsData.posts) ? postsData.posts : [];
         setPosts(list);
@@ -197,7 +190,9 @@ export default function Blog() {
               {ledeImage ? (
                 <img src={ledeImage} alt="" />
               ) : (
-                <div style={{ width: "100%", height: "100%", minHeight: "200px" }} />
+                <div className="blog-index-thumb-placeholder" aria-hidden>
+                  {(featuredPost.title || "?").trim().slice(0, 1).toUpperCase()}
+                </div>
               )}
             </div>
             <div
@@ -291,13 +286,16 @@ export default function Blog() {
           >
             {gridPosts.map((post) => {
               const postImage = getImageUrl(post.meta_image);
+              const initial = (post.title || "?").trim().slice(0, 1).toUpperCase();
               return (
                 <Link key={post.name} to={`/blog/${post.name}`} className="blog-index-card">
                   <div className="blog-index-thumb">
                     {postImage ? (
                       <img src={postImage} alt="" />
                     ) : (
-                      <div style={{ width: "100%", height: "100%", minHeight: "140px" }} />
+                      <div className="blog-index-thumb-placeholder" aria-hidden>
+                        {initial}
+                      </div>
                     )}
                   </div>
                   <div style={{ padding: "22px 22px 26px" }}>

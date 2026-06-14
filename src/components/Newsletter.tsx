@@ -145,16 +145,20 @@ export default function Newsletter() {
 
   const isReady = giftBook !== undefined;
   const bookName = giftBook?.bookName?.trim() ?? "";
+  const noBookOffer = isReady && giftBook === null;
+  const hasBookOffer = isReady && giftBook !== null;
 
   const descriptionText = !isReady
     ? ""
-    : descOverride?.trim()
-      ? descOverride.trim()
-      : giftBook && giftBook.description?.trim()
-        ? giftBook.description.trim()
-        : FALLBACK_DESCRIPTION;
+    : noBookOffer
+      ? ""
+      : descOverride?.trim()
+        ? descOverride.trim()
+        : giftBook && giftBook.description?.trim()
+          ? giftBook.description.trim()
+          : FALLBACK_DESCRIPTION;
 
-  const coverSrc = isReady && giftBook?.imageUrl ? giftBook.imageUrl : bookPlaceholder;
+  const coverSrc = hasBookOffer && giftBook?.imageUrl ? giftBook.imageUrl : bookPlaceholder;
 
   const msgClass =
     message && (message.includes("wrong") || message.includes("not available"))
@@ -168,6 +172,10 @@ export default function Newsletter() {
           <div className="gift-band__visual">
             {!isReady ? (
               <div className="gift-band__skeleton" aria-hidden />
+            ) : noBookOffer ? (
+              <div className="gift-band__coming-soon-visual" role="status">
+                Coming soon
+              </div>
             ) : giftBook?.bookUrl ? (
               <a href={giftBook.bookUrl} target="_blank" rel="noopener noreferrer" className="gift-band__cover">
                 <img src={coverSrc} alt={bookName || "Book cover"} />
@@ -184,6 +192,8 @@ export default function Newsletter() {
             <h2 id="gift-band-heading" className="gift-band__title">
               {!isReady ? (
                 <span className="gift-band__title--ghost">{ghostTitle}</span>
+              ) : noBookOffer ? (
+                <>Coming soon</>
               ) : (
                 <>
                   {titlePrefix}
@@ -199,32 +209,34 @@ export default function Newsletter() {
 
             {!isReady ? (
               <div className="gift-band__skeleton gift-band__skeleton--text" aria-hidden />
-            ) : (
+            ) : noBookOffer ? null : (
               <GiftDescription text={descriptionText} />
             )}
 
-            <form className="gift-band__form" onSubmit={handleSubmit}>
-              <label className="gift-band__label" htmlFor="gift-band-email">
-                {emailLabel}
-              </label>
-              <div className="gift-band__fields">
-                <input
-                  id="gift-band-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder={emailPlaceholder}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <button type="submit" className="gift-band__submit" disabled={loading}>
-                  {loading ? submitLoading : submitLabel}
-                </button>
-              </div>
-            </form>
+            {!noBookOffer ? (
+              <form className="gift-band__form" onSubmit={handleSubmit}>
+                <label className="gift-band__label" htmlFor="gift-band-email">
+                  {emailLabel}
+                </label>
+                <div className="gift-band__fields">
+                  <input
+                    id="gift-band-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder={emailPlaceholder}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <button type="submit" className="gift-band__submit" disabled={loading}>
+                    {loading ? submitLoading : submitLabel}
+                  </button>
+                </div>
+              </form>
+            ) : null}
 
-            <p className="gift-band__fine">{finePrint}</p>
+            {!noBookOffer ? <p className="gift-band__fine">{finePrint}</p> : null}
 
             {message ? <p className={msgClass}>{message}</p> : null}
           </div>

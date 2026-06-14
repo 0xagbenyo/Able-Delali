@@ -17,6 +17,7 @@ type NavItem = { label: string } & ({ id: string } | { path: string });
 const navLeft: readonly NavItem[] = [
   { label: "Home", id: "home" },
   { label: "About", path: "/about" },
+  { label: "Public voice", path: "/public-voice" },
   { label: "Books", path: "/books" },
 ];
 

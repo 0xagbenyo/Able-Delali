@@ -4,7 +4,7 @@ import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { socialLinks } from "../config/social";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
-import { apiUrl } from "../lib/apiUrl";
+import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
 
 type BlogPostApi = {
   name: string;
@@ -25,6 +25,7 @@ type RecentRow = {
   slug: string;
   title: string;
   date: string;
+  imageUrl: string;
 };
 
 const DEFAULT_INTRO =
@@ -63,7 +64,8 @@ export default function LatestArticles() {
     (async () => {
       try {
         const blogRes = await fetch(apiUrl("/api/blog"));
-        const blogData = (await blogRes.json().catch(() => ({}))) as { posts?: BlogPostApi[] };
+        assertApiJsonResponse(blogRes, "Journal (home)");
+        const blogData = (await blogRes.json()) as { posts?: BlogPostApi[] };
         const raw: BlogPostApi[] = Array.isArray(blogData.posts) ? blogData.posts : [];
         const lead = raw.slice(0, 1).map((p) => {
           const img = resolveErpPublicUrl(p.meta_image || "");
@@ -77,6 +79,7 @@ export default function LatestArticles() {
           slug: p.name,
           title: p.title || p.name,
           date: formatDate(p.published_on) || "Recent",
+          imageUrl: resolveErpPublicUrl(p.meta_image || "") || "",
         }));
         if (!cancelled) {
           setPosts(lead);
@@ -179,14 +182,24 @@ export default function LatestArticles() {
             </p>
           ) : (
             <ul className="cb-ref-journal__recent-list">
-              {recentRows.map((row) => (
-                <li key={row.slug}>
-                  <Link to={`/blog/${encodeURIComponent(row.slug)}`} className="cb-ref-journal__recent-row">
-                    <span className="cb-ref-journal__recent-title">{row.title}</span>
-                    <span className="cb-ref-journal__recent-date">{row.date}</span>
-                  </Link>
-                </li>
-              ))}
+              {recentRows.map((row) => {
+                const letter = row.title?.trim().slice(0, 1).toUpperCase() || "·";
+                return (
+                  <li key={row.slug}>
+                    <Link to={`/blog/${encodeURIComponent(row.slug)}`} className="cb-ref-journal__recent-row">
+                      <div className="cb-ref-journal__recent-thumb" aria-hidden>
+                        {row.imageUrl ? (
+                          <img src={row.imageUrl} alt="" />
+                        ) : (
+                          <span className="cb-ref-journal__recent-thumb-letter">{letter}</span>
+                        )}
+                      </div>
+                      <span className="cb-ref-journal__recent-title">{row.title}</span>
+                      <span className="cb-ref-journal__recent-date">{row.date}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
