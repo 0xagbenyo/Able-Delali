@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Linkedin, Twitter, Instagram } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import elikemPhoto from "@assets/Ps._Elikem_Aflakpui_1767385677540.jpg";
+import ablePhoto from "@assets/Ps._Able_Delali_1767385677540.jpg";
 
 export default function About() {
   const fadeIn = {
@@ -20,7 +20,7 @@ export default function About() {
             <span className="text-sm tracking-widest uppercase font-medium">Back to Home</span>
           </Link>
           <span className="text-xl tracking-widest font-serif font-bold uppercase text-primary">
-            Elikem Aflakpui
+            Able Delali
           </span>
         </div>
       </nav>
@@ -38,8 +38,8 @@ export default function About() {
               >
                 <div className="aspect-[3/4] overflow-hidden bg-muted">
                   <img 
-                    src={elikemPhoto} 
-                    alt="Elikem Aflakpui" 
+                    src={ablePhoto} 
+                    alt="Able Delali" 
                     className="w-full h-full object-cover grayscale object-[35%_top] scale-125"
                   />
                 </div>
@@ -53,7 +53,7 @@ export default function About() {
                 <a href="#" className="hover:text-primary transition-colors"><Linkedin className="h-5 w-5" /></a>
                 <a href="#" className="hover:text-primary transition-colors"><Twitter className="h-5 w-5" /></a>
                 <a href="#" className="hover:text-primary transition-colors"><Instagram className="h-5 w-5" /></a>
-                <a href="mailto:hello@elikemaflakpui.com" className="hover:text-primary transition-colors"><Mail className="h-5 w-5" /></a>
+                <a href="mailto:hello@abledelali.com" className="hover:text-primary transition-colors"><Mail className="h-5 w-5" /></a>
               </motion.div>
             </div>
 
@@ -70,38 +70,38 @@ export default function About() {
 
               <motion.div {...fadeIn} className="prose prose-lg max-w-none text-muted-foreground space-y-6 font-light leading-relaxed">
                 <p>
-                  Elikem Aflakpui is a multifaceted leader whose life's work is dedicated to the pursuit of truth—whether through spiritual revelation, analytical precision, or narrative clarity. Based in Ghana, he serves as a dynamic bridge between traditional wisdom and modern innovation.
+                  Able Delali is a multifaceted leader whose life's work is dedicated to the pursuit of truth—whether through spiritual revelation, analytical precision, or narrative clarity. Based in Ghana, he serves as a dynamic bridge between traditional wisdom and modern innovation.
                 </p>
 
                 <div className="space-y-4">
                   <h3 className="text-2xl font-serif text-primary font-normal">Spiritual Leadership</h3>
                   <p>
-                    As a Pastor, Elikem is known for his ability to translate ancient spiritual principles into practical, lived experiences for a contemporary generation. His ministry is characterized by "Faith at the Core"—a belief that all true success and peace begin with a deep, unwavering spiritual foundation.
+                    As a Pastor, Able is known for his ability to translate ancient spiritual principles into practical, lived experiences for a contemporary generation. His ministry is characterized by "Faith at the Core"—a belief that all true success and peace begin with a deep, unwavering spiritual foundation.
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <h3 className="text-2xl font-serif text-primary font-normal">Analytical Rigor</h3>
                   <p>
-                    In his professional capacity as a Data Analyst, Elikem brings "Insight in the Lead." He understands that in a world drowning in information, clarity is the ultimate competitive advantage. By leveraging data, he helps organizations and individuals see through the noise, making strategic decisions grounded in evidence and foresight.
+                    In his professional capacity as a Data Analyst, Able brings "Insight in the Lead." He understands that in a world drowning in information, clarity is the ultimate competitive advantage. By leveraging data, he helps organizations and individuals see through the noise, making strategic decisions grounded in evidence and foresight.
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <h3 className="text-2xl font-serif text-primary font-normal">Creative Expression</h3>
                   <p>
-                    As a Writer, Elikem is focused on "Impact as the Legacy." He believes that stories and ideas are the most enduring human currency. Through his writing, he distills complex philosophical and analytical concepts into accessible, transformative narratives that challenge readers to think deeper and live more purposefully.
+                    As a Writer, Able is focused on "Impact as the Legacy." He believes that stories and ideas are the most enduring human currency. Through his writing, he distills complex philosophical and analytical concepts into accessible, transformative narratives that challenge readers to think deeper and live more purposefully.
                   </p>
                 </div>
 
                 <p>
-                  Whether he is standing behind a pulpit, sitting behind a dataset, or hunched over a keyboard, Elikem's mission remains singular: to empower people to bridge the gap between their current reality and their God-given potential.
+                  Whether he is standing behind a pulpit, sitting behind a dataset, or hunched over a keyboard, Able's mission remains singular: to empower people to bridge the gap between their current reality and their God-given potential.
                 </p>
               </motion.div>
 
               <motion.div {...fadeIn} className="pt-8">
                 <Button className="rounded-none px-8 py-6 text-base tracking-widest uppercase bg-primary hover:bg-primary/90 text-white shadow-lg transition-all">
-                  Collaborate with Elikem
+                  Collaborate with Able
                 </Button>
               </motion.div>
             </div>

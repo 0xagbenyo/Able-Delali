@@ -21,7 +21,6 @@ const navLeft: readonly NavItem[] = [
 ];
 
 const navRight: readonly NavItem[] = [
-  { label: "Speaking", id: "speaking" },
   { label: "Journal", id: "podcast" },
   { label: "Insights", id: "insights" },
 ];

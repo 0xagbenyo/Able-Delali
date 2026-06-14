@@ -9,7 +9,7 @@ import heroBg from "@assets/generated_images/minimalist_serene_light_abstract_ba
 import pastorIcon from "@assets/EA_Pastor_Icon_(1)_1767383792177.png";
 import writerIcon from "@assets/EA_Writer_Icon_(1)_1767383792179.png";
 import analystIcon from "@assets/EA_Data_Analyst_icon_1767384265979.png";
-import elikemPhoto from "@assets/Ps._Elikem_Aflakpui_1767385677540.jpg";
+import ablePhoto from "@assets/Ps._Able_Delali_1767385677540.jpg";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,7 +46,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
           <a href="#" className="text-xl tracking-widest font-serif font-bold uppercase text-primary">
-            Elikem Aflakpui
+            Able Delali
           </a>
 
           {/* Desktop Menu */}
@@ -56,7 +56,7 @@ export default function Home() {
             <a href="#writing" className="hover:text-primary transition-colors">Writing</a>
             <a href="#contact" className="hover:text-primary transition-colors">Contact</a>
             <Button variant="outline" className="ml-4 border-primary text-primary hover:bg-primary hover:text-white transition-colors rounded-none px-6">
-              Book Elikem
+              Book Able
             </Button>
           </div>
 
@@ -110,7 +110,7 @@ export default function Home() {
               variants={fadeIn}
               className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif text-primary leading-tight"
             >
-              Elikem Aflakpui
+              Able Delali
             </motion.h1>
 
             <motion.div variants={fadeIn} className="w-24 h-px bg-primary/20 my-4"></motion.div>
@@ -152,8 +152,8 @@ export default function Home() {
             >
               <div className="aspect-[3/4] overflow-hidden bg-muted relative">
                 <img 
-                  src={elikemPhoto} 
-                  alt="Elikem Aflakpui" 
+                  src={ablePhoto} 
+                  alt="Able Delali" 
                   className="w-full h-full object-cover grayscale transition-all duration-700 object-[35%_top] scale-125"
                 />
                 <div className="absolute -bottom-6 -right-6 w-full h-full border border-primary/20 -z-10"></div>
@@ -169,7 +169,7 @@ export default function Home() {
             >
               <h2 className="text-4xl md:text-5xl font-serif text-primary">A Multifaceted Journey</h2>
               <p className="text-lg text-muted-foreground leading-relaxed font-light">
-                Elikem Aflakpui occupies the unique intersection of spiritual leadership, analytical rigor, and creative expression. 
+                Able Delali occupies the unique intersection of spiritual leadership, analytical rigor, and creative expression. 
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed font-light">
                 As a Pastor, he grounds individuals in faith; as a Data Analyst, he provides the clarity needed for strategic growth; and as a Writer, he distills complex truths into impactful narratives.
@@ -238,7 +238,7 @@ export default function Home() {
           <h2 className="text-3xl md:text-5xl font-serif leading-tight italic">
             "Faith provides the anchor, analysis provides the path, and writing provides the voice for legacy."
           </h2>
-          <p className="mt-8 text-white/60 tracking-widest uppercase text-sm">— Elikem Aflakpui</p>
+          <p className="mt-8 text-white/60 tracking-widest uppercase text-sm">— Able Delali</p>
         </div>
       </section>
 
@@ -300,11 +300,11 @@ export default function Home() {
 
             {/* Email */}
             <a 
-              href="mailto:hello@elikemaflakpui.com" 
+              href="mailto:hello@abledelali.com" 
               className="group flex items-center gap-3 px-6 py-3 rounded-lg bg-primary/5 hover:bg-primary/10 transition-all duration-300"
             >
               <Mail className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
-              <span className="text-primary font-medium tracking-wide">hello@elikemaflakpui.com</span>
+              <span className="text-primary font-medium tracking-wide">hello@abledelali.com</span>
             </a>
 
             {/* Social Media Icons */}
@@ -352,7 +352,7 @@ export default function Home() {
 
             {/* Copyright */}
             <div className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Elikem Aflakpui. All rights reserved.
+              © {new Date().getFullYear()} Able Delali. All rights reserved.
             </div>
           </div>
         </div>

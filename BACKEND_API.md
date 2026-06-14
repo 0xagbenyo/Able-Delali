@@ -1,6 +1,6 @@
-# Elikem Website Backend API
+# Able Delali Website Backend API
 
-This document describes the backend API endpoints and configuration for the Elikem website using ERPNext as the backend.
+This document describes the backend API endpoints and configuration for the Able Delali website using ERPNext as the backend.
 
 ## Configuration
 
@@ -10,7 +10,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # ERPNext Configuration
-ERPNEXT_API_URL=https://erp-elikem.l.frappe.cloud/
+ERPNEXT_API_URL=https://abledelali.l.frappe.cloud/
 ERPNEXT_API_KEY=your-api-key
 ERPNEXT_API_SECRET=your-api-secret
 
@@ -26,12 +26,75 @@ API_PORT=3001
 # Client Configuration
 VITE_USE_GOOGLE_API=false
 # Public site origin for blog images (same host as ERPNEXT_API_URL; no API secret)
-VITE_ERPNEXT_PUBLIC_URL=https://erp-elikem.l.frappe.cloud
+VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
+
+# Web Page route for React homepage copy (Page Builder). Default: homepage
+# ERPNEXT_HOMEPAGE_ROUTE=homepage
+
+# Web Page route for React /about copy (Page Builder). Default: about-page
+# ERPNEXT_ABOUT_ROUTE=about-page
+```
+
+### Homepage copy (ERPNext Web Page — Page Builder)
+
+The React app loads **text and images for homepage sections** from the **Web Page** whose **`route`** matches **`ERPNEXT_HOMEPAGE_ROUTE`** (default `homepage`). Content Type must be **Page Builder**; each row in **Page Building Blocks** becomes one section. **`web_template_values`** JSON is parsed into flat string fields.
+
+If your **Web Templates only expose one field**, name it **`description`** in Customize Form — the app tries **`description` first** for each block’s main text (marquee, about body, books intro, newsletter gift blurb, outreach intro, journal intro, insights lede, hero bio). **Cover Image** is different: use the **`url`** field (first) to set the **Hero** portrait; `description` and `image` / `image_url` are fallbacks when the attach path is stored there.
+
+- **API:** `GET /api/homepage/sections` → `{ ok, route, web_page, sections: [{ template, key, values }] }`  
+- **Books catalog, footer gift book, and blog lists** are **not** taken from this Web Page; they still use `GET /api/books/catalog`, `GET /api/books/footer/latest`, and `GET /api/blog`.
+
+**Provision from your machine** (after the Web Page was deleted or on a fresh site): creates the **Web Templates** below if missing, then a **Web Page** with **Page Builder** blocks and sensible default copy (aligned with `server/scripts/homepageSeedData.ts`). Requires API permissions to create **Web Template** and **Web Page**.
+
+```bash
+npm run provision:homepage
+# Replace all Page Building Blocks on the existing homepage route:
+npm run provision:homepage -- --force
+```
+
+Match **Web Template** titles to section keys (spaces → underscores, lowercased):
+
+| Web Template (your list) | `key` | Main CMS field |
+|--------------------------|--------|----------------|
+| Cover Image | `cover_image` | **`url`** (first) — public URL or `/files/…`; overrides the **Hero** portrait (first main photo in `#home`). Aliases: `cover_image`, `image_url`, … |
+| Marquee | `marquee` | `description` (phrases: commas, newlines, or JSON array) |
+| About teaser | `about_teaser` | `description` (body; blank lines = paragraphs). Headlines still use `headline_line_1` / `headline_line_2` if you add them. |
+| Books | `books` | `description` (optional intro under the heading). Headings: `heading_line_1` / `heading_emphasis` if added. |
+| Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
+| Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. |
+| Latest Articles | `latest_articles` | `description` (intro under the heading) |
+| Home Insights | `home_insights` | `description` (main lede) |
+| Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. |
+
+Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).
+
+**`stats_json` (About teaser)** — JSON array, e.g.  
+`[{"valueMain":"15","valueAccent":"+","sub":"Years bridging care & policy"}, …]`
+
+**`highlights_json` / `press_links_json` (Outreach)** — JSON arrays, e.g.  
+`[{"title":"…","url":"https://…","source":"Site","note":"…"}]` and `[{"label":"…","url":"https://…"}]`.
+
+**`aside_json` (Outreach)** — partial override of the Rhoda sidebar object: `displayName`, `nameNote`, `roleLine`, `summary`, `linkedin`, `links` (array of `{title,url}`).
+
+### About page (`/about`) — ERPNext Web Page (Page Builder)
+
+The React **`/about`** page loads copy from the **Web Page** whose **`route`** matches **`ERPNEXT_ABOUT_ROUTE`** (default **`about-page`**, so it does not collide with ERPNext’s built-in Website route **`about`**). Content Type must be **Page Builder**. Use a block whose Web Template normalizes to **`about_intro`** (recommended title: **About Intro**); a legacy block keyed **`about`** is merged, and on overlapping fields **`about_intro`** wins.
+
+- **API:** `GET /api/about/sections` → same shape as homepage: `{ ok, route, web_page, sections: [{ template, key, values }] }`
+
+| Web Template (suggested) | `key` | Fields the app uses |
+|--------------------------|--------|----------------------|
+| About Intro | `about_intro` | **`eyebrow`**, **`title`**, **`description`** (body; `\n\n` = paragraphs). **Carousel (first match wins):** **`image`**, **`image2`**, **`image3`**, **`image4`** (Attach Image paths — same resolution as blog images). If none are set, **`slide_urls`** (JSON array or newline/comma URLs). If still empty, the app uses **built-in default** slides. Aliases for attach slots: `image_2` … `image_4`. Slide list aliases: `slides_json` / `slides` / `gallery_urls`. |
+
+**Provision from your machine** (creates template + Web Page if missing; requires API user with Website Manager / create on **Web Template** and **Web Page**):
+
+```bash
+npm run provision:about-page
+# Replace Page Building Blocks on an existing page:
+npm run provision:about-page -- --force
 ```
 
 ### Required ERPNext Doctypes
-
-This application requires the following ERPNext doctypes to be set up:
 
 1. **Subscribers** - Stores newsletter subscriber information
    - Fields: `email` (Email field)
@@ -39,8 +102,9 @@ This application requires the following ERPNext doctypes to be set up:
 2. **Book** - Stores book information and metadata
    - Fields: `title` (Text), `description` (Text Editor), `file_url` (URL)
 
-3. **Books** — site catalog (`/books` page, `GET /api/books/catalog`) and newsletter “free gift” block (`GET /api/books/footer/latest`). Doctype name can be overridden with `ERPNEXT_BOOKS_DOCTYPE` (default `Books`).
-   - Typical fields: `book_name`, `book` (Attach / file URL), `image` (Attach), description (`description` / `book_description` / **`ERPNEXT_BOOKS_DESCRIPTION_FIELD`**)
+3. **Books** — site catalog (`/books` page, `GET /api/books/catalog`) and newsletter “free gift” featured title (`GET /api/books/footer/latest`). Doctype name can be overridden with `ERPNEXT_BOOKS_DOCTYPE` (default `Books`).
+   - The gift block uses the **most recently modified** **Books** row with **`is_free`** set (see **`ERPNEXT_BOOKS_IS_FREE_FIELD`** if your Check field is named differently).
+   - Typical fields: `book_name`, `book` (Attach / file URL), cover attach (`image` by default; fallbacks `cover_image`, `book_image`, … — see **`ERPNEXT_BOOKS_IMAGE_FIELD`**), description (`description` / `book_description` / **`ERPNEXT_BOOKS_DESCRIPTION_FIELD`**)
    - Optional flags (Check or equivalent): `is_free` (on-site read + download when `book` is a public `http(s)` URL), `is_amazon` + `amazon_url`, `is_preorder` (pre-order form on **`/books`**; legacy path **`/books/preorder/:id`** redirects to **`/books?preorder=:id`**) + `POST /api/books/preorder`
 
 4. **Book Order** - Stores book order information
@@ -56,8 +120,26 @@ This application requires the following ERPNext doctypes to be set up:
      - `feedback_type` — Feedback Type (Select); option text must match what the site sends (see `TOPICS` labels in `EnquiryForm.tsx`)
      - `feedback` — body text (“What do you want us to know?”)
 
+7. **Blog Post** (Frappe **Blog Post**) — journal / **`/blog`** lists and **`/blog/:slug`** article pages. The article **body** is taken from the **`content`** field (Text Editor / HTML), not **`content_md`**. Listing endpoints omit the heavy HTML; the single-post API merges a full document read so **`content`** is available for rendering. Only rows with the **Published** checkbox set are returned (field **`published`** by default, or **`ERPNEXT_BLOG_PUBLISHED_FIELD`**).
+
 
 ## API Endpoints
+
+### Homepage CMS (Web Page Page Builder)
+
+```
+GET /api/homepage/sections
+```
+
+Returns `{ ok, route, web_page, sections }` where `sections` is built from the **Web Page** `page_blocks` rows (`web_template` + `web_template_values`). Used by the React homepage for copy only; see **Homepage copy** under Configuration.
+
+### About page CMS (Web Page Page Builder)
+
+```
+GET /api/about/sections
+```
+
+Same response shape as homepage CMS; `route` follows **`ERPNEXT_ABOUT_ROUTE`** (default `about-page`). Used by the React **`/about`** page; see **About page (`/about`)** under Configuration.
 
 ### Newsletter Management
 
@@ -154,6 +236,20 @@ Response:
     }
   ]
 }
+```
+
+#### Featured free book (newsletter gift — latest `is_free`)
+
+The homepage newsletter / reader-gift block calls **`GET /api/books/footer/latest`**. The server returns the **single most recently modified** **Books** row whose **`is_free`** field is checked / truthy. If no row qualifies, **`book`** is **`null`**. Override the flag field API name with **`ERPNEXT_BOOKS_IS_FREE_FIELD`** when it is not `is_free`.
+
+```
+GET /api/books/footer/latest
+
+Response (no qualifying free book):
+{ "book": null }
+
+Response (latest modified free book):
+{ "book": { ... same shape as one catalog item ... } }
 ```
 
 #### Get one **Books** row (by ERPNext `name`)
@@ -349,7 +445,7 @@ Response:
 - **`server/newsletterStore.ts`** - Newsletter subscription management (using ERPNext Subscribers)
 - **`server/ordersStore.ts`** - Book order management (using ERPNext Book Order)
 - **`server/driveStore.ts`** - Books management (using ERPNext Book doctype)
-- **`server/booksStore.ts`** - **Books** doctype (site catalog + newsletter “latest book”); `GET /api/books/catalog`, single-book GET, footer latest
+- **`server/booksStore.ts`** - **Books** doctype (site catalog + newsletter featured free book); `GET /api/books/catalog`, single-book GET, **`GET /api/books/footer/latest`** (latest **`is_free`** only)
 - **`server/preorderStore.ts`** - **Pre-Order** doctype inserts from `POST /api/books/preorder`
 - **`server/accessToken.ts`** - JWT token generation and verification
 - **`server/static.ts`** - Static file serving for production
@@ -399,9 +495,9 @@ Used by **`/books`**, **`GET /api/books/catalog`**, **`GET /api/books/footer/lat
 - Fields (align API field names with your form; the app maps common variants):
   - `book_name` (Data) — display title
   - `book` (Attach or URL) — downloadable file (resolved to a public URL)
-  - `image` (Attach) — cover
+  - Cover: **`image`** (Attach) by default; override with **`ERPNEXT_BOOKS_IMAGE_FIELD`**, or the server tries `cover_image`, `book_image`, `thumbnail`, `image_url`, `cover`, `photo`
   - Description: `description`, `book_description`, or a custom field set via **`ERPNEXT_BOOKS_DESCRIPTION_FIELD`**
-  - `is_free`, `is_amazon`, `is_preorder` (Check) — drive `/books` UI and reader route
+  - `is_free`, `is_amazon`, `is_preorder` (Check) — drive `/books` UI and reader route; **`is_free`** also selects the newsletter gift title (**`ERPNEXT_BOOKS_IS_FREE_FIELD`** if renamed)
   - `amazon_url` (Data or Small Text) — full `https://…` Amazon link when `is_amazon` is set
 
 #### 4. Pre-Order Doctype

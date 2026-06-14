@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import HomeMarquee from "./components/HomeMarquee";
 import HomeBooks from "./components/HomeBooks";
-import HomeSpeaking from "./components/HomeSpeaking";
 import HomeFacebookAdvocacy from "./components/HomeFacebookAdvocacy";
 import HomeInsights from "./components/HomeInsights";
 import AboutTeaser from "./components/AboutTeaser";
@@ -24,6 +23,7 @@ import BookRead from "./pages/BookRead";
 import BooksPreorder from "./pages/BooksPreorder";
 import Contact from "./pages/Contact";
 import RotatingFavicon from "./components/RotatingFavicon";
+import { HomepageCMSProvider } from "./context/HomepageCMSProvider";
 
 function ScrollToTop() {
   const { pathname, search } = useLocation();
@@ -50,36 +50,36 @@ function Home() {
   }, [location.hash, location.pathname]);
 
   return (
-    <div className="page-with-fixed-nav ad-page ed-site cb-site">
-      <a className="ed-skip" href="#home">
-        Skip to content
-      </a>
-      <Navbar />
+    <HomepageCMSProvider>
+      <div className="page-with-fixed-nav ad-page ed-site cb-site">
+        <a className="ed-skip" href="#home">
+          Skip to content
+        </a>
+        <Navbar />
 
-      <main className="ad-page__main">
-        <div id="home">
-          <Hero />
-        </div>
+        <main className="ad-page__main">
+          <div id="home">
+            <Hero />
+          </div>
 
-        <HomeMarquee />
+          <HomeMarquee />
 
-        <AboutTeaser />
+          <AboutTeaser />
 
-        <HomeBooks />
+          <HomeBooks />
 
-        <HomeSpeaking />
+          <Newsletter />
 
-        <Newsletter />
+          <HomeFacebookAdvocacy />
 
-        <HomeFacebookAdvocacy />
+          <LatestArticles />
 
-        <LatestArticles />
+          <HomeInsights />
+        </main>
 
-        <HomeInsights />
-      </main>
-
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </HomepageCMSProvider>
   );
 }
 

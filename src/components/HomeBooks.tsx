@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { bookPlaceholder } from "../config/brand";
+import { resolveErpPublicUrl } from "../config/erpnextPublic";
+import useResponsive from "../hooks/useResponsive";
+import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
+import { pickCms } from "../lib/cmsPick";
+
+/** Homepage preview: four most recent catalog rows (API is `modified desc`). */
+const HOME_BOOKS_COUNT = 4;
 
 type SiteBook = {
   id: string;
@@ -31,8 +39,19 @@ function badgeLine(book: SiteBook): string {
 }
 
 export default function HomeBooks() {
+  const { isMobile, isTablet } = useResponsive();
+  const v = useHomepageSectionValues("books");
   const [books, setBooks] = useState<SiteBook[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const kicker = pickCms(v, "kicker", "eyebrow", "label") || "Books";
+  const hLead = pickCms(v, "heading_line_1", "heading", "title") || "The books that";
+  const hEm = pickCms(v, "heading_emphasis", "heading_line_2", "subtitle") || "start conversations.";
+  const sectionIntro = pickCms(v, "description", "intro", "section_intro", "body", "text");
+  const loadingText = pickCms(v, "loading_message", "loading_text") || "Loading titles…";
+  const emptyMessage = pickCms(v, "empty_message", "empty_text");
+  const libraryCta =
+    pickCms(v, "library_link_text", "footer_cta", "view_all_label") || "View full library →";
 
   useEffect(() => {
     let cancelled = false;
@@ -42,7 +61,7 @@ export default function HomeBooks() {
         if (!res.ok) throw new Error("catalog");
         const data = (await res.json()) as { books?: SiteBook[] };
         const list = Array.isArray(data.books) ? data.books : [];
-        if (!cancelled) setBooks(list.slice(0, 4));
+        if (!cancelled) setBooks(list.slice(0, HOME_BOOKS_COUNT));
       } catch {
         if (!cancelled) setBooks([]);
       } finally {
@@ -57,25 +76,40 @@ export default function HomeBooks() {
   return (
     <section className="cb-ref-books" id="home-books">
       <div className="cb-ref-books__inner">
-        <p className="cb-ref-books__kicker">Books</p>
+        <p className="cb-ref-books__kicker">{kicker}</p>
         <h2 className="cb-ref-books__h2">
-          The books that <em>start conversations.</em>
+          {hLead} <em>{hEm}</em>
         </h2>
 
+        {sectionIntro ? (
+          <p className="cb-ref-books__muted" style={{ maxWidth: "42rem", marginTop: "0.5rem" }}>
+            {sectionIntro}
+          </p>
+        ) : null}
+
         {loading ? (
-          <p className="cb-ref-books__muted">Loading titles…</p>
+          <p className="cb-ref-books__muted">{loadingText}</p>
         ) : books.length === 0 ? (
           <p className="cb-ref-books__muted">
-            New titles will appear here soon.{" "}
-            <Link to="/books" className="cb-ref-books__link">
-              Open the library →
-            </Link>
+            {emptyMessage ? (
+              emptyMessage
+            ) : (
+              <>
+                New titles will appear here soon.{" "}
+                <Link to="/books" className="cb-ref-books__link">
+                  Open the library →
+                </Link>
+              </>
+            )}
           </p>
         ) : (
           <>
             <div className="cb-ref-books__grid">
               {books.map((book) => {
-                const blurb = excerptFromDescription(book.description, 160);
+                const blurb = excerptFromDescription(
+                  book.description,
+                  isMobile || isTablet ? 110 : 160,
+                );
                 const readPath = `/books/${encodeURIComponent(book.id)}/read`;
                 const preorderPath = `/books/preorder/${encodeURIComponent(book.id)}`;
                 const hasHttpFile = !!book.bookUrl?.trim() && /^https?:\/\//i.test(book.bookUrl.trim());
@@ -93,8 +127,15 @@ export default function HomeBooks() {
                 else if (book.bookUrl?.trim() && /^https?:\/\//i.test(book.bookUrl.trim()))
                   cta = { href: book.bookUrl.trim(), label: "Read more →", external: true };
 
+                const coverSrc = book.imageUrl?.trim()
+                  ? resolveErpPublicUrl(book.imageUrl)
+                  : bookPlaceholder;
+
                 return (
                   <article key={book.id} className="cb-ref-books__col">
+                    <figure className="cb-ref-books__thumb">
+                      <img src={coverSrc} alt={book.bookName} loading="lazy" decoding="async" />
+                    </figure>
                     <p className="cb-ref-books__badge">{badgeLine(book)}</p>
                     <h3 className="cb-ref-books__title">{book.bookName}</h3>
                     {blurb ? <p className="cb-ref-books__excerpt">{blurb}</p> : null}
@@ -116,7 +157,7 @@ export default function HomeBooks() {
               })}
             </div>
             <Link to="/books" className="cb-ref-books__cta cb-ref-books__cta--footer">
-              View full library →
+              {libraryCta}
             </Link>
           </>
         )}

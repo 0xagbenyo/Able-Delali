@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { bookPlaceholder } from "../config/brand";
+import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
+import { pickCms } from "../lib/cmsPick";
 
 type GiftBook = {
   bookName: string;
@@ -68,10 +70,25 @@ function GiftDescription({ text }: { text: string }) {
 }
 
 export default function Newsletter() {
+  const v = useHomepageSectionValues("newsletter");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [giftBook, setGiftBook] = useState<GiftBook | null | undefined>(undefined);
+
+  const eyebrow = pickCms(v, "eyebrow", "kicker") || "Reader gift";
+  const titlePrefix = pickCms(v, "title_prefix", "heading_prefix") || "Complimentary copy";
+  const titleOfWord = pickCms(v, "title_of_word", "of_word") || "of";
+  const ghostTitle =
+    pickCms(v, "loading_title", "placeholder_title") || "Complimentary book for subscribers";
+  const emailLabel = pickCms(v, "email_label") || "Email";
+  const emailPlaceholder = pickCms(v, "email_placeholder") || "you@example.com";
+  const submitLabel = pickCms(v, "submit_label", "button_text") || "Send the book";
+  const submitLoading = pickCms(v, "submit_loading_label") || "Sending…";
+  const finePrint =
+    pickCms(v, "fine_print", "disclaimer") ||
+    "You'll also receive occasional insights — no noise, just value.";
+  const descOverride = pickCms(v, "description", "gift_description", "description_override", "body");
 
   useEffect(() => {
     let cancelled = false;
@@ -107,13 +124,13 @@ export default function Newsletter() {
       });
 
       if (res.ok) {
-        setMessage("You’re in — check your email for next steps on your free book.");
+        setMessage("You're in — check your email for next steps on your free book.");
         setEmail("");
       } else {
         const err = await res.json().catch(() => ({}));
         const reason = (err as { reason?: string }).reason;
         if (reason === "no_book") {
-          setMessage("This offer isn’t available right now. Please try again later.");
+          setMessage("This offer isn't available right now. Please try again later.");
         } else {
           setMessage("Something went wrong. Please try again.");
         }
@@ -128,8 +145,13 @@ export default function Newsletter() {
   const isReady = giftBook !== undefined;
   const bookName = giftBook?.bookName?.trim() ?? "";
 
-  const descriptionText =
-    !isReady ? "" : giftBook && giftBook.description?.trim() ? giftBook.description.trim() : FALLBACK_DESCRIPTION;
+  const descriptionText = !isReady
+    ? ""
+    : descOverride?.trim()
+      ? descOverride.trim()
+      : giftBook && giftBook.description?.trim()
+        ? giftBook.description.trim()
+        : FALLBACK_DESCRIPTION;
 
   const coverSrc = isReady && giftBook?.imageUrl ? giftBook.imageUrl : bookPlaceholder;
 
@@ -157,17 +179,17 @@ export default function Newsletter() {
           </div>
 
           <div className="gift-band__body">
-            <p className="gift-band__eyebrow">Reader gift</p>
+            <p className="gift-band__eyebrow">{eyebrow}</p>
             <h2 id="gift-band-heading" className="gift-band__title">
               {!isReady ? (
-                <span className="gift-band__title--ghost">Complimentary book for subscribers</span>
+                <span className="gift-band__title--ghost">{ghostTitle}</span>
               ) : (
                 <>
-                  Complimentary copy
+                  {titlePrefix}
                   {bookName ? (
                     <>
                       {" "}
-                      of <em>{bookName}</em>
+                      {titleOfWord} <em>{bookName}</em>
                     </>
                   ) : null}
                 </>
@@ -182,7 +204,7 @@ export default function Newsletter() {
 
             <form className="gift-band__form" onSubmit={handleSubmit}>
               <label className="gift-band__label" htmlFor="gift-band-email">
-                Email
+                {emailLabel}
               </label>
               <div className="gift-band__fields">
                 <input
@@ -190,18 +212,18 @@ export default function Newsletter() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="you@example.com"
+                  placeholder={emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
                 <button type="submit" className="gift-band__submit" disabled={loading}>
-                  {loading ? "Sending…" : "Send the book"}
+                  {loading ? submitLoading : submitLabel}
                 </button>
               </div>
             </form>
 
-            <p className="gift-band__fine">You&apos;ll also receive occasional insights — no noise, just value.</p>
+            <p className="gift-band__fine">{finePrint}</p>
 
             {message ? <p className={msgClass}>{message}</p> : null}
           </div>

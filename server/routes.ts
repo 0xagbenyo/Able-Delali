@@ -34,6 +34,8 @@ import {
   incrementBlogReads,
   getBlogReads,
 } from "./commentStore.js";
+import { getHomepageSectionsFromERPNext } from "./homepageStore.js";
+import { getAboutSectionsFromERPNext } from "./aboutPageStore.js";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -149,6 +151,31 @@ export async function registerRoutes(
       }
 
       await streamDriveFileDownload(fileId, res);
+    }),
+  );
+
+  /** Web Page (Page Builder) `homepage` → section copy for the React homepage (not books/blog rows). */
+  router.get(
+    "/homepage/sections",
+    asyncHandler(async (_req: Request, res: Response) => {
+      res.setHeader(
+        "Cache-Control",
+        "public, s-maxage=60, stale-while-revalidate=300",
+      );
+      const payload = await getHomepageSectionsFromERPNext();
+      res.json(payload);
+    }),
+  );
+
+  router.get(
+    "/about/sections",
+    asyncHandler(async (_req: Request, res: Response) => {
+      res.setHeader(
+        "Cache-Control",
+        "public, s-maxage=60, stale-while-revalidate=300",
+      );
+      const payload = await getAboutSectionsFromERPNext();
+      res.json(payload);
     }),
   );
 

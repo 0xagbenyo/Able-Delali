@@ -1,5 +1,5 @@
 {
-  "name": "elikem-website",
+  "name": "able-delali-website",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,6 +7,8 @@
     "dev": "node --import tsx ./server/index.ts",
     "dev:vite": "vite",
     "build": "tsc -b && vite build",
+    "provision:about-page": "node --import tsx ./server/scripts/provision-about-page.ts",
+    "provision:homepage": "node --import tsx ./server/scripts/provision-homepage.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -18,7 +20,6 @@
     "pdfjs-dist": "^5.4.296",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-markdown": "^9.0.1",
     "react-router-dom": "^7.13.2"
   },
   "devDependencies": {

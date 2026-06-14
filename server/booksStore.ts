@@ -13,12 +13,15 @@ import {
  * - Book (file) → `book`
  * - Image → `image`
  * - Description → `description`
- * - `is_free` — free read on site + download when `book` is set
+ * - `is_free` — free read on site + download when `book` is set; **newsletter gift** uses the
+ *   latest row where this is true (`modified` desc). Override API name with **`ERPNEXT_BOOKS_IS_FREE_FIELD`**.
  * - `is_amazon` + `amazon_url` — buy link
  * - `is_preorder` — pre-order form on **`/books`** (expand card; old `/books/preorder/:id` redirects)
  *
  * Doctype name override: `ERPNEXT_BOOKS_DOCTYPE` (default `Books`).
  * If your description field has a custom API name: `ERPNEXT_BOOKS_DESCRIPTION_FIELD`.
+ * Cover image: default **`image`**; override with **`ERPNEXT_BOOKS_IMAGE_FIELD`**, or we try
+ * `cover_image`, `book_image`, `thumbnail`, `image_url`.
  */
 export type FooterLatestBook = {
   id: string;
@@ -86,6 +89,42 @@ function pickDescription(source: Record<string, unknown>): string {
   return "";
 }
 
+/** Attach / URL field for catalog card & newsletter cover (Books doctype). */
+function pickBooksCoverImageRaw(source: Record<string, unknown>): string | undefined {
+  const envField = process.env.ERPNEXT_BOOKS_IMAGE_FIELD?.trim();
+  if (envField) {
+    const v = source[envField];
+    if (v != null && String(v).trim()) return String(v).trim();
+  }
+  const keys = [
+    "image",
+    "cover_image",
+    "book_image",
+    "thumbnail",
+    "image_url",
+    "cover",
+    "photo",
+  ];
+  for (const key of keys) {
+    const v = source[key];
+    if (v == null) continue;
+    const s = String(v).trim();
+    if (s) return s;
+  }
+  return undefined;
+}
+
+function booksIsFreeFieldName(): string {
+  const f = process.env.ERPNEXT_BOOKS_IS_FREE_FIELD?.trim();
+  return f && f.length > 0 ? f : "is_free";
+}
+
+function pickIsFree(source: Record<string, unknown>): boolean {
+  const key = booksIsFreeFieldName();
+  const v = source[key] ?? source.is_free;
+  return truthyFromErp(v);
+}
+
 /** GET /resource/Doc/name wraps fields under `data` */
 function unwrapDoc<T extends Record<string, unknown>>(res: unknown): T {
   if (res && typeof res === "object" && "data" in res) {
@@ -121,7 +160,7 @@ function mapMergedRowToFooterBook(merged: Record<string, unknown>): FooterLatest
   const bookName =
     String(merged.book_name ?? merged.title ?? "").trim() || id || "Book";
   const description = pickDescription(merged);
-  const imageUrl = resolvePublicUrl(merged.image as string);
+  const imageUrl = resolvePublicUrl(pickBooksCoverImageRaw(merged));
   const bookUrl = resolvePublicUrl(merged.book as string);
   const amazonUrl = pickAmazonUrl(merged);
   return {
@@ -130,7 +169,7 @@ function mapMergedRowToFooterBook(merged: Record<string, unknown>): FooterLatest
     description,
     imageUrl,
     bookUrl,
-    isFree: truthyFromErp(merged.is_free),
+    isFree: pickIsFree(merged),
     isAmazon: truthyFromErp(merged.is_amazon),
     isPreorder: truthyFromErp(merged.is_preorder),
     amazonUrl,
@@ -162,12 +201,13 @@ async function mergeBooksDocFromErp(
 
 export async function getLatestBooksFooterEntry(): Promise<FooterLatestBook | null> {
   const doctype = (process.env.ERPNEXT_BOOKS_DOCTYPE || "Books").trim();
+  const freeKey = booksIsFreeFieldName();
   try {
     const result = await listERPNextDocuments(
       doctype,
-      {},
-      ["name", "book_name", "book", "image", "modified"],
-      { orderBy: "modified desc", limit: 1 }
+      { [freeKey]: 1 },
+      ["name", "book_name", "book", "image", "modified", freeKey],
+      { orderBy: "modified desc", limit: 1 },
     );
 
     const row = result.data?.[0] as Record<string, unknown> | undefined;
@@ -177,9 +217,11 @@ export async function getLatestBooksFooterEntry(): Promise<FooterLatestBook | nu
     if (!id) return null;
 
     const merged = await mergeBooksDocFromErp(doctype, id, row);
-    return mapMergedRowToFooterBook(merged);
+    const book = mapMergedRowToFooterBook(merged);
+    if (!book?.isFree) return null;
+    return book;
   } catch (error) {
-    console.error(`[booksStore] Failed to load latest ${doctype}:`, error);
+    console.error(`[booksStore] Failed to load latest free ${doctype}:`, error);
     return null;
   }
 }
@@ -282,7 +324,7 @@ function upstreamHeadersForBookFile(
 ): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/pdf,application/octet-stream,*/*;q=0.8",
-    "User-Agent": "ElikemWebsite/1.0 (book-proxy)",
+    "User-Agent": "AbleWebsite/1.0 (book-proxy)",
   };
   try {
     const origin = new URL(fileUrl).origin;

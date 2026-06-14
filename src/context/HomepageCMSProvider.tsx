@@ -1,0 +1,89 @@
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+
+export type HomepageSectionPayload = {
+  template: string;
+  key: string;
+  values: Record<string, string>;
+};
+
+type ApiResponse = {
+  ok: boolean;
+  sections: HomepageSectionPayload[];
+  web_page?: { name: string; title?: string; route?: string } | null;
+  error?: string;
+};
+
+type Ctx = {
+  loading: boolean;
+  error: string | null;
+  valuesByKey: ReadonlyMap<string, Record<string, string>>;
+};
+
+const HomepageCMSContext = createContext<Ctx | null>(null);
+
+export function HomepageCMSProvider({ children }: { children: ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [map, setMap] = useState<ReadonlyMap<string, Record<string, string>>>(
+    () => new Map(),
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/homepage/sections", { cache: "no-store" });
+        const data = (await res.json()) as ApiResponse;
+        if (cancelled) return;
+        const m = new Map<string, Record<string, string>>();
+        for (const s of data.sections || []) {
+          m.set(s.key, s.values);
+        }
+        setMap(m);
+        if (!data.ok && data.error) setError(data.error);
+        else setError(null);
+      } catch (e) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "fetch_failed");
+          setMap(new Map());
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const value = useMemo<Ctx>(
+    () => ({ loading, error, valuesByKey: map }),
+    [loading, error, map],
+  );
+
+  return (
+    <HomepageCMSContext.Provider value={value}>
+      {children}
+    </HomepageCMSContext.Provider>
+  );
+}
+
+/** Normalized Web Template key: `About teaser` → `about_teaser` */
+export function useHomepageSectionValues(key: string): Record<string, string> {
+  const ctx = useContext(HomepageCMSContext);
+  const norm = key.trim().toLowerCase().replace(/\s+/g, "_");
+  if (!ctx) return {};
+  return ctx.valuesByKey.get(norm) ?? {};
+}
+
+export function useHomepageCMSMeta(): { loading: boolean; error: string | null } {
+  const ctx = useContext(HomepageCMSContext);
+  return { loading: ctx?.loading ?? false, error: ctx?.error ?? null };
+}
