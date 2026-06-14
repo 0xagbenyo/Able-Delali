@@ -293,10 +293,12 @@
 /* —— Footer —— */
 .ad-footer {
   margin-top: auto;
+  flex-shrink: 0;
   background: #2a2a2e;
   color: #fff;
   font-family: "Exo 2", system-ui, sans-serif;
   border-top: 3px solid var(--ad-red);
+  padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
 }
 
 .ad-footer__grid {

@@ -8,11 +8,3 @@ export const MARQUEE_CHUNKS = [
   "Writing & advocacy",
   "Practice meets policy",
 ] as const;
-
-/** About + stats grid (reference layout): main numeral + accent suffix in Life Red */
-export const HERO_STATS = [
-  { valueMain: "15", valueAccent: "+", sub: "Years bridging care & policy" },
-  { valueMain: "UK", valueAccent: "+", sub: "Talks, panels & partnerships" },
-  { valueMain: "50", valueAccent: "+", sub: "Essays, rooms & programmes shaped" },
-  { valueMain: "1", valueAccent: "", sub: "North star: menstrual health equity" },
-] as const;

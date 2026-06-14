@@ -6,7 +6,6 @@ import Hero from "./components/Hero";
 import HomeMarquee from "./components/HomeMarquee";
 import HomeBooks from "./components/HomeBooks";
 import HomeFacebookAdvocacy from "./components/HomeFacebookAdvocacy";
-import HomeInsights from "./components/HomeInsights";
 import AboutTeaser from "./components/AboutTeaser";
 import LatestArticles from "./components/LatestArticles";
 import Newsletter from "./components/Newsletter";
@@ -68,13 +67,11 @@ function Home() {
 
           <HomeBooks />
 
+          <LatestArticles />
+
           <Newsletter />
 
           <HomeFacebookAdvocacy />
-
-          <LatestArticles />
-
-          <HomeInsights />
         </main>
 
         <Footer />

@@ -41,19 +41,30 @@ export default function Blog() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [postsRes, categoriesRes] = await Promise.all([
-          fetch("/api/blog"),
-          fetch("/api/blog/categories"),
-        ]);
-
+        const postsRes = await fetch("/api/blog");
         if (!postsRes.ok) throw new Error("Failed to fetch blog posts");
-        if (!categoriesRes.ok) throw new Error("Failed to fetch categories");
-
         const postsData = await postsRes.json();
-        const categoriesData = await categoriesRes.json();
+        const list: BlogPost[] = Array.isArray(postsData.posts) ? postsData.posts : [];
+        setPosts(list);
 
-        setPosts(postsData.posts || []);
-        setCategories(["All", ...(categoriesData.categories || [])]);
+        let categoryNames: string[] = [];
+        try {
+          const categoriesRes = await fetch("/api/blog/categories");
+          if (categoriesRes.ok) {
+            const categoriesData = await categoriesRes.json();
+            categoryNames = Array.isArray(categoriesData.categories) ? categoriesData.categories : [];
+          }
+        } catch {
+          /* non-fatal: still show posts */
+        }
+        if (categoryNames.length === 0 && list.length > 0) {
+          const fromPosts = new Set<string>();
+          for (const p of list) {
+            if (p.blog_category?.trim()) fromPosts.add(p.blog_category.trim());
+          }
+          categoryNames = [...fromPosts].sort((a, b) => a.localeCompare(b));
+        }
+        setCategories(["All", ...categoryNames]);
         setSelectedCategory("All");
       } catch (err) {
         setError("We couldn’t load the journal right now. Please try again later.");

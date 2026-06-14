@@ -13,13 +13,6 @@ export const MARQUEE_CHUNKS = [
   "Practice meets policy",
 ] as const;
 
-export const HERO_STATS = [
-  { valueMain: "15", valueAccent: "+", sub: "Years bridging care & policy" },
-  { valueMain: "UK", valueAccent: "+", sub: "Talks, panels & partnerships" },
-  { valueMain: "50", valueAccent: "+", sub: "Essays, rooms & programmes shaped" },
-  { valueMain: "1", valueAccent: "", sub: "North star: menstrual health equity" },
-] as const;
-
 export const DEFAULT_ROLE_TAGS = [
   "Pharmacist",
   "Public health",
@@ -82,6 +75,3 @@ export const LINKEDIN_NOTE =
 
 export const LATEST_ARTICLES_INTRO =
   "The place where essays go a little deeper — practice, policy, faith, and menstrual health equity. New pieces land here first.";
-
-export const HOME_INSIGHTS_LEDE =
-  "Long-form notes, advocacy reflections, and the conversations that do not always fit elsewhere — plus a free resource when you join the list.";

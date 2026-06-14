@@ -18,7 +18,6 @@ import {
 } from "../erpnextAuth.js";
 import {
   MARQUEE_CHUNKS,
-  HERO_STATS,
   DEFAULT_ROLE_TAGS,
   DEFAULT_HERO_BIO,
   ABOUT_PARAGRAPHS,
@@ -27,7 +26,6 @@ import {
   OUTREACH_PRESS_LINKS,
   LINKEDIN_NOTE,
   LATEST_ARTICLES_INTRO,
-  HOME_INSIGHTS_LEDE,
 } from "./homepageSeedData.js";
 
 const ROUTE = (process.env.ERPNEXT_HOMEPAGE_ROUTE || "homepage").trim().replace(/^\//, "");
@@ -67,7 +65,6 @@ const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
       { label: "Headline line 1", fieldname: "headline_line_1", fieldtype: "Data" },
       { label: "Headline line 2", fieldname: "headline_line_2", fieldtype: "Data" },
       { label: "Body", fieldname: "description", fieldtype: "Text" },
-      { label: "Stats JSON", fieldname: "stats_json", fieldtype: "Text" },
     ],
   },
   {
@@ -108,15 +105,6 @@ const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
       { label: "Overlay line 1", fieldname: "overlay_line_1", fieldtype: "Data" },
       { label: "Overlay line 2", fieldname: "overlay_line_2", fieldtype: "Data" },
       { label: "Overlay line 3", fieldname: "overlay_line_3", fieldtype: "Data" },
-    ],
-  },
-  {
-    name: "Home Insights",
-    fields: [
-      { label: "Eyebrow", fieldname: "eyebrow", fieldtype: "Data" },
-      { label: "Heading line 1", fieldname: "heading_line_1", fieldtype: "Data" },
-      { label: "Heading emphasis", fieldname: "heading_emphasis", fieldtype: "Data" },
-      { label: "Lede", fieldname: "description", fieldtype: "Text" },
     ],
   },
 ];
@@ -174,7 +162,6 @@ function seedPageBlocks(): { web_template: string; web_template_values: string }
         headline_line_1: "A voice that",
         headline_line_2: "shifts the conversation.",
         description: aboutBody,
-        stats_json: JSON.stringify([...HERO_STATS]),
       }),
     },
     {
@@ -204,15 +191,6 @@ function seedPageBlocks(): { web_template: string; web_template_values: string }
         heading_line_1: "Notes from the",
         heading_emphasis: "journal",
         description: LATEST_ARTICLES_INTRO,
-      }),
-    },
-    {
-      web_template: "Home Insights",
-      web_template_values: JSON.stringify({
-        eyebrow: "Newsletter & notes",
-        heading_line_1: "Writing on",
-        heading_emphasis: "health, equity, and the work in between",
-        description: HOME_INSIGHTS_LEDE,
       }),
     },
   ];

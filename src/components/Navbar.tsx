@@ -22,7 +22,7 @@ const navLeft: readonly NavItem[] = [
 
 const navRight: readonly NavItem[] = [
   { label: "Journal", id: "podcast" },
-  { label: "Insights", id: "insights" },
+  { label: "Newsletter", id: "newsletter" },
 ];
 
 const sheetNavItems: NavItem[] = [...navLeft, ...navRight];

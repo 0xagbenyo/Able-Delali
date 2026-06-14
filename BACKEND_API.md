@@ -35,11 +35,17 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 # ERPNEXT_ABOUT_ROUTE=about-page
 ```
 
+### Deploying to Vercel
+
+1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, **`ERPNEXT_API_SECRET`**, and **`VITE_ERPNEXT_PUBLIC_URL`** (same values as local `.env`) for **Production** and **Preview**. The serverless **`/api/*`** handlers need these at runtime; missing values cause empty blog lists or failed loads.
+2. **SPA routing** — `vercel.json` serves **static files first**, then **`/api/*`** to **`api/index.ts`**, then falls through to **`/index.html`** so routes like **`/blog`** and **`/blog/:slug`** work on full page refresh.
+3. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
+
 ### Homepage copy (ERPNext Web Page — Page Builder)
 
 The React app loads **text and images for homepage sections** from the **Web Page** whose **`route`** matches **`ERPNEXT_HOMEPAGE_ROUTE`** (default `homepage`). Content Type must be **Page Builder**; each row in **Page Building Blocks** becomes one section. **`web_template_values`** JSON is parsed into flat string fields.
 
-If your **Web Templates only expose one field**, name it **`description`** in Customize Form — the app tries **`description` first** for each block’s main text (marquee, about body, books intro, newsletter gift blurb, outreach intro, journal intro, insights lede, hero bio). **Cover Image** is different: use the **`url`** field (first) to set the **Hero** portrait; `description` and `image` / `image_url` are fallbacks when the attach path is stored there.
+If your **Web Templates only expose one field**, name it **`description`** in Customize Form — the app tries **`description` first** for each block’s main text (marquee, about body, books intro, newsletter gift blurb, outreach intro, journal intro, hero bio). **Cover Image** is different: use the **`url`** field (first) to set the **Hero** portrait; `description` and `image` / `image_url` are fallbacks when the attach path is stored there.
 
 - **API:** `GET /api/homepage/sections` → `{ ok, route, web_page, sections: [{ template, key, values }] }`  
 - **Books catalog, footer gift book, and blog lists** are **not** taken from this Web Page; they still use `GET /api/books/catalog`, `GET /api/books/footer/latest`, and `GET /api/blog`.
@@ -63,13 +69,9 @@ Match **Web Template** titles to section keys (spaces → underscores, lowercase
 | Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
 | Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. |
 | Latest Articles | `latest_articles` | `description` (intro under the heading) |
-| Home Insights | `home_insights` | `description` (main lede) |
 | Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. |
 
 Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).
-
-**`stats_json` (About teaser)** — JSON array, e.g.  
-`[{"valueMain":"15","valueAccent":"+","sub":"Years bridging care & policy"}, …]`
 
 **`highlights_json` / `press_links_json` (Outreach)** — JSON arrays, e.g.  
 `[{"title":"…","url":"https://…","source":"Site","note":"…"}]` and `[{"label":"…","url":"https://…"}]`.

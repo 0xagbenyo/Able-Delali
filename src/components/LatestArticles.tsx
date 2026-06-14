@@ -15,6 +15,7 @@ type BlogPostApi = {
 };
 
 type LeadPost = {
+  slug: string;
   title: string;
   image: string;
 };
@@ -40,12 +41,13 @@ export default function LatestArticles() {
     let cancelled = false;
     (async () => {
       try {
-        const response = await fetch("/api/blog");
-        const data = await response.json();
-        const raw: BlogPostApi[] = Array.isArray(data.posts) ? data.posts : [];
+        const blogRes = await fetch("/api/blog");
+        const blogData = await blogRes.json().catch(() => ({}));
+        const raw: BlogPostApi[] = Array.isArray(blogData.posts) ? blogData.posts : [];
         const one = raw.slice(0, 1).map((p) => {
           const img = resolveErpPublicUrl(p.meta_image || "");
           return {
+            slug: p.name,
             title: p.title || p.name,
             image: img || "",
           };
@@ -64,28 +66,45 @@ export default function LatestArticles() {
   }, []);
 
   const leadPost = posts[0];
-  const leadLetter = leadPost?.title?.slice(0, 1) ?? "J";
+  const leadLetter = leadPost?.title?.slice(0, 1)?.toUpperCase() ?? "J";
+
+  const postPath = leadPost?.slug ? `/blog/${encodeURIComponent(leadPost.slug)}` : "/blog";
+  const figureAria = leadPost ? `Read: ${leadPost.title}` : "Visit the journal";
+
+  const figureInner = (
+    <>
+      {leadPost?.image ? (
+        <img src={leadPost.image} alt="" />
+      ) : (
+        <div className="cb-ref-journal__placeholder">{leadLetter}</div>
+      )}
+      <div className="cb-ref-journal__overlay" aria-hidden>
+        <span className="cb-ref-journal__overlay-line">{overlay1}</span>
+        <span className="cb-ref-journal__overlay-line cb-ref-journal__overlay-line--accent">
+          {overlay2}
+        </span>
+        <span className="cb-ref-journal__overlay-line">{overlay3}</span>
+      </div>
+    </>
+  );
+
+  const figure = (
+    <figure className="cb-ref-journal__figure">
+      {figureInner}
+    </figure>
+  );
+
+  const visual = (
+    <Link className="cb-ref-journal__figure-link" to={postPath} aria-label={figureAria}>
+      {figure}
+    </Link>
+  );
 
   return (
     <section className="cb-ref-journal" id="podcast">
       <div className="cb-ref-journal__inner">
         <div className="cb-ref-journal__split">
-          <div className="cb-ref-journal__visual-wrap">
-            <figure className="cb-ref-journal__figure">
-              {leadPost?.image ? (
-                <img src={leadPost.image} alt="" />
-              ) : (
-                <div className="cb-ref-journal__placeholder">{leadLetter}</div>
-              )}
-              <div className="cb-ref-journal__overlay" aria-hidden>
-                <span className="cb-ref-journal__overlay-line">{overlay1}</span>
-                <span className="cb-ref-journal__overlay-line cb-ref-journal__overlay-line--accent">
-                  {overlay2}
-                </span>
-                <span className="cb-ref-journal__overlay-line">{overlay3}</span>
-              </div>
-            </figure>
-          </div>
+          <div className="cb-ref-journal__visual-wrap">{visual}</div>
 
           <div className="cb-ref-journal__copy">
             <p className="cb-ref-journal__kicker">{kicker}</p>

@@ -53,6 +53,24 @@ app.use((req, res, next) => {
 
 let isInitialized = false;
 
+/**
+ * Some serverless hosts forward `/api/blog` to the function with `url` set to
+ * `/blog` (mount prefix stripped). Express mounts API routes at `/api`, so we
+ * restore the prefix when missing.
+ */
+function ensureApiUrlForExpress(req: Request): void {
+  const raw = req.url ?? "";
+  const q = raw.indexOf("?");
+  const pathname = q === -1 ? raw : raw.slice(0, q);
+  const search = q === -1 ? "" : raw.slice(q);
+  if (pathname.startsWith("/api")) return;
+  if (!pathname || pathname === "/") {
+    req.url = `/api${search}`;
+    return;
+  }
+  req.url = `/api${pathname.startsWith("/") ? pathname : `/${pathname}`}${search}`;
+}
+
 async function init() {
   if (isInitialized) return;
   await registerRoutes(httpServer, app);
@@ -66,6 +84,7 @@ async function init() {
 }
 
 export default async function handler(req: Request, res: Response) {
+  ensureApiUrlForExpress(req);
   await init();
   return app(req, res);
 }
