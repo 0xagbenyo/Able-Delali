@@ -31,7 +31,7 @@ export default function Blog() {
   const { isMobile } = useResponsive();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -84,13 +84,14 @@ export default function Blog() {
     });
   };
 
+  const categoryFilter = selectedCategory || "All";
   const filteredPosts =
-    selectedCategory === "All"
+    categoryFilter === "All"
       ? posts
-      : posts.filter((post) => post.blog_category === selectedCategory);
+      : posts.filter((post) => post.blog_category === categoryFilter);
 
   const featuredPost =
-    selectedCategory === "All" && filteredPosts.length > 0
+    categoryFilter === "All" && filteredPosts.length > 0
       ? filteredPosts.find((p) => p.featured) ?? filteredPosts[0]
       : null;
 
@@ -98,7 +99,7 @@ export default function Blog() {
     ? filteredPosts.filter((p) => p.name !== featuredPost.name)
     : filteredPosts;
 
-  const gridPosts = selectedCategory === "All" ? otherPosts : filteredPosts;
+  const gridPosts = categoryFilter === "All" ? otherPosts : filteredPosts;
 
   if (loading) {
     return (
@@ -148,7 +149,7 @@ export default function Blog() {
       <nav className="ad-container ad-section" style={{ paddingTop: 0 }} aria-label="Blog categories">
         <div className="ad-blog-cat">
           {categories.map((category) => {
-            const active = selectedCategory === category;
+            const active = categoryFilter === category;
             return (
               <button
                 key={category}
@@ -170,7 +171,7 @@ export default function Blog() {
       )}
 
       {/* Lede — only on “All” */}
-      {featuredPost && selectedCategory === "All" && (
+      {featuredPost && categoryFilter === "All" && (
         <section className="ad-container ad-section" style={{ paddingTop: 0 }}>
           <h2
             style={{
@@ -274,7 +275,7 @@ export default function Blog() {
               margin: "0 0 24px",
             }}
           >
-            {selectedCategory === "All" ? "Older" : selectedCategory}
+            {categoryFilter === "All" ? "Older" : categoryFilter}
           </h2>
 
           <div
