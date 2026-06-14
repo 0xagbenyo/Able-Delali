@@ -37,6 +37,11 @@ import {
 import { getHomepageSectionsFromERPNext } from "./homepageStore.js";
 import { getAboutSectionsFromERPNext } from "./aboutPageStore.js";
 
+function applyNoStoreCache(res: Response): void {
+  res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -158,10 +163,7 @@ export async function registerRoutes(
   router.get(
     "/homepage/sections",
     asyncHandler(async (_req: Request, res: Response) => {
-      res.setHeader(
-        "Cache-Control",
-        "public, s-maxage=60, stale-while-revalidate=300",
-      );
+      applyNoStoreCache(res);
       const payload = await getHomepageSectionsFromERPNext();
       res.json(payload);
     }),
@@ -170,10 +172,7 @@ export async function registerRoutes(
   router.get(
     "/about/sections",
     asyncHandler(async (_req: Request, res: Response) => {
-      res.setHeader(
-        "Cache-Control",
-        "public, s-maxage=60, stale-while-revalidate=300",
-      );
+      applyNoStoreCache(res);
       const payload = await getAboutSectionsFromERPNext();
       res.json(payload);
     }),
@@ -182,8 +181,7 @@ export async function registerRoutes(
   router.get(
     "/books/footer/latest",
     asyncHandler(async (_req: Request, res: Response) => {
-      res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
-      res.setHeader("Pragma", "no-cache");
+      applyNoStoreCache(res);
       const book = await getLatestBooksFooterEntry();
       res.json({ book });
     }),
@@ -193,10 +191,7 @@ export async function registerRoutes(
   router.get(
     "/books/catalog",
     asyncHandler(async (_req: Request, res: Response) => {
-      res.setHeader(
-        "Cache-Control",
-        "public, s-maxage=120, stale-while-revalidate=300",
-      );
+      applyNoStoreCache(res);
       const books = await getAllBooksFromSiteCatalog();
       res.json({ books });
     }),
@@ -216,7 +211,7 @@ export async function registerRoutes(
         res.status(404).json({ reason: "book_not_found" });
         return;
       }
-      res.setHeader("Cache-Control", "public, max-age=60");
+      applyNoStoreCache(res);
       res.json({ book });
     }),
   );
@@ -500,6 +495,7 @@ export async function registerRoutes(
   router.get(
     "/blog",
     asyncHandler(async (_req: Request, res: Response): Promise<void> => {
+      applyNoStoreCache(res);
       const posts = await getAllBlogPosts();
       res.json({ posts });
     }),
@@ -509,6 +505,7 @@ export async function registerRoutes(
   router.get(
     "/blog/featured",
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
+      applyNoStoreCache(res);
       const limit = parseInt(String(req.query.limit || "3"), 10);
       const posts = await getFeaturedBlogPosts(limit);
       res.json({ posts });
@@ -519,6 +516,7 @@ export async function registerRoutes(
   router.get(
     "/blog/categories",
     asyncHandler(async (_req: Request, res: Response): Promise<void> => {
+      applyNoStoreCache(res);
       const categories = await getBlogCategories();
       res.json({ categories });
     }),
@@ -528,6 +526,7 @@ export async function registerRoutes(
   router.get(
     "/blog/category/:category",
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
+      applyNoStoreCache(res);
       const category = String(req.params.category || "");
       if (!category) {
         res.status(400).json({ reason: "missing_category" });
@@ -545,6 +544,7 @@ export async function registerRoutes(
   router.get(
     /^\/blog\/([^/]+)\/reads$/,
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
+      applyNoStoreCache(res);
       const blogName = req.params[0] as string;
       if (!blogName) {
         res.status(400).json({ reason: "missing_blog_name" });
@@ -575,6 +575,7 @@ export async function registerRoutes(
   router.get(
     /^\/blog\/([^/]+)$/,
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
+      applyNoStoreCache(res);
       const blogName = req.params[0] as string;
       if (!blogName) {
         res.status(400).json({ reason: "missing_blog_name" });

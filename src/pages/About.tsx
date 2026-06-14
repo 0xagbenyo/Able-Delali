@@ -6,7 +6,12 @@ import aboutContent from "../content/aboutintro.json";
 import { ablePortrait, rhodaImage1, rhodaImage2, patternTexture } from "../config/brand";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { pickCms } from "../lib/cmsPick";
-import { apiUrl } from "../lib/apiUrl";
+import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
+
+const DEFAULT_FAMILY_INTRO =
+  typeof aboutContent?.familyIntro === "string" && aboutContent.familyIntro.trim().length > 0
+    ? aboutContent.familyIntro
+    : "Able Delalie is a pharmacist and public health voice bridging practice and policy.";
 
 const DEFAULT_SLIDES = [ablePortrait, rhodaImage1, rhodaImage2, patternTexture] as const;
 
@@ -70,11 +75,17 @@ export default function About() {
     (async () => {
       try {
         const res = await fetch(apiUrl("/api/about/sections"), { cache: "no-store" });
-        const data = (await res.json()) as { sections?: SectionPayload[] };
+        assertApiJsonResponse(res, "About sections");
+        const data = (await res.json()) as {
+          ok?: boolean;
+          sections?: SectionPayload[];
+          error?: string;
+        };
         if (cancelled) return;
         const rows = Array.isArray(data.sections) ? data.sections : [];
         setIntroValues(mergeIntroValues(rows));
-      } catch {
+      } catch (e) {
+        console.warn("[About] /api/about/sections failed, using built-in copy:", e);
         if (!cancelled) setIntroValues({});
       }
     })();
@@ -85,9 +96,9 @@ export default function About() {
 
   const eyebrow = pickCms(introValues, "eyebrow", "kicker", "label") || "About";
   const title = pickCms(introValues, "title", "heading", "h1") || "Who she is";
-  const body =
-    pickCms(introValues, "description", "body", "text", "copy", "family_intro") ||
-    aboutContent.familyIntro;
+  const bodyRaw =
+    pickCms(introValues, "description", "body", "text", "copy", "family_intro") || DEFAULT_FAMILY_INTRO;
+  const body = typeof bodyRaw === "string" ? bodyRaw : String(bodyRaw);
 
   const slides = useMemo(() => {
     const fromAttach = collectAttachImagePaths(introValues)
