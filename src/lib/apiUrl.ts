@@ -17,6 +17,10 @@ export function apiUrl(path: string): string {
  *
  * Does **not** require `Content-Type: application/json` so gateways that omit charset
  * or use `application/problem+json` still work.
+ *
+ * **Note:** `response.ok` is **false** for **HTTP 304** (Not Modified). CDNs often
+ * return 304 for cached `/api/*` GETs. Use **`fetch(..., { cache: "no-store" })`** on
+ * client-side API reads so you get **200 + JSON** every time.
  */
 export function assertApiJsonResponse(res: Response, context = "API"): void {
   if (!res.ok) {

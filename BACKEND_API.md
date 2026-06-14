@@ -42,6 +42,7 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`** and **`/blog/:slug`** work on full refresh.
 4. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
 5. **API responses** — Some gateways return JSON with a minimal or missing **`Content-Type`** header. The site treats **HTML** responses as misconfiguration; it does **not** require an exact **`application/json`** header so normal JSON payloads still parse.
+6. **Browser caching (`304`)** — Some hosts cache **`GET /api/blog`** or **`GET /api/books/catalog`**. In the browser **`fetch` API**, **`response.ok` is `false` for HTTP 304**, so client code that only accepts “OK” responses would treat a valid cache hit as a failure. The app uses **`cache: "no-store"`** on those reads so production gets a normal **200** body. If you fork the client, keep that pattern for JSON list endpoints.
 
 ### Homepage copy (ERPNext Web Page — Page Builder)
 

@@ -38,7 +38,7 @@ export default function Blog() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const postsRes = await fetch(apiUrl("/api/blog"));
+        const postsRes = await fetch(apiUrl("/api/blog"), { cache: "no-store" });
         assertApiJsonResponse(postsRes, "Journal list");
         const postsData = await postsRes.json();
         const list: BlogPost[] = Array.isArray(postsData.posts) ? postsData.posts : [];
@@ -46,7 +46,7 @@ export default function Blog() {
 
         let categoryNames: string[] = [];
         try {
-          const categoriesRes = await fetch(apiUrl("/api/blog/categories"));
+          const categoriesRes = await fetch(apiUrl("/api/blog/categories"), { cache: "no-store" });
           if (categoriesRes.ok) {
             const categoriesData = await categoriesRes.json();
             categoryNames = Array.isArray(categoriesData.categories) ? categoriesData.categories : [];

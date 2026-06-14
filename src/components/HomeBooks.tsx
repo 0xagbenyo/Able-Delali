@@ -58,7 +58,7 @@ export default function HomeBooks() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(apiUrl("/api/books/catalog"));
+        const res = await fetch(apiUrl("/api/books/catalog"), { cache: "no-store" });
         assertApiJsonResponse(res, "Books catalog");
         const data = (await res.json()) as { books?: SiteBook[] };
         const list = Array.isArray(data.books) ? data.books : [];

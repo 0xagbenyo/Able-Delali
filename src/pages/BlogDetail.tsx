@@ -69,7 +69,7 @@ export default function BlogDetail() {
         // Read-count API expects the internal document id, not the blog URL slug.
         const docName = encodeURIComponent(loaded.name);
 
-        const readsRes = await fetch(apiUrl(`/api/blog/${docName}/reads`));
+        const readsRes = await fetch(apiUrl(`/api/blog/${docName}/reads`), { cache: "no-store" });
         if (readsRes.ok) {
           const readsData = await readsRes.json();
           setReads(readsData.reads || 0);

@@ -63,7 +63,7 @@ export default function LatestArticles() {
     let cancelled = false;
     (async () => {
       try {
-        const blogRes = await fetch(apiUrl("/api/blog"));
+        const blogRes = await fetch(apiUrl("/api/blog"), { cache: "no-store" });
         assertApiJsonResponse(blogRes, "Journal (home)");
         const blogData = (await blogRes.json()) as { posts?: BlogPostApi[] };
         const raw: BlogPostApi[] = Array.isArray(blogData.posts) ? blogData.posts : [];
