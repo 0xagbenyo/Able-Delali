@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "env": {
+    "NODE_OPTIONS": "--disable-warning=DEP0169"
+  },
   "headers": [
     {
       "source": "/assets/(.*\\.mjs)",

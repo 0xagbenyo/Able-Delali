@@ -45,6 +45,7 @@ export default function BlogDetail() {
       try {
         const res = await fetch(
           apiUrl(`/api/blog/${encodeURIComponent(blogName)}`),
+          { cache: "no-store" },
         );
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
