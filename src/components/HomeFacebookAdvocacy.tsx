@@ -96,9 +96,12 @@ function ChannelLinks() {
 
 export default function HomeFacebookAdvocacy({
   fullList = false,
+  variant = "embed",
 }: {
   /** When true (standalone page), show all highlights and press links from CMS / defaults. */
   fullList?: boolean;
+  /** `page` = standalone `/public-voice`: stronger hierarchy, roomier layout, full notes. */
+  variant?: "embed" | "page";
 }) {
   const v = useHomepageSectionValues("outreach");
 
@@ -133,14 +136,19 @@ export default function HomeFacebookAdvocacy({
     return { ...base, ...asidePatch, links };
   })();
 
+  const isPage = variant === "page";
+  const sectionClass = ["adv-outreach", isPage ? "adv-outreach--page" : ""].filter(Boolean).join(" ");
+  const TitleTag: "h1" | "h2" = isPage ? "h1" : "h2";
+  const SectionLabelTag: "h2" | "h3" = isPage ? "h2" : "h3";
+
   return (
-    <section className="adv-outreach" aria-labelledby="adv-outreach-heading">
+    <section className={sectionClass} aria-labelledby="adv-outreach-heading">
       <div className="adv-outreach__inner">
         <header className="adv-outreach__header">
           <p className="adv-outreach__eyebrow">{eyebrow}</p>
-          <h2 id="adv-outreach-heading" className="adv-outreach__title">
+          <TitleTag id="adv-outreach-heading" className="adv-outreach__title">
             {titleMain} <em>{titleEm}</em>
-          </h2>
+          </TitleTag>
           <p className="adv-outreach__lede">{intro}</p>
           <ChannelLinks />
           {!linkedin ? <p className="adv-outreach__hint">{linkedinNote}</p> : null}
@@ -148,7 +156,7 @@ export default function HomeFacebookAdvocacy({
 
         <div className="adv-outreach__grid">
           <div className="adv-outreach__main">
-            <h3 className="adv-outreach__section-label">{documentedLabel}</h3>
+            <SectionLabelTag className="adv-outreach__section-label">{documentedLabel}</SectionLabelTag>
             <ul className="adv-outreach__cards">
               {highlights.slice(0, highlightsMax).map((h) => (
                 <li key={`${h.title}-${h.url}`}>
@@ -163,7 +171,9 @@ export default function HomeFacebookAdvocacy({
               ))}
             </ul>
 
-            <h3 className="adv-outreach__section-label adv-outreach__section-label--spaced">{contextLabel}</h3>
+            <SectionLabelTag className="adv-outreach__section-label adv-outreach__section-label--spaced">
+              {contextLabel}
+            </SectionLabelTag>
             <ul className="adv-outreach__links">
               {pressLinks.slice(0, pressLinksMax).map((p) => (
                 <li key={p.url}>
@@ -175,8 +185,10 @@ export default function HomeFacebookAdvocacy({
             </ul>
           </div>
 
-          <aside className="adv-outreach__aside" id="rhoda-delali-agbenyo" aria-label={aside.displayName}>
-            <h3 className="adv-outreach__aside-name">{aside.displayName}</h3>
+          <aside className="adv-outreach__aside" id="rhoda-delali-agbenyo" aria-labelledby="pv-aside-heading">
+            <h3 id="pv-aside-heading" className="adv-outreach__aside-name">
+              {aside.displayName}
+            </h3>
             <p className="adv-outreach__aside-alias">{aside.nameNote}</p>
             <p className="adv-outreach__aside-role">{aside.roleLine}</p>
             <p className="adv-outreach__aside-copy">{aside.summary}</p>

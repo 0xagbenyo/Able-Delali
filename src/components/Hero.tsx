@@ -60,7 +60,11 @@ export default function Hero() {
   const portraitSrc = portraitRaw ? resolveErpPublicUrl(portraitRaw) : ablePortrait;
 
   return (
-    <section className="cb-ref-hero" aria-labelledby="cb-ref-hero-title">
+    <section
+      id="ad-home-main-hero"
+      className="cb-ref-hero"
+      aria-labelledby="cb-ref-hero-title"
+    >
       <div className="cb-ref-hero__grid">
         <div className="cb-ref-hero__copy">
           <div className="cb-ref-hero__tags" role="list">
@@ -75,10 +79,10 @@ export default function Hero() {
             ))}
           </div>
 
-          <h1 id="cb-ref-hero-title" className="cb-ref-hero__title">
+          <h2 id="cb-ref-hero-title" className="cb-ref-hero__title">
             <span className="cb-ref-hero__name">{nameFirst}</span>
             <span className="cb-ref-hero__name cb-ref-hero__name--accent">{nameSecond}</span>
-          </h1>
+          </h2>
 
           <p className="cb-ref-hero__bio">{bio}</p>
 

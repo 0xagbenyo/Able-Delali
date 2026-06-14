@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "provision:about-page": "node --import tsx ./server/scripts/provision-about-page.ts",
     "provision:homepage": "node --import tsx ./server/scripts/provision-homepage.ts",
+    "provision:press-kit": "node --import tsx ./server/scripts/provision-press-kit-page.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },

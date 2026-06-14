@@ -1,0 +1,209 @@
+/* Press kit — editorial layout inspired by classic press-kit pages (clear hierarchy, rules, serif titles). */
+
+.pk-shell {
+  background: var(--ad-paper, #fafafa);
+}
+
+.pk-skip {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 300;
+  padding: 0.5rem 1rem;
+  background: var(--ad-card, #fff);
+  color: var(--ad-ink, #16192d);
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(22, 25, 45, 0.2);
+}
+
+.pk-skip:focus {
+  left: max(16px, env(safe-area-inset-left, 0px));
+  top: calc(var(--fixed-nav-offset, 56px) + 8px);
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.pk-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2.75rem) max(20px, env(safe-area-inset-left, 0px))
+    clamp(3rem, 8vw, 5rem) max(20px, env(safe-area-inset-right, 0px));
+}
+
+.pk-header {
+  margin-bottom: 0.25rem;
+}
+
+.pk-title {
+  margin: 0 0 0.75rem;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.25rem, 5vw, 3rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--ad-ink, #16192d);
+}
+
+.pk-lede {
+  margin: 0;
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.65;
+  color: rgba(22, 25, 45, 0.62);
+}
+
+.pk-strong {
+  font-weight: 700;
+  color: var(--ad-ink, #16192d);
+}
+
+.pk-rule {
+  border: none;
+  border-top: 1px solid rgba(22, 25, 45, 0.12);
+  margin: clamp(1.75rem, 4vw, 2.5rem) 0;
+}
+
+.pk-section {
+  margin: 0;
+}
+
+.pk-section-title {
+  margin: 0 0 0.65rem;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.35rem, 2.8vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ad-ink, #16192d);
+}
+
+.pk-usage {
+  margin: 0 0 1rem;
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(22, 25, 45, 0.52);
+}
+
+.pk-headshots {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1.15rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 360px) {
+  .pk-headshots {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pk-figure {
+  margin: 0;
+  background: var(--ad-card, #fff);
+  border: 1px solid rgba(22, 25, 45, 0.1);
+}
+
+.pk-figure__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.pk-figure__cap {
+  padding: 0.5rem 0.65rem 0.65rem;
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: rgba(22, 25, 45, 0.48);
+}
+
+.pk-headline {
+  margin: 0.35rem 0 0;
+  padding: 1rem 1.15rem;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.1rem, 2vw, 1.28rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ad-ink, #16192d);
+  background: var(--ad-card, #fff);
+  border: 1px solid rgba(22, 25, 45, 0.1);
+  border-left: 3px solid var(--ad-red, #cd0b07);
+}
+
+.pk-prose {
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: clamp(0.92rem, 1.35vw, 0.98rem);
+  line-height: 1.72;
+  color: rgba(22, 25, 45, 0.78);
+}
+
+.pk-prose p {
+  margin: 0 0 1rem;
+}
+
+.pk-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.pk-social {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.pk-social a {
+  color: var(--ad-ink, #16192d);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(22, 25, 45, 0.2);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.pk-social a:hover {
+  color: var(--ad-red, #cd0b07);
+  border-bottom-color: rgba(205, 11, 7, 0.45);
+}
+
+.pk-social__handle {
+  font-weight: 500;
+  color: rgba(22, 25, 45, 0.55);
+}
+
+.pk-footer {
+  margin-top: 0.5rem;
+}
+
+.pk-footer__text {
+  margin: 0;
+  font-family: "Exo 2", system-ui, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: rgba(22, 25, 45, 0.55);
+}
+
+.pk-footer__link {
+  color: var(--ad-red, #cd0b07);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pk-footer__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

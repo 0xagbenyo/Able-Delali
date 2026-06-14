@@ -36,6 +36,7 @@ import {
 } from "./commentStore.js";
 import { getHomepageSectionsFromERPNext } from "./homepageStore.js";
 import { getAboutSectionsFromERPNext } from "./aboutPageStore.js";
+import { getPressKitSectionsFromERPNext } from "./pressKitStore.js";
 
 function applyNoStoreCache(res: Response): void {
   res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
@@ -174,6 +175,15 @@ export async function registerRoutes(
     asyncHandler(async (_req: Request, res: Response) => {
       applyNoStoreCache(res);
       const payload = await getAboutSectionsFromERPNext();
+      res.json(payload);
+    }),
+  );
+
+  router.get(
+    "/press-kit/sections",
+    asyncHandler(async (_req: Request, res: Response) => {
+      applyNoStoreCache(res);
+      const payload = await getPressKitSectionsFromERPNext();
       res.json(payload);
     }),
   );

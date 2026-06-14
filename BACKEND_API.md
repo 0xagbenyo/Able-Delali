@@ -31,6 +31,9 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 # Web Page route for React homepage copy (Page Builder). Default: homepage
 # ERPNEXT_HOMEPAGE_ROUTE=homepage
 
+# Web Page route for React /press-kit CMS (Page Builder). Default: press-kit-page
+# ERPNEXT_PRESS_KIT_ROUTE=press-kit-page
+
 # Web Page route for React /about copy (Page Builder). Default: about-page
 # ERPNEXT_ABOUT_ROUTE=about-page
 ```
@@ -39,7 +42,7 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 
 1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, **`ERPNEXT_API_SECRET`**, and **`VITE_ERPNEXT_PUBLIC_URL`** (same values as local `.env`) for **Production** and **Preview**. The serverless **`/api/*`** handlers need these at runtime; missing values cause empty blog lists or failed loads.
 2. **Routing order** — In **`vercel.json`**, **`/api/*`** is sent to **`api/index.ts`** **before** the static filesystem and **before** the SPA fallback to **`index.html`**. That way **`GET /api/blog`** returns JSON, not the React shell. If **`/api/blog`** in the browser shows HTML, the deployment root is probably wrong (Vercel **Root Directory** should be the folder that contains **`package.json`** and **`vercel.json`**, not a parent download folder).
-3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`** and **`/blog/:slug`** work on full refresh.
+3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`**, **`/blog/:slug`**, **`/press-kit`**, **`/public-voice`**, etc. work on full refresh.
 4. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
 5. **API responses** — Some gateways return JSON with a minimal or missing **`Content-Type`** header. The site treats **HTML** responses as misconfiguration; it does **not** require an exact **`application/json`** header so normal JSON payloads still parse.
 6. **Browser caching (`304`)** — Some hosts cache **`GET /api/blog`** or **`GET /api/books/catalog`**. In the browser **`fetch` API**, **`response.ok` is `false` for HTTP 304**, so client code that only accepts “OK” responses would treat a valid cache hit as a failure. The app uses **`cache: "no-store"`** on those reads (including **`GET /api/blog/:slug`** on the article page) so production gets a normal **200** body. If you fork the client, keep that pattern for every JSON **`fetch`** you parse.
@@ -73,7 +76,7 @@ Match **Web Template** titles to section keys (spaces → underscores, lowercase
 | Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
 | Outreach | `outreach` | `description` (intro lede). Optional JSON: `highlights_json`, `press_links_json`, `aside_json`. **Rendered on `/public-voice`** (not on the homepage). |
 | Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the journal band), overlay lines `overlay_line_1` … `overlay_line_3`. |
-| Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. |
+| Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. Optional **`landing_tagline`** / **`tagline`** — serif line under the name on the **white landing strip** above the split hero; defaults to the bio if empty. |
 
 Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).
 
@@ -99,6 +102,27 @@ npm run provision:about-page
 # Replace Page Building Blocks on an existing page:
 npm run provision:about-page -- --force
 ```
+
+### Press kit (`/press-kit`) — ERPNext Web Page (Page Builder)
+
+The React **`/press-kit`** page loads copy and **up to ten headshots** from the **Web Page** whose **`route`** matches **`ERPNEXT_PRESS_KIT_ROUTE`** (default **`press-kit-page`** — different from the public URL **`/press-kit`** so ERP routing stays predictable). Content Type must be **Page Builder** with one block whose Web Template title is **Press Kit** (section key **`press_kit`**).
+
+- **API:** `GET /api/press-kit/sections` → same JSON shape as homepage/about: `{ ok, route, web_page, sections: [{ template, key, values }] }`
+- **Fallbacks:** If the Web Page is missing or no **`press_image_*`** attachments are set, the site uses built-in copy from **`src/content/pressKitCopy.ts`** / **`pressKitData.ts`** and local brand images.
+
+| Web Template | `key` | Fields |
+|--------------|--------|--------|
+| Press Kit | `press_kit` | **`page_heading`**, **`page_intro`**, **`preferred_headline`**, **`short_bio_usage`**, **`short_bio`**, **`mid_bio_usage`**, **`mid_bio`**, **`full_bio_usage`**, **`full_bio`**, **`social_handles_json`** (JSON array of `{label, handle, url}`), plus **`press_image_1`** … **`press_image_10`** (**Attach Image**). |
+
+**Provision from your machine** (creates **Web Template** with **10 image fields** + **Web Page** if missing):
+
+```bash
+npm run provision:press-kit
+# Replace Page Building Blocks on an existing page:
+npm run provision:press-kit -- --force
+```
+
+Shared default copy for ERP seed and the React fallback lives in **`src/content/pressKitCopy.ts`**. Align wording with **Able Delalie Brand Guide.pdf** when you have the file.
 
 ### Required ERPNext Doctypes
 

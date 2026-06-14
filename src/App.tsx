@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import HomeLandingStrip from "./components/HomeLandingStrip";
 import HomeMarquee from "./components/HomeMarquee";
 import HomeBooks from "./components/HomeBooks";
 import AboutTeaser from "./components/AboutTeaser";
@@ -21,6 +22,7 @@ import BookRead from "./pages/BookRead";
 import BooksPreorder from "./pages/BooksPreorder";
 import Contact from "./pages/Contact";
 import PublicVoice from "./pages/PublicVoice";
+import PressKit from "./pages/PressKit";
 import RotatingFavicon from "./components/RotatingFavicon";
 import { HomepageCMSProvider } from "./context/HomepageCMSProvider";
 
@@ -58,6 +60,7 @@ function Home() {
 
         <main className="ad-page__main">
           <div id="home">
+            <HomeLandingStrip />
             <Hero />
           </div>
 
@@ -96,6 +99,7 @@ export default function App() {
         <Route path="/books" element={<Books />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/public-voice" element={<PublicVoice />} />
+        <Route path="/press-kit" element={<PressKit />} />
       </Routes>
     </>
   );

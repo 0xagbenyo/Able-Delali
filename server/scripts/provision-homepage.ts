@@ -45,6 +45,7 @@ const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
     name: "Hero Section",
     fields: [
       { label: "Bio", fieldname: "description", fieldtype: "Text" },
+      { label: "Landing tagline", fieldname: "landing_tagline", fieldtype: "Text" },
       { label: "Role tags", fieldname: "role_tags", fieldtype: "Text" },
       { label: "First name", fieldname: "name_first", fieldtype: "Data" },
       { label: "Second name", fieldname: "name_second", fieldtype: "Data" },

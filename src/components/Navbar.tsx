@@ -17,13 +17,14 @@ type NavItem = { label: string } & ({ id: string } | { path: string });
 const navLeft: readonly NavItem[] = [
   { label: "Home", id: "home" },
   { label: "About", path: "/about" },
+  { label: "Press kit", path: "/press-kit" },
   { label: "Public voice", path: "/public-voice" },
   { label: "Books", path: "/books" },
 ];
 
 const navRight: readonly NavItem[] = [
-  { label: "Journal", id: "podcast" },
-  { label: "Newsletter", id: "newsletter" },
+  { label: "Journal", path: "/blog" },
+  { label: "Newsletter", path: "/#newsletter" },
 ];
 
 const sheetNavItems: NavItem[] = [...navLeft, ...navRight];
@@ -128,6 +129,16 @@ export default function Navbar() {
 
   const goToSection = (id: string | undefined, path?: string) => {
     if (path) {
+      const hashIdx = path.indexOf("#");
+      if (hashIdx >= 0) {
+        const pathname = path.slice(0, hashIdx) || "/";
+        const bareHash = path.slice(hashIdx + 1).replace(/^#/, "");
+        navigate({
+          pathname,
+          hash: bareHash ? `#${bareHash}` : "",
+        });
+        return;
+      }
       navigate(path);
       return;
     }

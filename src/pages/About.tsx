@@ -182,7 +182,6 @@ export default function About() {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  objectPosition: "center",
                   opacity: i === index ? 1 : 0,
                   transition: "opacity 1.2s ease",
                 }}
