@@ -1,14 +1,13 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ablePortrait } from "../config/brand";
+import { LEGACY_HERO_DEFAULT_BIO } from "../content/legacyHeroBio";
+import { SITE_FOOTER_TAGLINE } from "../content/siteTagline";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms, splitListFromCms } from "../lib/cmsPick";
 
-const DEFAULT_ROLE_TAGS = ["Pharmacist", "Public health", "Advocate", "Writer"] as const;
-
-const DEFAULT_BIO =
-  "Pharmacist and public health voice bridging practice and policy — strengthening health systems through evidence, advocacy, and menstrual health equity.";
+const DEFAULT_ROLE_TAGS = ["Pharmacist", "Public health", "Policy", "Writer"] as const;
 
 function go(navigate: ReturnType<typeof useNavigate>, pathOrUrl: string) {
   const p = pathOrUrl.trim();
@@ -26,18 +25,33 @@ export default function Hero() {
   const vPrimary = useHomepageSectionValues("hero_section");
   const vFallback = useHomepageSectionValues("hero");
   const vCover = useHomepageSectionValues("cover_image");
+  const vAboutTeaser = useHomepageSectionValues("about_teaser");
   const v = useMemo(
     () => ({ ...vFallback, ...vPrimary }),
     [vPrimary, vFallback],
   );
+
+  /** Shown in the hero (same copy as former About teaser headline; still edited under **About teaser** in ERPNext). */
+  const voiceLine1 =
+    pickCms(vAboutTeaser, "headline_line_1", "headline", "title_line_1", "heading") || "Meet Able";
+  const voiceLine2 =
+    pickCms(vAboutTeaser, "headline_line_2", "headline_muted", "subtitle", "title_line_2") ||
+    "the voice that shifts conversations";
 
   const roleTagsRaw = pickCms(v, "role_tags", "tags", "roles", "pill_labels");
   const roleTags = splitListFromCms(roleTagsRaw ?? "", [...DEFAULT_ROLE_TAGS]);
 
   const nameFirst = pickCms(v, "name_first", "first_name", "given_name") || "Able";
   const nameSecond = pickCms(v, "name_second", "last_name", "surname") || "Delalie";
+  const cmsBio = pickCms(v, "description", "bio", "intro", "body", "text")?.trim() ?? "";
+  const taglineNorm = SITE_FOOTER_TAGLINE.trim().toLowerCase();
+  const legacyBioNorm = LEGACY_HERO_DEFAULT_BIO.trim().toLowerCase();
   const bio =
-    pickCms(v, "description", "bio", "intro", "body", "text") || DEFAULT_BIO;
+    cmsBio &&
+    cmsBio.toLowerCase() !== taglineNorm &&
+    cmsBio.toLowerCase() !== legacyBioNorm
+      ? cmsBio
+      : "";
 
   const primaryLabel =
     pickCms(v, "button_primary_text", "primary_button_text", "primary_cta") || "About Able Delalie";
@@ -51,6 +65,15 @@ export default function Hero() {
     pickCms(v, "button_secondary_path", "secondary_button_path", "secondary_path", "secondary_url") ||
     "/contact";
 
+  const speakingLabel =
+    pickCms(v, "button_speaking_text", "button_book_speaking_text", "speaking_cta") || "Book Able to speak";
+  const speakingPath =
+    pickCms(v, "button_speaking_path", "button_book_speaking_path", "speaking_path") || "/contact";
+
+  /** Red pill like the first tag (“Pharmacist”) — also used for “Policy” when it appears in the tag list. */
+  const tagIsAccent = (tag: string, index: number) =>
+    index === 0 || tag.trim().toLowerCase() === "policy";
+
   /** Web Page "Cover Image" block — `url` (then other fields) overrides the hero portrait. */
   const portraitFromCover =
     pickCms(vCover, "url", "description", "image", "cover_image", "image_url", "file", "photo", "banner") || "";
@@ -63,7 +86,7 @@ export default function Hero() {
     <section
       id="ad-home-main-hero"
       className="cb-ref-hero"
-      aria-labelledby="cb-ref-hero-title"
+      aria-labelledby="cb-ref-hero-voice cb-ref-hero-title"
     >
       <div className="cb-ref-hero__grid">
         <div className="cb-ref-hero__copy">
@@ -71,7 +94,7 @@ export default function Hero() {
             {roleTags.map((tag, i) => (
               <span
                 key={`${tag}-${i}`}
-                className={`cb-ref-hero__tag${i === 0 ? " cb-ref-hero__tag--active" : ""}`}
+                className={`cb-ref-hero__tag${tagIsAccent(tag, i) ? " cb-ref-hero__tag--active" : ""}`}
                 role="listitem"
               >
                 {tag}
@@ -79,12 +102,19 @@ export default function Hero() {
             ))}
           </div>
 
+          <p id="cb-ref-hero-voice" className="cb-ref-hero__voice">
+            <span className="cb-ref-hero__voice-line">{voiceLine1}</span>
+            <span className="cb-ref-hero__voice-line cb-ref-hero__voice-line--muted">
+              <em>{voiceLine2}</em>
+            </span>
+          </p>
+
           <h2 id="cb-ref-hero-title" className="cb-ref-hero__title">
             <span className="cb-ref-hero__name">{nameFirst}</span>
             <span className="cb-ref-hero__name cb-ref-hero__name--accent">{nameSecond}</span>
           </h2>
 
-          <p className="cb-ref-hero__bio">{bio}</p>
+          {bio ? <p className="cb-ref-hero__bio">{bio}</p> : null}
 
           <div className="cb-ref-hero__actions">
             <button
@@ -100,6 +130,13 @@ export default function Hero() {
               onClick={() => go(navigate, secondaryPath)}
             >
               {secondaryLabel}
+            </button>
+            <button
+              type="button"
+              className="cb-ref-btn cb-ref-btn--red-outline"
+              onClick={() => go(navigate, speakingPath)}
+            >
+              {speakingLabel}
             </button>
           </div>
         </div>

@@ -61,6 +61,18 @@ const SECTION_TEMPLATE_DEFS: { name: string; fields: FieldRow[] }[] = [
       { label: "Primary button path", fieldname: "button_primary_path", fieldtype: "Data" },
       { label: "Secondary button text", fieldname: "button_secondary_text", fieldtype: "Data" },
       { label: "Secondary button path", fieldname: "button_secondary_path", fieldtype: "Data" },
+      {
+        label: "Speaking / booking button text",
+        fieldname: "button_speaking_text",
+        fieldtype: "Data",
+        description: 'Default: "Book Able to speak".',
+      },
+      {
+        label: "Speaking / booking button path",
+        fieldname: "button_speaking_path",
+        fieldtype: "Data",
+        description: "e.g. /contact or /speaking-and-media",
+      },
     ],
   },
   {
@@ -149,6 +161,8 @@ function seedPageBlocks(): { web_template: string; web_template_values: string }
         button_primary_path: "/about",
         button_secondary_text: "Get in touch",
         button_secondary_path: "/contact",
+        button_speaking_text: "Book Able to speak",
+        button_speaking_path: "/contact",
       }),
     },
     { web_template: "Marquee", web_template_values: JSON.stringify({ description: marqueeDesc }) },
@@ -156,8 +170,8 @@ function seedPageBlocks(): { web_template: string; web_template_values: string }
       web_template: "About teaser",
       web_template_values: JSON.stringify({
         kicker: "About Able",
-        headline_line_1: "A voice that",
-        headline_line_2: "shifts the conversation.",
+        headline_line_1: "Meet Able",
+        headline_line_2: "the voice that shifts conversations",
         description: aboutBody,
       }),
     },

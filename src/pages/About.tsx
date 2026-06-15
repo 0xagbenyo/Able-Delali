@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
 import PageChrome from "../components/PageChrome";
 import aboutContent from "../content/aboutintro.json";
@@ -166,6 +166,29 @@ export default function About() {
     { label: "Contact", path: "/contact" },
   ] as const;
 
+  const engageCards = [
+    {
+      to: "/work-with-me#speaking-engagements",
+      title: "Speaking Engagements",
+      text: "Invite Able to speak at conferences, institutions, or events.",
+    },
+    {
+      to: "/work-with-me#media-interviews",
+      title: "Media & Interviews",
+      text: "Request commentary or expert opinion on pharmacy, public health, and policy.",
+    },
+    {
+      to: "/work-with-me#partnerships-collaborations",
+      title: "Partnerships",
+      text: "Collaborate on campaigns, research, education, or advocacy initiatives.",
+    },
+    {
+      to: "/blog",
+      title: "Journal",
+      text: "Explore essays and insights on pharmacy, policy, public health, and menstrual health.",
+    },
+  ] as const;
+
   return (
     <PageChrome>
       <div className="ad-container ad-section">
@@ -217,6 +240,23 @@ export default function About() {
           </div>
         </div>
       </div>
+
+      <section className="ad-about-engage" aria-labelledby="about-engage-heading">
+        <div className="ad-container">
+          <h2 id="about-engage-heading" className="ad-about-engage__title">
+            Let&apos;s Build Better Health Together
+          </h2>
+          <div className="ad-about-engage__grid">
+            {engageCards.map((card) => (
+              <Link key={card.to} to={card.to} className="ad-about-engage-card">
+                <h3 className="ad-about-engage-card__heading">{card.title}</h3>
+                <p className="ad-about-engage-card__text">{card.text}</p>
+                <span className="ad-about-engage-card__cta">Learn more</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
     </PageChrome>
   );
 }

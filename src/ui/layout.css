@@ -34,11 +34,11 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding-bottom: clamp(4rem, 8vw, 6.5rem);
 }
 
-.ad-page__main > .ad-footer {
+.ad-page > .ad-site-footer {
   margin-top: auto;
+  flex-shrink: 0;
 }
 
 /* —— Containers —— */
@@ -303,207 +303,7 @@
   font-family: inherit;
 }
 
-/* —— Footer —— */
-.ad-footer {
-  margin-top: auto;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 30;
-  background: var(--ad-ink);
-  color: #fff;
-  font-family: "Exo 2", system-ui, sans-serif;
-  border-top: 3px solid var(--ad-red);
-  padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
-}
-
-.ad-footer__grid {
-  display: grid;
-  gap: clamp(1.75rem, 4vw, 2.5rem);
-  padding-block: clamp(2rem, 4vw, 2.75rem);
-}
-
-@media (min-width: 768px) {
-  .ad-footer__grid {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.95fr);
-    gap: clamp(2rem, 4vw, 3rem);
-    align-items: start;
-  }
-}
-
-.ad-footer__newsletter {
-  min-width: 0;
-}
-
-.ad-footer__connect {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  min-width: 0;
-  padding-top: 0.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-@media (min-width: 768px) {
-  .ad-footer__connect {
-    padding-top: 0;
-    padding-left: clamp(1.5rem, 3vw, 2.25rem);
-    margin-left: 0;
-    border-top: none;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-  }
-}
-
-.ad-footer__connect-sub {
-  margin: 0 0 0.2rem;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.48);
-}
-
-.ad-footer__connect-sub--social {
-  margin-top: 1.1rem;
-  margin-bottom: 0.15rem;
-}
-
-.ad-footer__connect .ad-footer__work-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.2rem 0.35rem;
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.ad-footer__work-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.ad-footer__work-sep {
-  color: rgba(255, 255, 255, 0.35);
-  user-select: none;
-}
-
-.ad-footer__work-link {
-  color: rgba(255, 255, 255, 0.92);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
-  padding-bottom: 1px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.ad-footer__work-link:hover {
-  color: #fff;
-  border-bottom-color: var(--ad-red);
-}
-
-.ad-footer__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ad-red);
-  margin: 0 0 6px;
-}
-
-.ad-footer__title {
-  font-size: clamp(1.05rem, 2vw, 1.4rem);
-  font-weight: 800;
-  line-height: 1.25;
-  margin: 0 0 6px;
-}
-
-.ad-footer__rule {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.12);
-  margin-block: 20px 14px;
-}
-
-.ad-footer__meta {
-  text-align: center;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.45);
-  padding-bottom: 20px;
-}
-
-.ad-footer__text {
-  margin: 0 0 12px;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  color: rgba(244, 244, 244, 0.78);
-  max-width: 36rem;
-}
-
-.ad-footer__form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  max-width: 480px;
-}
-
-.ad-footer__input {
-  flex: 1;
-  min-width: 160px;
-  padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-}
-
-.ad-footer__input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.ad-footer__submit {
-  padding: 12px 20px;
-  background: var(--ad-red);
-  color: #fff;
-  border: none;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-family: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.ad-footer__submit:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.ad-footer__msg {
-  margin-top: 10px;
-  font-size: 13px;
-}
-
-.ad-footer__msg--ok {
-  color: #b8f0c4;
-}
-
-.ad-footer__msg--err {
-  color: var(--ad-red, #cd0b07);
-}
-
-.ad-footer__social {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px;
-}
-
-.ad-footer__social a {
-  color: #fff;
-  opacity: 0.85;
-}
+/* Site footer: `.ad-site-footer` in reference-home.css */
 
 /* —— Page header (inner pages) —— */
 .ad-page-head {
@@ -1364,10 +1164,6 @@ a.ad-blog-lede:focus-visible {
     --ad-section-y: clamp(2rem, 5vw, 3.25rem);
   }
 
-  .ad-page__main {
-    padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px));
-  }
-
   .ad-home-hero__copy {
     padding-block: clamp(1.5rem, 4vw, 2.5rem);
   }
@@ -1474,17 +1270,17 @@ a.ad-blog-lede:focus-visible {
     min-height: 48px;
   }
 
-  .ad-footer__form {
+  .ad-site-footer__form-row {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .ad-footer__input {
+  .ad-site-footer__input {
     min-width: 0;
     width: 100%;
   }
 
-  .ad-footer__submit {
+  .ad-site-footer__submit {
     width: 100%;
     min-height: 48px;
   }
@@ -1502,4 +1298,119 @@ a.ad-blog-lede:focus-visible {
     width: 100%;
     text-align: center;
   }
+}
+
+/* —— Work with me (standalone page) —— */
+.ad-work-with-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ad-work-with-block {
+  margin: 0;
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.1rem, 2.5vw, 1.5rem);
+  border: 1px solid var(--ad-line-strong);
+  background: var(--ad-card);
+  scroll-margin-top: calc(var(--ad-nav-h, 64px) + 12px);
+}
+
+.ad-work-with-block__title {
+  margin: 0 0 10px;
+  font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ad-ink);
+}
+
+.ad-work-with-block__body {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: var(--ad-ink-muted);
+}
+
+.ad-work-with-cta {
+  text-align: center;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.ad-work-with-cta__lead {
+  margin: 0 0 18px;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--ad-ink-muted);
+}
+
+/* —— About — “Let’s build better health together” cards —— */
+.ad-about-engage {
+  padding: clamp(2rem, 5vw, 3.25rem) 0 clamp(2.25rem, 5vw, 3.5rem);
+  background: #f4f4f4;
+  border-top: 1px solid var(--ad-line-strong);
+  border-bottom: 1px solid var(--ad-line);
+}
+
+.ad-about-engage__title {
+  margin: 0;
+  font-size: clamp(1.45rem, 3.2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ad-ink);
+}
+
+.ad-about-engage__grid {
+  display: grid;
+  gap: 14px;
+  margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+@media (min-width: 768px) {
+  .ad-about-engage__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+.ad-about-engage-card {
+  display: block;
+  height: 100%;
+  padding: 22px 20px 24px;
+  border: 1px solid var(--ad-line-strong);
+  background: var(--ad-card);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  box-sizing: border-box;
+}
+
+.ad-about-engage-card:hover {
+  border-color: var(--ad-ink);
+  background: var(--ad-paper);
+}
+
+.ad-about-engage-card__heading {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ad-ink);
+}
+
+.ad-about-engage-card__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ad-ink-muted);
+}
+
+.ad-about-engage-card__cta {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ad-red);
 }

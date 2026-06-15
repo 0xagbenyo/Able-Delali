@@ -45,7 +45,7 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 
 1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, **`ERPNEXT_API_SECRET`**, and **`VITE_ERPNEXT_PUBLIC_URL`** (same values as local `.env`) for **Production** and **Preview**. The serverless **`/api/*`** handlers need these at runtime; missing values cause empty blog lists or failed loads.
 2. **Routing order** — In **`vercel.json`**, **`/api/*`** is sent to **`api/index.ts`** **before** the static filesystem and **before** the SPA fallback to **`index.html`**. That way **`GET /api/blog`** returns JSON, not the React shell. If **`/api/blog`** in the browser shows HTML, the deployment root is probably wrong (Vercel **Root Directory** should be the folder that contains **`package.json`** and **`vercel.json`**, not a parent download folder).
-3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`**, **`/blog/:slug`**, **`/press-kit`**, **`/speaking-and-media`** (legacy **`/public-voice`** redirects in-app), etc. work on full refresh.
+3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`**, **`/blog/:slug`**, **`/about`**, **`/work-with-me`**, **`/press-kit`**, **`/speaking-and-media`** (legacy **`/public-voice`** redirects in-app), etc. work on full refresh.
 4. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.
 5. **API responses** — Some gateways return JSON with a minimal or missing **`Content-Type`** header. The site treats **HTML** responses as misconfiguration; it does **not** require an exact **`application/json`** header so normal JSON payloads still parse.
 6. **Browser caching (`304`)** — Some hosts cache **`GET /api/blog`** or **`GET /api/books/catalog`**. In the browser **`fetch` API**, **`response.ok` is `false` for HTTP 304**, so client code that only accepts “OK” responses would treat a valid cache hit as a failure. The app uses **`cache: "no-store"`** on those reads (including **`GET /api/blog/:slug`** on the article page) so production gets a normal **200** body. If you fork the client, keep that pattern for every JSON **`fetch`** you parse.
@@ -55,7 +55,7 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 
 The React app loads **text and images for homepage sections** from the **Web Page** whose **`route`** matches **`ERPNEXT_HOMEPAGE_ROUTE`** (default `homepage`). Content Type must be **Page Builder**; each row in **Page Building Blocks** becomes one section. **`web_template_values`** JSON is parsed into flat string fields.
 
-If your **Web Templates only expose one field**, name it **`description`** in Customize Form — the app tries **`description` first** for each block’s main text (marquee, about body, books intro, newsletter gift blurb, outreach intro, journal intro, hero bio). **Cover Image** is different: use the **`url`** field (first) to set the **Hero** portrait; `description` and `image` / `image_url` are fallbacks when the attach path is stored there.
+If your **Web Templates only expose one field**, name it **`description`** in Customize Form — the app tries **`description` first** for each block’s main text (marquee phrases, about body, books intro, newsletter gift blurb, outreach intro, journal intro, hero bio). **Cover Image** is different: use the **`url`** field (first) to set the **Hero** portrait; `description` and `image` / `image_url` are fallbacks when the attach path is stored there.
 
 - **API:** `GET /api/homepage/sections` → `{ ok, route, web_page, sections: [{ template, key, values }] }`  
 - **Books catalog, footer gift book, and blog lists** are **not** taken from this Web Page; they still use `GET /api/books/catalog`, `GET /api/books/footer/latest`, and `GET /api/blog`.
@@ -77,13 +77,13 @@ If you already ran **`provision:homepage`** before this behavior existed, run **
 | Web Template (your list) | `key` | Main CMS field |
 |--------------------------|--------|----------------|
 | Cover Image | `cover_image` | **`url`** (first) — public URL or `/files/…`; overrides the **Hero** portrait (first main photo in `#home`). Aliases: `cover_image`, `image_url`, … |
-| Marquee | `marquee` | `description` (phrases: commas, newlines, or JSON array) |
-| About teaser | `about_teaser` | `description` (body; blank lines = paragraphs). Headlines still use `headline_line_1` / `headline_line_2` if you add them. |
+| Marquee | `marquee` | `description` (phrases: commas, newlines, or JSON array). Red scrolling strip **between Hero and Journal** on the homepage. |
+| About teaser | `about_teaser` | On the **homepage**, only **`headline_line_1`** / **`headline_line_2`** are used — they feed the **Hero** voice block on separate lines (defaults: “Meet Able” / “the voice that shifts conversations”). The kicker, body (`description`), and CTA from this block are **not** rendered on the home page (use **`/about`** for long bio). |
 | Books | `books` | `description` (optional intro under the heading). Headings: `heading_line_1` / `heading_emphasis` if added. |
-| Newsletter | `newsletter` | `description` (gift copy; overrides ERP book blurb when set) |
+| Newsletter | `newsletter` | **`description`** still feeds the **reader gift** band (free book copy). On the homepage, **list signup** (email only → `POST /api/newsletter/subscribe`) appears **above** that band at **`#newsletter`**; the gift block anchor is **`#reader-gift`**. Optional **`eyebrow`**, title parts, **`email_*`**, **`submit_*`**, **`fine_print`** apply to the gift section only. |
 | Outreach | `outreach` | `description` (intro lede). **`documented_work_label`**, **`context_label`**. **Documented work:** numbered fields **`ext_1_title`** … **`ext_6_title`** with matching **`ext_N_url`**, **`ext_N_note`**, **`ext_N_source`** (outlet badge). **Context links:** **`ctx_1_label`** / **`ctx_1_url`** … up to **8**. **`linkedin_note`**, **`aside_json`** (sidebar). Optional legacy **`highlights_json`** / **`press_links_json`** (Text) apply only when every slot row is empty. Shown as an **embed** on the **homepage**; **`/speaking-and-media`** reads a **separate** Web Page (`ERPNEXT_PUBLIC_VOICE_ROUTE`, default **`public-voice-page`**) — see **Public voice** below. |
 | Latest Articles | `latest_articles` | `description` (intro). Optional: `panel_label` (heading above the **four most recent posts** list in the journal band), overlay lines `overlay_line_1` … `overlay_line_3`, **`journal_cta`** (button label; used on **`/speaking-and-media`** for the journal footer link). |
-| Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. Optional **`landing_tagline`** / **`tagline`** — serif line under the name on the **white landing strip** above the split hero; defaults to the bio if empty. |
+| Hero Section | `hero_section` | `description` (hero bio). Legacy key `hero` still merged. **`role_tags`** (comma list): first tag and any tag whose label is **Policy** use the red “active” pill style. **`button_primary_*`**, **`button_secondary_*`**, **`button_speaking_text`** / **`button_speaking_path`** (third CTA, default “Book Able to speak” → `/contact`). Optional **`landing_tagline`** / **`tagline`** — serif line under the name on the **white landing strip** above the split hero; defaults to the bio if empty. |
 
 Field names are matched **case-insensitively**; common aliases remain (see `pickCms` in each component).
 
@@ -108,6 +108,10 @@ npm run provision:about-page
 # Replace Page Building Blocks on an existing page:
 npm run provision:about-page -- --force
 ```
+
+### Work with me (`/work-with-me`)
+
+The **`/work-with-me`** route is a **static** React page (copy lives in **`src/pages/WorkWithMe.tsx`**). It is **not** loaded from ERPNext. Use **`/contact`** for enquiries; optional deep links use fragment IDs **`#speaking-engagements`**, **`#media-interviews`**, **`#advisory-policy`**, **`#writing-publications`**, and **`#partnerships-collaborations`**.
 
 ### Press kit (`/press-kit`) — ERPNext Web Page (Page Builder)
 

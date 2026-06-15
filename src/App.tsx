@@ -3,10 +3,9 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import HomeLandingStrip from "./components/HomeLandingStrip";
 import HomeMarquee from "./components/HomeMarquee";
 import HomeBooks from "./components/HomeBooks";
-import AboutTeaser from "./components/AboutTeaser";
+import HomeSubscribeBanner from "./components/HomeSubscribeBanner";
 import LatestArticles from "./components/LatestArticles";
 import Newsletter from "./components/Newsletter";
 import Footer from "./components/Footer";
@@ -21,6 +20,7 @@ import Books from "./pages/Books";
 import BookRead from "./pages/BookRead";
 import BooksPreorder from "./pages/BooksPreorder";
 import Contact from "./pages/Contact";
+import WorkWithMe from "./pages/WorkWithMe";
 import SpeakingAndMedia from "./pages/SpeakingAndMedia";
 import RotatingFavicon from "./components/RotatingFavicon";
 import { HomepageCMSProvider } from "./context/HomepageCMSProvider";
@@ -59,22 +59,21 @@ function Home() {
 
         <main className="ad-page__main">
           <div id="home">
-            <HomeLandingStrip />
             <Hero />
           </div>
 
           <HomeMarquee />
 
-          <AboutTeaser />
-
           <LatestArticles />
+
+          <HomeSubscribeBanner />
 
           <Newsletter />
 
           <HomeBooks />
-
-          <Footer />
         </main>
+
+        <Footer />
       </div>
     </HomepageCMSProvider>
   );
@@ -88,6 +87,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/work-with-me" element={<WorkWithMe />} />
         <Route path="/pastor" element={<Pastor />} />
         <Route path="/data" element={<Analyst />} />
         <Route path="/writing" element={<Writer />} />

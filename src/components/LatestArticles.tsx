@@ -148,15 +148,26 @@ export default function LatestArticles() {
             </h2>
             <p className="cb-ref-journal__intro">{intro}</p>
             <div className="cb-ref-journal__platforms" aria-label="Where to follow">
-              <Link to="/blog">Journal</Link>
-              {socialLinks.map((s) => (
-                <Fragment key={s.label}>
-                  <span className="cb-ref-journal__pipe" aria-hidden />
-                  <a href={s.link} target="_blank" rel="noopener noreferrer">
-                    {s.label}
-                  </a>
-                </Fragment>
-              ))}
+              <Link to="/blog" className="cb-ref-journal__platform cb-ref-journal__platform--text">
+                Journal
+              </Link>
+              {socialLinks.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <Fragment key={s.label}>
+                    <span className="cb-ref-journal__pipe" aria-hidden />
+                    <a
+                      className="cb-ref-journal__platform cb-ref-journal__platform--icon"
+                      href={s.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.label}
+                    >
+                      <Icon />
+                    </a>
+                  </Fragment>
+                );
+              })}
             </div>
             {loading ? (
               <p className="cb-ref-journal__status">Loading…</p>

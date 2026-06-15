@@ -1,7 +1,7 @@
 /**
  * Default homepage CMS seeds for `provision-homepage.ts`.
- * Keep aligned with `src/config/homeEditorial.ts`, `src/content/about.json`,
- * `src/components/Hero.tsx`, `src/content/facebookPublicThemes.ts`, etc.
+ * Keep aligned with `src/config/homeEditorial.ts`, `src/content/about.json`, `src/components/Hero.tsx`,
+ * `src/content/facebookPublicThemes.ts`, etc.
  */
 export const MARQUEE_CHUNKS = [
   "Pharmacist",
@@ -20,8 +20,8 @@ export const DEFAULT_ROLE_TAGS = [
   "Writer",
 ] as const;
 
-export const DEFAULT_HERO_BIO =
-  "Pharmacist and public health voice bridging practice and policy — strengthening health systems through evidence, advocacy, and menstrual health equity.";
+/** Intentionally empty: hero no longer shows a default bio paragraph (see `LEGACY_HERO_DEFAULT_BIO` in app). */
+export const DEFAULT_HERO_BIO = "";
 
 export const ABOUT_PARAGRAPHS = [
   "Able Delalie is a pharmacist and advocate whose work sits where clinical practice meets public conversation — especially on menstrual health equity and fairer health systems.",

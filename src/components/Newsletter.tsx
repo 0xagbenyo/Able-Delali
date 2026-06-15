@@ -166,7 +166,7 @@ export default function Newsletter() {
       : "gift-band__msg gift-band__msg--ok";
 
   return (
-    <section className="gift-band" id="newsletter" aria-labelledby="gift-band-heading">
+    <section className="gift-band" id="reader-gift" aria-labelledby="gift-band-heading">
       <div className="gift-band__inner">
         <div className="gift-band__layout">
           <div className="gift-band__visual">

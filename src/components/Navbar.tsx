@@ -24,6 +24,7 @@ type LeftNavItem = SimpleNav | DropdownNav;
 const navLeft: LeftNavItem[] = [
   { kind: "simple", label: "Home", id: "home" },
   { kind: "simple", label: "About", path: "/about" },
+  { kind: "simple", label: "Work with me", path: "/work-with-me" },
   { kind: "simple", label: "Speaking and media", path: "/speaking-and-media" },
   { kind: "simple", label: "Books", path: "/books" },
 ];
