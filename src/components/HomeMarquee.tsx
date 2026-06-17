@@ -11,7 +11,7 @@ export default function HomeMarquee() {
   const sequence = chunks.join("  ★  ") + "  ★  ";
 
   return (
-    <div className="ed-marquee cb-ref-marquee" aria-hidden>
+    <div className="ed-marquee cb-ref-marquee" aria-hidden data-aos="fade" data-aos-duration="2000">
       <div className="ed-marquee__inner">
         <span className="ed-marquee__text">{sequence}</span>
         <span className="ed-marquee__text">{sequence}</span>

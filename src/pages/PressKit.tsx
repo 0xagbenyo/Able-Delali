@@ -264,7 +264,7 @@ export default function PressKit() {
         <footer className="pk-footer">
           <p className="pk-footer__text">
             For media, speaking requests, and collaborations, use the{" "}
-            <Link to="/contact" className="pk-footer__link">
+            <Link to="/contact?topic=press-kit" className="pk-footer__link">
               contact page
             </Link>
             .

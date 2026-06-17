@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ablePortrait } from "../config/brand";
 import { LEGACY_HERO_DEFAULT_BIO } from "../content/legacyHeroBio";
 import { SITE_FOOTER_TAGLINE } from "../content/siteTagline";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
@@ -31,9 +30,10 @@ export default function Hero() {
     [vPrimary, vFallback],
   );
 
-  /** Shown in the hero (same copy as former About teaser headline; still edited under **About teaser** in ERPNext). */
-  const voiceLine1 =
-    pickCms(vAboutTeaser, "headline_line_1", "headline", "title_line_1", "heading") || "Meet Able";
+  /** Hero voice: “Meet,” + name (grey / red) + muted tagline from About teaser CMS. */
+  const meetRaw =
+    pickCms(vAboutTeaser, "headline_line_1", "headline", "title_line_1", "heading") || "Meet";
+  const meetLabel = meetRaw.replace(/\s+Able\s*$/i, "").replace(/,+\s*$/, "").trim() || "Meet";
   const voiceLine2 =
     pickCms(vAboutTeaser, "headline_line_2", "headline_muted", "subtitle", "title_line_2") ||
     "the voice that shifts conversations";
@@ -63,12 +63,12 @@ export default function Hero() {
     pickCms(v, "button_secondary_text", "secondary_button_text", "secondary_cta") || "Get in touch";
   const secondaryPath =
     pickCms(v, "button_secondary_path", "secondary_button_path", "secondary_path", "secondary_url") ||
-    "/contact";
+    "/contact?topic=general";
 
   const speakingLabel =
     pickCms(v, "button_speaking_text", "button_book_speaking_text", "speaking_cta") || "Book Able to speak";
   const speakingPath =
-    pickCms(v, "button_speaking_path", "button_book_speaking_path", "speaking_path") || "/contact";
+    pickCms(v, "button_speaking_path", "button_book_speaking_path", "speaking_path") || "/contact?topic=speaking";
 
   /** Red pill like the first tag (“Pharmacist”) — also used for “Policy” when it appears in the tag list. */
   const tagIsAccent = (tag: string, index: number) =>
@@ -80,12 +80,12 @@ export default function Hero() {
   const portraitFromHero =
     pickCms(v, "portrait", "portrait_url", "image", "photo", "headshot") || "";
   const portraitRaw = portraitFromCover || portraitFromHero;
-  const portraitSrc = portraitRaw ? resolveErpPublicUrl(portraitRaw) : ablePortrait;
+  const portraitSrc = portraitRaw ? resolveErpPublicUrl(portraitRaw) : "";
 
   return (
     <section
       id="ad-home-main-hero"
-      className="cb-ref-hero"
+      className={`cb-ref-hero${portraitSrc ? "" : " cb-ref-hero--no-portrait"}`}
       aria-labelledby="cb-ref-hero-voice cb-ref-hero-title"
     >
       <div className="cb-ref-hero__grid">
@@ -103,16 +103,19 @@ export default function Hero() {
           </div>
 
           <p id="cb-ref-hero-voice" className="cb-ref-hero__voice">
-            <span className="cb-ref-hero__voice-line">{voiceLine1}</span>
+            <span className="cb-ref-hero__voice-line">{meetLabel},</span>
+          </p>
+
+          <h2 id="cb-ref-hero-title" className="cb-ref-hero__title">
+            <span className="cb-ref-hero__name">{nameFirst}</span>{" "}
+            <span className="cb-ref-hero__name cb-ref-hero__name--accent">{nameSecond}</span>
+          </h2>
+
+          <p className="cb-ref-hero__voice cb-ref-hero__voice--tagline">
             <span className="cb-ref-hero__voice-line cb-ref-hero__voice-line--muted">
               <em>{voiceLine2}</em>
             </span>
           </p>
-
-          <h2 id="cb-ref-hero-title" className="cb-ref-hero__title">
-            <span className="cb-ref-hero__name">{nameFirst}</span>
-            <span className="cb-ref-hero__name cb-ref-hero__name--accent">{nameSecond}</span>
-          </h2>
 
           {bio ? <p className="cb-ref-hero__bio">{bio}</p> : null}
 
@@ -141,9 +144,11 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="cb-ref-hero__visual">
-          <img src={portraitSrc} alt={`${nameFirst} ${nameSecond}`} className="cb-ref-hero__portrait" />
-        </div>
+        {portraitSrc ? (
+          <div className="cb-ref-hero__visual">
+            <img src={portraitSrc} alt={`${nameFirst} ${nameSecond}`} className="cb-ref-hero__portrait" />
+          </div>
+        ) : null}
       </div>
     </section>
   );

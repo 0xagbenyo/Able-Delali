@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { bookPlaceholder } from "../config/brand";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import useResponsive from "../hooks/useResponsive";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
 import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
+import { refreshAos } from "../hooks/useAos";
 
 /** Homepage preview: four most recent catalog rows (API is `modified desc`). */
 const HOME_BOOKS_COUNT = 4;
@@ -74,8 +74,18 @@ export default function HomeBooks() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!loading) refreshAos();
+  }, [loading, books.length]);
+
   return (
-    <section className="cb-ref-books" id="home-books">
+    <section
+      className="cb-ref-books"
+      id="home-books"
+      data-aos="fade"
+      data-aos-duration="2000"
+      data-aos-delay="500"
+    >
       <div className="cb-ref-books__inner">
         <p className="cb-ref-books__kicker">{kicker}</p>
         <h2 className="cb-ref-books__h2">
@@ -117,15 +127,15 @@ export default function HomeBooks() {
                 else if (book.bookUrl?.trim() && /^https?:\/\//i.test(book.bookUrl.trim()))
                   cta = { href: book.bookUrl.trim(), label: "Read more →", external: true };
 
-                const coverSrc = book.imageUrl?.trim()
-                  ? resolveErpPublicUrl(book.imageUrl)
-                  : bookPlaceholder;
+                const coverSrc = book.imageUrl?.trim() ? resolveErpPublicUrl(book.imageUrl) : "";
 
                 return (
                   <article key={book.id} className="cb-ref-books__col">
-                    <figure className="cb-ref-books__thumb">
-                      <img src={coverSrc} alt={book.bookName} loading="lazy" decoding="async" />
-                    </figure>
+                    {coverSrc ? (
+                      <figure className="cb-ref-books__thumb">
+                        <img src={coverSrc} alt={book.bookName} loading="lazy" decoding="async" />
+                      </figure>
+                    ) : null}
                     <p className="cb-ref-books__badge">{badgeLine(book)}</p>
                     <h3 className="cb-ref-books__title">{book.bookName}</h3>
                     {blurb ? <p className="cb-ref-books__excerpt">{blurb}</p> : null}

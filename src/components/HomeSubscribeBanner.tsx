@@ -41,7 +41,14 @@ export default function HomeSubscribeBanner() {
       : "cb-ref-subscribe-banner__msg cb-ref-subscribe-banner__msg--ok";
 
   return (
-    <section className="cb-ref-subscribe-banner" id="newsletter" aria-labelledby="cb-ref-subscribe-banner-heading">
+    <section
+      className="cb-ref-subscribe-banner"
+      id="newsletter"
+      aria-labelledby="cb-ref-subscribe-banner-heading"
+      data-aos="fade"
+      data-aos-duration="2000"
+      data-aos-delay="250"
+    >
       <div className="cb-ref-subscribe-banner__inner">
         <div className="cb-ref-subscribe-banner__copy">
           <h2 id="cb-ref-subscribe-banner-heading" className="cb-ref-subscribe-banner__title">

@@ -63,7 +63,7 @@ export default function FocusStoryPage({
             <button
               type="button"
               className="ad-btn ad-btn--navy"
-              onClick={() => navigate("/contact", { state: { enquiryTopic } })}
+              onClick={() => navigate(`/contact?topic=${encodeURIComponent(enquiryTopic)}`)}
             >
               {content.cta}
             </button>

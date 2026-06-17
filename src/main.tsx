@@ -6,6 +6,7 @@ import './ui/layout.css'
 import './ui/editorial-home.css'
 import './ui/candice-clone.css'
 import './ui/reference-home.css'
+import './ui/home-transitions.css'
 import App from './App.tsx'
 
 const routerBasename = (() => {

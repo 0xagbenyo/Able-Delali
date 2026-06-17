@@ -24,6 +24,7 @@ import WorkWithMe from "./pages/WorkWithMe";
 import SpeakingAndMedia from "./pages/SpeakingAndMedia";
 import RotatingFavicon from "./components/RotatingFavicon";
 import { HomepageCMSProvider } from "./context/HomepageCMSProvider";
+import { useAos } from "./hooks/useAos";
 
 function ScrollToTop() {
   const { pathname, search } = useLocation();
@@ -37,6 +38,8 @@ function ScrollToTop() {
 
 function Home() {
   const location = useLocation();
+
+  useAos();
 
   useEffect(() => {
     const id = location.hash.replace(/^#/, "").trim();
@@ -57,7 +60,7 @@ function Home() {
         </a>
         <Navbar />
 
-        <main className="ad-page__main">
+        <main className="ad-page__main ad-page__main--home">
           <div id="home">
             <Hero />
           </div>

@@ -158,6 +158,12 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Full-width rule under navbar on blog routes */
 .blog-below-nav-divider {
   margin: 0;

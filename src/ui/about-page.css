@@ -1,0 +1,1440 @@
+/**
+ * About page — Able Delalie brand (Deep Navy + Life Red + paper surfaces).
+ * Images from ERPNext About Intro; see About.tsx.
+ */
+
+.ad-about-page {
+  --about-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --about-sans: "Exo 2", system-ui, sans-serif;
+  width: 100%;
+  overflow-x: clip;
+  background: var(--ad-paper, #fafafa);
+}
+
+/* —— Hero: one viewport below fixed nav — image never sits under the bar —— */
+.ad-about-page__hero {
+  position: relative;
+  box-sizing: border-box;
+  margin-top: 0;
+  padding-top: clamp(1.25rem, 4vw, 2rem);
+  min-height: calc(100svh - var(--fixed-nav-offset, 56px) + clamp(2.75rem, 11vh, 6.5rem));
+  min-height: calc(100dvh - var(--fixed-nav-offset, 56px) + clamp(2.75rem, 11vh, 6.5rem));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  color: #fff;
+  overflow: hidden;
+}
+
+.ad-about-page__hero--no-image {
+  background: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__hero--no-image .ad-about-page__hero-scrim {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+@media (min-width: 640px) {
+  .ad-about-page__hero {
+    padding-top: clamp(1.5rem, 4vw, 2.5rem);
+  }
+}
+
+.ad-about-page__hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.ad-about-page__hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.62) 100%);
+  pointer-events: none;
+}
+
+.ad-about-page__hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 920px;
+  width: 100%;
+  padding-left: max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--ad-gutter, 20px), env(safe-area-inset-right, 0px));
+  padding-bottom: clamp(2.75rem, 10vw, 5.25rem);
+  box-sizing: border-box;
+}
+
+.ad-about-page__hero-eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--about-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (min-width: 640px) {
+  .ad-about-page__hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+  }
+}
+
+.ad-about-page__hero-title {
+  margin: 0 0 16px;
+  font-family: var(--about-serif);
+  font-size: clamp(1.65rem, 6.5vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+
+@media (min-width: 640px) {
+  .ad-about-page__hero-title {
+    margin-bottom: 18px;
+    max-width: none;
+  }
+}
+
+.ad-about-page__hero-title em {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.ad-about-page__hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 22px;
+  font-family: var(--about-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  background: var(--ad-red, #cd0b07);
+  border: 1px solid var(--ad-red, #cd0b07);
+  transition: opacity 0.2s ease;
+}
+
+.ad-about-page__hero-cta:hover {
+  opacity: 0.94;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ad-about-page__hero-inner {
+    animation: ad-about-hero-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+  }
+}
+
+@keyframes ad-about-hero-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* —— Split “About me” —— */
+.ad-about-page__split {
+  background: var(--ad-paper, #fafafa);
+  padding: clamp(1.75rem, 5vw, 3.5rem) 0 clamp(2.25rem, 6vw, 4rem);
+  scroll-margin-top: calc(var(--fixed-nav-offset, 64px) + 12px);
+}
+
+.ad-about-page__split-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  align-items: stretch;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px)) 0
+    max(var(--ad-gutter, 20px), env(safe-area-inset-right, 0px));
+}
+
+@media (min-width: 880px) {
+  .ad-about-page__split-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 0.55fr) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+}
+
+/* Mobile: story first, portrait below (readable flow) */
+.ad-about-page__story-card {
+  order: 1;
+  margin: 0;
+  padding: clamp(1.15rem, 3.5vw, 1.75rem);
+  background: var(--ad-card, #fff);
+  border: 1px solid var(--ad-line, rgba(22, 25, 45, 0.12));
+  border-radius: 2px;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.ad-about-page__portrait-shell {
+  order: 2;
+  justify-self: center;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  padding: clamp(12px, 3vw, 20px);
+  background: var(--ad-card, #fff);
+  border: 1px solid var(--ad-line, rgba(22, 25, 45, 0.12));
+  border-radius: 2px;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+@media (min-width: 880px) {
+  .ad-about-page__story-card {
+    order: 0;
+  }
+
+  .ad-about-page__portrait-shell {
+    order: 0;
+    width: auto;
+    max-width: 520px;
+    margin-inline: 0;
+    justify-self: stretch;
+  }
+}
+
+.ad-about-page__arch-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+@media (min-width: 880px) {
+  .ad-about-page__arch-wrap {
+    margin-inline: 0;
+    max-width: none;
+  }
+}
+
+.ad-about-page__arch {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--ad-line-strong, rgba(22, 25, 45, 0.16));
+  box-shadow: none;
+}
+
+@media (min-width: 480px) {
+  .ad-about-page__arch {
+    aspect-ratio: 3 / 3.95;
+  }
+}
+
+.ad-about-page__arch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.ad-about-page__story-card h2 {
+  margin: 0 0 12px;
+  font-family: var(--about-serif);
+  font-size: clamp(1.65rem, 5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__story-card .ad-about-page__prose {
+  font-family: var(--about-sans);
+  font-size: clamp(0.94rem, 3.5vw, 1.05rem);
+  line-height: 1.75;
+  color: var(--ad-ink-muted, rgba(22, 25, 45, 0.62));
+}
+
+.ad-about-page__story-card .ad-about-page__prose p {
+  margin: 0 0 1rem;
+}
+
+.ad-about-page__story-card .ad-about-page__prose p:last-child {
+  margin-bottom: 0;
+}
+
+.ad-about-page__split-cta {
+  margin-top: 1.25rem;
+  align-self: flex-start;
+}
+
+.ad-about-page__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 639px) {
+  .ad-about-page__chips {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ad-about-page__chips .ad-chip {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* —— Services —— */
+.ad-about-page__services {
+  background: var(--ad-ink, #16192d);
+  padding: clamp(1.75rem, 4vw, 2.5rem) 0 clamp(2.5rem, 6vw, 4rem);
+}
+
+.ad-about-page__services-head {
+  text-align: center;
+  padding: 0 max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px)) 1rem
+    max(var(--ad-gutter, 20px), env(safe-area-inset-right, 0px));
+}
+
+.ad-about-page__services-head h2 {
+  margin: 0;
+  font-family: var(--about-serif);
+  font-size: clamp(1.45rem, 4.5vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+.ad-about-page__services-grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px)) 0
+    max(var(--ad-gutter, 20px), env(safe-area-inset-right, 0px));
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .ad-about-page__services-grid {
+    gap: 1.15rem;
+  }
+}
+
+@media (min-width: 820px) {
+  .ad-about-page__services-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.ad-about-page__service-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--ad-card, #fff);
+  border: 1px solid var(--ad-line, rgba(22, 25, 45, 0.1));
+  border-top: 3px solid var(--ad-red, #cd0b07);
+  box-shadow: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ad-about-page__service-card:hover {
+  border-color: rgba(22, 25, 45, 0.22);
+  background: #f8f8f8;
+}
+
+.ad-about-page__service-arch {
+  position: relative;
+  /* Taller band keeps portrait-style photos from losing heads under `cover`. */
+  aspect-ratio: 3 / 4;
+  min-height: 200px;
+  background: var(--ad-paper, #fafafa);
+}
+
+@media (min-width: 520px) {
+  .ad-about-page__service-arch {
+    aspect-ratio: 4 / 5;
+    min-height: 220px;
+  }
+}
+
+@media (min-width: 820px) {
+  .ad-about-page__service-arch {
+    aspect-ratio: 3 / 4;
+    min-height: 240px;
+  }
+}
+
+.ad-about-page__service-arch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.ad-about-page__service-arch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Keep tint off the upper third so faces stay clear. */
+  background: linear-gradient(180deg, transparent 0%, transparent 42%, rgba(22, 25, 45, 0.05) 100%);
+}
+
+.ad-about-page__service-body {
+  padding: clamp(1rem, 3vw, 1.35rem) clamp(1rem, 3vw, 1.25rem) clamp(1.25rem, 3vw, 1.5rem);
+  flex: 1 1 auto;
+}
+
+.ad-about-page__service-body h3 {
+  margin: 0 0 8px;
+  font-family: var(--about-serif);
+  font-size: clamp(1.08rem, 3.8vw, 1.35rem);
+  font-weight: 600;
+  font-style: italic;
+  color: var(--ad-red, #cd0b07);
+}
+
+.ad-about-page__service-body p {
+  margin: 0;
+  font-family: var(--about-sans);
+  font-size: clamp(0.86rem, 2.8vw, 0.92rem);
+  line-height: 1.62;
+  color: var(--ad-ink-muted, rgba(22, 25, 45, 0.62));
+}
+
+.ad-about-page__services-foot {
+  text-align: center;
+  margin-top: clamp(1.5rem, 4vw, 2.25rem);
+  padding: 0 max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px));
+}
+
+.ad-about-page__services-foot a {
+  display: inline-flex;
+  padding: 12px 24px;
+  font-family: var(--about-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.ad-about-page__services-foot a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #fff;
+}
+
+/* —— Mission & focus —— */
+.ad-about-page__mission {
+  position: relative;
+  background: #f0f0f0;
+  border-top: 1px solid var(--ad-line, rgba(22, 25, 45, 0.1));
+  padding: clamp(2rem, 5vw, 3.25rem) 0 clamp(2.5rem, 5.5vw, 3.5rem);
+  overflow-x: visible;
+}
+
+.ad-about-page__mission-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--ad-gutter, 20px), env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.ad-about-page__mission-title {
+  margin: 0 auto clamp(1.5rem, 4vw, 2.25rem);
+  max-width: 28ch;
+  text-align: center;
+  font-family: var(--about-serif);
+  font-size: clamp(1.5rem, 4.8vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__mission-title::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 3px;
+  margin: 1rem auto 0;
+  background: var(--ad-red, #cd0b07);
+  border-radius: 2px;
+}
+
+.ad-about-page__mission-groups {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.ad-about-page__mission-group {
+  margin: 0;
+}
+
+.ad-about-page__mission-group-heading {
+  margin: 0 0 clamp(1rem, 2.5vw, 1.35rem);
+  font-family: var(--about-serif);
+  font-size: clamp(1.28rem, 3.8vw, 1.65rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ad-ink, #16192d);
+  text-align: center;
+}
+
+.ad-about-page__mission-grid {
+  display: grid;
+  gap: clamp(16px, 3vw, 22px);
+}
+
+.ad-about-page__mission-grid--intro {
+  grid-template-columns: 1fr;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.ad-about-page__mission-group--intro .ad-about-page__mission-grid--intro {
+  max-width: min(52rem, 100%);
+}
+
+/* Narrative mission: stacked “binder” decks — image left, note right */
+.ad-about-page__mission-binder {
+  position: relative;
+  padding: 0 2px clamp(0.75rem, 2vw, 1.25rem);
+  margin-top: 0.25rem;
+  overflow: visible;
+}
+
+.ad-about-page__mission-grid--intro.ad-about-page__mission-grid--binder {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vw, 2.35rem);
+  max-width: min(56rem, 100%);
+  margin: 0 auto;
+  padding: 0 4px 12px;
+}
+
+.ad-about-page__mission-group--intro .ad-about-page__mission-grid--binder {
+  max-width: min(58rem, 100%);
+}
+
+.ad-about-page__mission-narrative-frame {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(0.35rem, 1.5vw, 1rem);
+  max-width: min(1040px, 100%);
+  margin: 0 auto;
+}
+
+.ad-about-page__mission-narrative-arrow {
+  flex: 0 0 auto;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(22, 25, 45, 0.14);
+  border-radius: 2px;
+  background: #fff;
+  color: var(--ad-ink, #16192d);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.ad-about-page__mission-narrative-arrow:hover:not(:disabled) {
+  background: rgba(205, 11, 7, 0.08);
+  border-color: var(--ad-red, #cd0b07);
+  color: var(--ad-red, #cd0b07);
+}
+
+.ad-about-page__mission-narrative-arrow:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+@media (max-width: 639px) {
+  .ad-about-page__mission-narrative-arrow {
+    display: none;
+  }
+}
+
+.ad-about-page__mission-narrative-track {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.ad-about-page__mission-narrative-track .ad-about-page__mission-grid--binder {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  gap: 0;
+}
+
+.ad-about-page__mission-narrative-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.35rem;
+}
+
+.ad-about-page__mission-narrative-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(22, 25, 45, 0.22);
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ad-about-page__mission-narrative-dot--active {
+  background: var(--ad-red, #cd0b07);
+  border-color: var(--ad-red, #cd0b07);
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ad-about-page__mission-narrative-track {
+    animation: ad-about-mission-narrative-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes ad-about-mission-narrative-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.ad-about-page__mission-deck {
+  position: relative;
+  padding: clamp(18px, 3vw, 26px) clamp(14px, 2.5vw, 22px) 0 0;
+  margin-bottom: 0;
+}
+
+.ad-about-page__mission-deck-layer {
+  position: absolute;
+  left: 0;
+  top: clamp(14px, 2.5vw, 22px);
+  right: clamp(10px, 2vw, 18px);
+  bottom: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(22, 25, 45, 0.08);
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.ad-about-page__mission-deck-layer:nth-child(1) {
+  z-index: 0;
+  transform: translate(clamp(16px, 2.8vw, 22px), clamp(-16px, -2.2vw, -12px));
+  background: #e0e2e8;
+}
+
+.ad-about-page__mission-deck-layer:nth-child(2) {
+  z-index: 1;
+  transform: translate(clamp(11px, 2vw, 16px), clamp(-11px, -1.6vw, -8px));
+  background: #e8eaef;
+}
+
+.ad-about-page__mission-deck-layer:nth-child(3) {
+  z-index: 2;
+  transform: translate(clamp(6px, 1.1vw, 10px), clamp(-6px, -1vw, -4px));
+  background: #eeeff4;
+}
+
+.ad-about-page__mission-deck-layer:nth-child(4) {
+  z-index: 3;
+  transform: translate(clamp(3px, 0.6vw, 5px), clamp(-3px, -0.5vw, -2px));
+  background: #f4f5f8;
+}
+
+.ad-about-page__mission-deck .ad-about-page__mission-card--binder {
+  position: relative;
+  z-index: 4;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ad-about-page__mission-card--binder {
+  border: 1px solid rgba(22, 25, 45, 0.12);
+  box-shadow: none;
+}
+
+.ad-about-page__mission-grid--binder .ad-about-page__mission-card--lead {
+  border-top: none;
+  border-left: none;
+}
+
+.ad-about-page__mission-grid--binder .ad-about-page__mission-card--lead .ad-about-page__mission-card-main {
+  border-left: 3px solid var(--ad-red, #cd0b07);
+}
+
+@media (min-width: 720px) {
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--has-media {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--has-media .ad-about-page__mission-card-media {
+    flex: 0 0 min(42%, 320px);
+    width: min(42%, 320px);
+    max-width: 360px;
+    min-width: min(240px, 38vw);
+    aspect-ratio: auto;
+    min-height: min(100%, 280px);
+    max-height: none;
+    background: var(--ad-ink, #16192d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.65rem, 1.8vw, 1rem);
+    box-sizing: border-box;
+  }
+
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--has-media .ad-about-page__mission-card-media img {
+    width: 100%;
+    height: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 2px;
+    box-shadow: none;
+  }
+
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--has-media .ad-about-page__mission-card-main {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: clamp(1.25rem, 3vw, 2rem) clamp(1.35rem, 3.2vw, 2.25rem);
+    background: #fff;
+    border-left: 1px solid rgba(22, 25, 45, 0.08);
+  }
+
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--lead .ad-about-page__mission-card-main {
+    border-left: 3px solid var(--ad-red, #cd0b07);
+  }
+}
+
+/* —— Mission cards (narrative / closing blocks only) —— */
+.ad-about-page__mission-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: clamp(1.2rem, 3vw, 1.5rem);
+  background: var(--ad-card, #fff);
+  border: 1px solid rgba(22, 25, 45, 0.1);
+  border-radius: 4px;
+  box-shadow: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.ad-about-page__mission-card--has-media {
+  padding: 0;
+}
+
+.ad-about-page__mission-card-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ad-about-page__mission-card--has-media .ad-about-page__mission-card-main {
+  padding: clamp(1.15rem, 3vw, 1.5rem);
+}
+
+.ad-about-page__mission-card-media {
+  position: relative;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 10;
+  background: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__mission-card--has-media:not(.ad-about-page__mission-card--lead) .ad-about-page__mission-card-media {
+  box-shadow: none;
+}
+
+.ad-about-page__mission-card-media::after {
+  display: none;
+}
+
+.ad-about-page__mission-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.ad-about-page__mission-card:hover,
+.ad-about-page__mission-deck .ad-about-page__mission-card--binder:hover {
+  border-color: rgba(22, 25, 45, 0.2);
+}
+
+/* Lead card: accent + optional split with image */
+.ad-about-page__mission-card--lead {
+  border-top: 3px solid var(--ad-red, #cd0b07);
+}
+
+.ad-about-page__mission-card--lead:not(.ad-about-page__mission-card--has-media) {
+  border-left: 4px solid var(--ad-red, #cd0b07);
+  border-top: 1px solid rgba(22, 25, 45, 0.08);
+}
+
+@media (min-width: 720px) {
+  .ad-about-page__mission-card--lead.ad-about-page__mission-card--has-media {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .ad-about-page__mission-card--lead.ad-about-page__mission-card--has-media .ad-about-page__mission-card-media {
+    width: min(42%, 280px);
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+
+  .ad-about-page__mission-card--lead.ad-about-page__mission-card--has-media .ad-about-page__mission-card-main {
+    flex: 1;
+    justify-content: center;
+    padding: clamp(1.35rem, 3vw, 1.85rem);
+  }
+}
+
+.ad-about-page__mission-card-title {
+  margin: 0 0 0.65rem;
+  font-family: var(--about-serif);
+  font-size: clamp(1.08rem, 2.6vw, 1.28rem);
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__mission-body {
+  margin: 0;
+  font-family: var(--about-sans);
+  font-size: clamp(0.94rem, 2.4vw, 1.02rem);
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  color: var(--ad-ink-muted, rgba(22, 25, 45, 0.72));
+}
+
+.ad-about-page__mission-card--lead .ad-about-page__mission-body {
+  font-size: clamp(1.02rem, 2.6vw, 1.12rem);
+  line-height: 1.68;
+  color: var(--ad-ink, #16192d);
+}
+
+/* Binder decks: note typography + no red strip on navy image rail */
+.ad-about-page__mission-grid--binder .ad-about-page__mission-body,
+.ad-about-page__mission-grid--binder .ad-about-page__mission-card--lead .ad-about-page__mission-body {
+  font-size: clamp(0.92rem, 2.2vw, 1.03rem);
+  line-height: 1.68;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__mission-grid--binder .ad-about-page__mission-card:not(.ad-about-page__mission-card--has-media) {
+  padding: clamp(1rem, 2.5vw, 1.25rem) clamp(1.1rem, 2.8vw, 1.45rem);
+}
+
+.ad-about-page__mission-grid--binder .ad-about-page__mission-card--has-media:not(.ad-about-page__mission-card--lead) .ad-about-page__mission-card-media {
+  box-shadow: none;
+}
+
+@media (min-width: 720px) {
+  /* Wins over generic lead split so first narrative card keeps wide image + note rail */
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--lead.ad-about-page__mission-card--has-media .ad-about-page__mission-card-media {
+    flex: 0 0 min(42%, 320px);
+    width: min(42%, 320px);
+    max-width: 360px;
+    min-width: min(240px, 38vw);
+    min-height: min(100%, 280px);
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
+  .ad-about-page__mission-grid--binder .ad-about-page__mission-card--lead.ad-about-page__mission-card--has-media .ad-about-page__mission-card-main {
+    padding: clamp(1.25rem, 3vw, 2rem) clamp(1.35rem, 3.2vw, 2.25rem);
+    background: #fafbfc;
+    justify-content: center;
+  }
+}
+
+.ad-about-page__mission-link {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 1rem;
+  padding: 8px 0 2px;
+  font-family: var(--about-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ad-red, #cd0b07);
+  border-bottom: 2px solid transparent;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.ad-about-page__mission-link:hover {
+  border-bottom-color: var(--ad-red, #cd0b07);
+}
+
+/* —— Mission showcase: luxury testimonial row (navy + white cards + carousel) —— */
+.ad-about-page__mission-showcase {
+  position: relative;
+  margin: clamp(2rem, 5vw, 3rem) 0;
+  padding: clamp(2.75rem, 6vw, 4rem) 0 clamp(2.5rem, 5vw, 3.35rem);
+  background: #0d0d12;
+  border-block: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.ad-about-page__mission-showcase-inner {
+  position: relative;
+  z-index: 1;
+  padding-left: max(var(--ad-gutter, 20px), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--ad-gutter, 20px), env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+
+.ad-about-page__mission-showcase-letter {
+  position: absolute;
+  right: min(5%, 2.5rem);
+  top: clamp(0.25rem, 2vw, 2rem);
+  font-family: var(--about-serif);
+  font-size: clamp(5rem, 20vw, 12rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.82;
+  color: rgba(255, 252, 248, 0.07);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ad-about-page__mission-showcase-title {
+  margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);
+  text-align: center;
+  font-family: var(--about-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.ad-about-page__mission-showcase-frame {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(0.35rem, 1.5vw, 1rem);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.ad-about-page__mission-showcase-arrow {
+  flex: 0 0 auto;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  margin-top: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.ad-about-page__mission-showcase-arrow:hover:not(:disabled) {
+  background: rgba(205, 11, 7, 0.22);
+  border-color: var(--ad-red, #cd0b07);
+  color: #fff;
+}
+
+.ad-about-page__mission-showcase-arrow:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+@media (max-width: 639px) {
+  .ad-about-page__mission-showcase-arrow {
+    display: none;
+  }
+}
+
+.ad-about-page__mission-carousel-track {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: clamp(1rem, 3vw, 1.75rem);
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ad-about-page__mission-carousel-track {
+    animation: ad-about-mission-carousel-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes ad-about-mission-carousel-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ad-about-page__mission-tile {
+  position: relative;
+  flex: 1 1 220px;
+  max-width: 300px;
+  margin: 0;
+  /* Space for half the avatar ring above the white card */
+  padding: clamp(2.35rem, 5vw, 2.85rem) 0 0;
+}
+
+@media (min-width: 640px) {
+  .ad-about-page__mission-tile {
+    max-width: 280px;
+  }
+}
+
+.ad-about-page__mission-tile-avatar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  width: clamp(76px, 17vw, 92px);
+  height: clamp(76px, 17vw, 92px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #fff;
+  box-shadow: none;
+}
+
+.ad-about-page__mission-tile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.ad-about-page__mission-tile-card {
+  margin: 0;
+  height: 100%;
+  padding: clamp(2.85rem, 5.5vw, 3.35rem) clamp(1rem, 3vw, 1.35rem) clamp(1.35rem, 3vw, 1.65rem);
+  background: var(--ad-card, #fff);
+  border-radius: 2px;
+  border: 1px solid rgba(22, 25, 45, 0.08);
+  box-shadow: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.ad-about-page__mission-tile-quote {
+  margin: 0 0 1rem;
+  font-family: var(--about-serif);
+  font-size: clamp(0.9rem, 2.35vw, 1.02rem);
+  line-height: 1.66;
+  font-style: italic;
+  color: var(--ad-ink, #16192d);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  overflow: hidden;
+}
+
+.ad-about-page__mission-tile-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.35rem 0 0;
+  width: 100%;
+  max-width: 300px;
+  padding: 0 clamp(1rem, 3vw, 1.35rem) 0.25rem;
+  box-sizing: border-box;
+}
+
+.ad-about-page__mission-tile-role {
+  font-family: var(--about-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page__mission-tile-link {
+  font-family: var(--about-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ad-red, #cd0b07);
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.ad-about-page__mission-tile-link:hover {
+  border-bottom-color: var(--ad-red, #cd0b07);
+  opacity: 0.92;
+}
+
+.ad-about-page__mission-showcase-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.85rem;
+}
+
+.ad-about-page__mission-showcase-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ad-about-page__mission-showcase-dot--active {
+  background: var(--ad-red, #cd0b07);
+  border-color: var(--ad-red, #cd0b07);
+  transform: scale(1.18);
+}
+
+/* Stagger mission narrative groups after AOS adds .aos-animate to the inner block */
+@media (prefers-reduced-motion: no-preference) {
+  .ad-about-page__mission-inner.aos-animate .ad-about-page__mission-groups > .ad-about-page__mission-group {
+    opacity: 0;
+    animation: ad-about-mission-group-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .ad-about-page__mission-inner.aos-animate .ad-about-page__mission-groups > .ad-about-page__mission-group:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .ad-about-page__mission-inner.aos-animate .ad-about-page__mission-groups > .ad-about-page__mission-group:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+
+  .ad-about-page__mission-inner.aos-animate .ad-about-page__mission-groups > .ad-about-page__mission-group:nth-child(3) {
+    animation-delay: 0.19s;
+  }
+
+  .ad-about-page__mission-inner.aos-animate .ad-about-page__mission-groups > .ad-about-page__mission-group:nth-child(4) {
+    animation-delay: 0.26s;
+  }
+}
+
+@keyframes ad-about-mission-group-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-about-page__hero-inner {
+    animation: none;
+  }
+
+  .ad-about-page__service-card:hover {
+    transform: none;
+  }
+
+  .ad-about-page__mission-groups > .ad-about-page__mission-group {
+    opacity: 1;
+    animation: none;
+  }
+
+  .ad-about-page__mission-card,
+  .ad-about-page__mission-card-media img,
+  .ad-about-page__mission-link {
+    transition: none;
+  }
+
+  .ad-about-page__mission-carousel-track {
+    animation: none;
+  }
+
+  .ad-about-page__mission-narrative-track {
+    animation: none;
+  }
+
+  .ad-about-page__mission-showcase-dot,
+  .ad-about-page__mission-showcase-arrow,
+  .ad-about-page__mission-narrative-dot,
+  .ad-about-page__mission-narrative-arrow {
+    transition: none;
+  }
+
+  .ad-about-page [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .ad-about-engage-card:hover {
+    transform: none;
+  }
+
+  .ad-about-engage-card__cta::after {
+    transform: none !important;
+  }
+}
+
+/* —— Engage: “Let’s build better health together” —— */
+.ad-about-page .ad-about-engage {
+  position: relative;
+  padding: clamp(2.75rem, 6vw, 4.25rem) 0 clamp(3rem, 7vw, 4.75rem);
+  background: linear-gradient(180deg, #fafafa 0%, #f0f0f3 48%, #fafafa 100%);
+  border-top: 1px solid var(--ad-line, rgba(22, 25, 45, 0.1));
+  border-bottom: 1px solid var(--ad-line, rgba(22, 25, 45, 0.1));
+  overflow: hidden;
+}
+
+.ad-about-page .ad-about-engage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(205, 11, 7, 0.35) 18%,
+    var(--ad-red, #cd0b07) 50%,
+    rgba(205, 11, 7, 0.35) 82%,
+    transparent 100%
+  );
+}
+
+.ad-about-page .ad-about-engage__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.ad-about-page .ad-about-engage__head {
+  text-align: center;
+  max-width: 38rem;
+  margin: 0 auto;
+}
+
+.ad-about-page .ad-about-engage__eyebrow {
+  margin: 0 0 0.75rem;
+  font-family: var(--about-sans, "Exo 2", system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ad-red, #cd0b07);
+}
+
+.ad-about-page .ad-about-engage__title {
+  margin: 0;
+  font-family: var(--about-serif, Georgia, "Times New Roman", serif);
+  font-size: clamp(1.85rem, 4.5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page .ad-about-engage__lede {
+  margin: clamp(1rem, 2vw, 1.25rem) 0 0;
+  font-family: var(--about-sans, "Exo 2", system-ui, sans-serif);
+  font-size: clamp(0.9rem, 1.9vw, 1rem);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--ad-ink-muted, rgba(22, 25, 45, 0.62));
+}
+
+.ad-about-page .ad-about-engage__grid {
+  display: grid;
+  gap: clamp(14px, 2.2vw, 18px);
+  margin-top: clamp(1.85rem, 3.5vw, 2.65rem);
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .ad-about-page .ad-about-engage__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .ad-about-page .ad-about-engage__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+}
+
+.ad-about-page .ad-about-engage-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: clamp(1.2rem, 2.4vw, 1.45rem) clamp(1.05rem, 2vw, 1.25rem) clamp(1.35rem, 2.4vw, 1.5rem);
+  border: 1px solid rgba(22, 25, 45, 0.12);
+  border-radius: 2px;
+  background: var(--ad-card, #fff);
+  text-decoration: none;
+  color: inherit;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.28s ease,
+    transform 0.28s ease;
+  position: relative;
+}
+
+.ad-about-page .ad-about-engage-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 2px 0 0 2px;
+  background: var(--ad-red, #cd0b07);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ad-about-page .ad-about-engage-card:hover {
+  border-color: rgba(22, 25, 45, 0.2);
+  box-shadow: 0 14px 40px rgba(22, 25, 45, 0.07);
+  transform: translateY(-3px);
+}
+
+.ad-about-page .ad-about-engage-card:hover::before {
+  opacity: 1;
+}
+
+.ad-about-page .ad-about-engage-card:focus-visible {
+  outline: 2px solid var(--ad-red, #cd0b07);
+  outline-offset: 3px;
+}
+
+.ad-about-page .ad-about-engage-card__heading {
+  margin: 0 0 10px;
+  font-family: var(--about-sans, "Exo 2", system-ui, sans-serif);
+  font-size: clamp(1rem, 1.35vw, 1.08rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--ad-ink, #16192d);
+}
+
+.ad-about-page .ad-about-engage-card__text {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ad-ink-muted, rgba(22, 25, 45, 0.62));
+}
+
+.ad-about-page .ad-about-engage-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 14px;
+  font-family: var(--about-sans, "Exo 2", system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ad-red, #cd0b07);
+}
+
+.ad-about-page .ad-about-engage-card__cta::after {
+  content: "→";
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  transition: transform 0.22s ease;
+}
+
+.ad-about-page .ad-about-engage-card:hover .ad-about-engage-card__cta::after {
+  transform: translateX(4px);
+}

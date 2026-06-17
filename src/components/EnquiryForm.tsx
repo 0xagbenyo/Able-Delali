@@ -2,19 +2,12 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { apiUrl } from "../lib/apiUrl";
-
-const TOPICS = [
-  { value: "general", label: "General enquiry" },
-  { value: "pastor", label: "Leadership & voice" },
-  { value: "data-analyst", label: "Public health & policy" },
-  { value: "writer", label: "Writing & advocacy" },
-] as const;
-
-type TopicValue = (typeof TOPICS)[number]["value"];
-
-function isTopicValue(v: string): v is TopicValue {
-  return TOPICS.some((t) => t.value === v);
-}
+import {
+  ENQUIRY_TOPICS,
+  type EnquiryTopicValue,
+  isEnquiryTopicValue,
+  resolveEnquiryTopicFromLocation,
+} from "../lib/enquiryTopics";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,7 +17,9 @@ export default function EnquiryForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [topic, setTopic] = useState<TopicValue>("general");
+  const [topic, setTopic] = useState<EnquiryTopicValue>(
+    () => resolveEnquiryTopicFromLocation(location) ?? "general",
+  );
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{
@@ -33,12 +28,9 @@ export default function EnquiryForm() {
   } | null>(null);
 
   useEffect(() => {
-    const st = location.state as { enquiryTopic?: string } | null;
-    const t = st?.enquiryTopic;
-    if (t && isTopicValue(t)) {
-      setTopic(t);
-    }
-  }, [location.state]);
+    const next = resolveEnquiryTopicFromLocation(location);
+    if (next) setTopic(next);
+  }, [location.search, location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,14 +112,12 @@ export default function EnquiryForm() {
         setEmail("");
         setPhone("");
         setMessage("");
-        setTopic("general");
+        setTopic(resolveEnquiryTopicFromLocation(location) ?? "general");
       } else {
         const reason = data.reason;
-        const erpDetail =
-          typeof data.detail === "string" ? data.detail.trim() : "";
+        const erpDetail = typeof data.detail === "string" ? data.detail.trim() : "";
 
-        let text =
-          "Something went wrong. Please check your details and try again.";
+        let text = "Something went wrong. Please check your details and try again.";
 
         if (!contentType.includes("application/json")) {
           text =
@@ -140,8 +130,7 @@ export default function EnquiryForm() {
         } else if (reason === "missing_name") {
           text = "Please add your name or organization.";
         } else if (reason === "missing_contact") {
-          text =
-            "Please enter either an email or a phone number so we can reach you.";
+          text = "Please enter either an email or a phone number so we can reach you.";
         } else if (reason === "invalid_email") {
           text = "Please enter a valid email address.";
         } else if (reason === "missing_feedback") {
@@ -149,25 +138,16 @@ export default function EnquiryForm() {
         } else if (reason === "feedback_too_long") {
           text = "Your message is too long. Please shorten it and try again.";
         } else if (reason === "erpnext_not_configured") {
-          text =
-            "We couldn’t send your message right now. Please try again later or email us directly.";
+          text = "We couldn’t send your message right now. Please try again later or email us directly.";
         } else if (reason === "erpnext_create_failed") {
-          text =
-            "We couldn’t save your message. Please try again or email us directly.";
+          text = "We couldn’t save your message. Please try again or email us directly.";
         } else if (reason === "erpnext" && erpDetail) {
           const line = erpDetail.split("\n")[0] ?? erpDetail;
-          const cleaned = line
-            .replace(/^ERPNext API error \(\d+\):\s*/i, "")
-            .trim();
-          if (
-            import.meta.env.DEV &&
-            cleaned.length > 0 &&
-            cleaned.length < 320
-          ) {
+          const cleaned = line.replace(/^ERPNext API error \(\d+\):\s*/i, "").trim();
+          if (import.meta.env.DEV && cleaned.length > 0 && cleaned.length < 320) {
             text = `Could not save: ${cleaned}`;
           } else {
-            text =
-              "We couldn’t save your message. Please try again or email us directly.";
+            text = "We couldn’t save your message. Please try again or email us directly.";
           }
         } else if (reason === "server_error") {
           text =
@@ -237,17 +217,17 @@ export default function EnquiryForm() {
       </p>
 
       <div className="ad-field">
-        <label htmlFor="enquiry-topic">Feedback type</label>
+        <label htmlFor="enquiry-topic">Enquiry type</label>
         <select
           id="enquiry-topic"
           name="topic"
           value={topic}
           onChange={(e) => {
             const v = e.target.value;
-            if (isTopicValue(v)) setTopic(v);
+            if (isEnquiryTopicValue(v)) setTopic(v);
           }}
         >
-          {TOPICS.map((t) => (
+          {ENQUIRY_TOPICS.map((t) => (
             <option key={t.value} value={t.value}>
               {t.label}
             </option>

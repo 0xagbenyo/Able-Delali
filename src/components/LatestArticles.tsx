@@ -5,6 +5,7 @@ import { socialLinks } from "../config/social";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
 import { pickCms } from "../lib/cmsPick";
 import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
+import { refreshAos } from "../hooks/useAos";
 
 type BlogPostApi = {
   name: string;
@@ -100,6 +101,10 @@ export default function LatestArticles() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!loading) refreshAos();
+  }, [loading, posts.length, recentRows.length]);
+
   const leadPost = posts[0];
   const leadLetter = leadPost?.title?.slice(0, 1)?.toUpperCase() ?? "J";
 
@@ -136,7 +141,12 @@ export default function LatestArticles() {
   );
 
   return (
-    <section className="cb-ref-journal" id="podcast">
+    <section
+      className="cb-ref-journal"
+      id="podcast"
+      data-aos="fade"
+      data-aos-duration="2000"
+    >
       <div className="cb-ref-journal__inner">
         <div className="cb-ref-journal__split">
           <div className="cb-ref-journal__visual-wrap">{visual}</div>

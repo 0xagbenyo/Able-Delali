@@ -7,9 +7,9 @@ import { apiUrl } from "../lib/apiUrl";
 
 const workLinks = [
   { id: "work-with-me", label: "Work with me", to: "/work-with-me" },
-  { id: "work-speaker", label: "Book as speaker", to: "/contact" },
-  { id: "work-brand", label: "Brand partnerships", to: "/contact" },
-  { id: "work-contact", label: "Contact page", to: "/contact" },
+  { id: "work-speaker", label: "Book as speaker", to: "/contact?topic=speaking" },
+  { id: "work-brand", label: "Brand partnerships", to: "/contact?topic=partnerships" },
+  { id: "work-contact", label: "Contact page", to: "/contact?topic=general" },
 ] as const;
 
 export default function Footer() {

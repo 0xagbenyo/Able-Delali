@@ -85,9 +85,14 @@ export default function Navbar() {
   const location = useLocation();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  /** Mobile sheet stays mounted briefly after `menuOpen` false so exit transitions can run. */
+  const [sheetMounted, setSheetMounted] = useState(false);
+  const [sheetVisible, setSheetVisible] = useState(false);
   const [barVisible, setBarVisible] = useState(() => isAtDocumentTop());
 
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sheetCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sheetEverOpenedRef = useRef(false);
   const menuOpenRef = useRef(menuOpen);
   const atScrollTopRef = useRef(isAtDocumentTop());
   menuOpenRef.current = menuOpen;
@@ -165,13 +170,59 @@ export default function Navbar() {
       document.body.style.overflow = "";
       return;
     }
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    const lockScroll = menuOpen || sheetMounted;
+    document.body.style.overflow = lockScroll ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
+    };
+  }, [menuOpen, sheetMounted, useNavSheet]);
+
+  useEffect(() => {
+    if (!useNavSheet) {
+      if (sheetCloseTimerRef.current !== null) {
+        window.clearTimeout(sheetCloseTimerRef.current);
+        sheetCloseTimerRef.current = null;
+      }
+      sheetEverOpenedRef.current = false;
+      setSheetMounted(false);
+      setSheetVisible(false);
+      return;
+    }
+
+    if (menuOpen) {
+      if (sheetCloseTimerRef.current !== null) {
+        window.clearTimeout(sheetCloseTimerRef.current);
+        sheetCloseTimerRef.current = null;
+      }
+      sheetEverOpenedRef.current = true;
+      setSheetMounted(true);
+      setSheetVisible(false);
+      const id = window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          setSheetVisible(true);
+        });
+      });
+      return () => window.cancelAnimationFrame(id);
+    }
+
+    setSheetVisible(false);
+    if (!sheetEverOpenedRef.current) {
+      return () => {
+        if (sheetCloseTimerRef.current !== null) {
+          window.clearTimeout(sheetCloseTimerRef.current);
+          sheetCloseTimerRef.current = null;
+        }
+      };
+    }
+    sheetCloseTimerRef.current = window.setTimeout(() => {
+      setSheetMounted(false);
+      sheetCloseTimerRef.current = null;
+    }, 380);
+    return () => {
+      if (sheetCloseTimerRef.current !== null) {
+        window.clearTimeout(sheetCloseTimerRef.current);
+        sheetCloseTimerRef.current = null;
+      }
     };
   }, [menuOpen, useNavSheet]);
 
@@ -203,14 +254,21 @@ export default function Navbar() {
 
   const hidden = !barVisible;
   const closeMenu = () => setMenuOpen(false);
+  /** Menu affordance stays “open” while the sheet is still visible (including exit animation). */
+  const sheetChromeOpen = menuOpen || sheetVisible;
 
   const sheetOverlay =
-    useNavSheet && menuOpen ? (
+    useNavSheet && sheetMounted ? (
       <>
-        <button type="button" className="ad-nav__backdrop" aria-label="Close menu" onClick={closeMenu} />
+        <button
+          type="button"
+          className={`ad-nav__backdrop${sheetVisible ? " ad-nav__backdrop--visible" : ""}`}
+          aria-label="Close menu"
+          onClick={closeMenu}
+        />
         <aside
           id="ad-nav-mobile-sheet"
-          className="ad-nav__sheet"
+          className={`ad-nav__sheet${sheetVisible ? " ad-nav__sheet--visible" : ""}`}
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
@@ -240,7 +298,7 @@ export default function Navbar() {
             type="button"
             className="ad-nav__sheet-cta"
             onClick={() => {
-              navigate("/contact");
+              navigate("/contact?topic=general");
               closeMenu();
             }}
           >
@@ -258,13 +316,13 @@ export default function Navbar() {
         <button
           type="button"
           className="ad-nav__menu-btn cb-nav__menu"
-          aria-expanded={menuOpen}
-          aria-controls={menuOpen ? "ad-nav-mobile-sheet" : undefined}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={sheetChromeOpen}
+          aria-controls={sheetChromeOpen ? "ad-nav-mobile-sheet" : undefined}
+          aria-label={sheetChromeOpen ? "Close menu" : "Open menu"}
           tabIndex={hidden ? -1 : 0}
           onClick={() => setMenuOpen((o) => !o)}
         >
-          {menuOpen ? "×" : "☰"}
+          {sheetChromeOpen ? "×" : "☰"}
         </button>
 
         <nav className="cb-nav__left" aria-label="Primary">
@@ -351,7 +409,7 @@ export default function Navbar() {
             type="button"
             className="ad-nav__cta"
             tabIndex={hidden ? -1 : 0}
-            onClick={() => navigate("/contact")}
+            onClick={() => navigate("/contact?topic=general")}
           >
             Contact
           </button>

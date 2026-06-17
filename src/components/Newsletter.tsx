@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { bookPlaceholder } from "../config/brand";
 import { useHomepageSectionValues } from "../context/HomepageCMSProvider";
+import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { pickCms } from "../lib/cmsPick";
 import { apiUrl } from "../lib/apiUrl";
+import { refreshAos } from "../hooks/useAos";
 
 type GiftBook = {
   bookName: string;
@@ -112,6 +113,10 @@ export default function Newsletter() {
     };
   }, []);
 
+  useEffect(() => {
+    refreshAos();
+  }, [giftBook]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -158,7 +163,8 @@ export default function Newsletter() {
           ? giftBook.description.trim()
           : FALLBACK_DESCRIPTION;
 
-  const coverSrc = hasBookOffer && giftBook?.imageUrl ? giftBook.imageUrl : bookPlaceholder;
+  const coverSrc =
+    hasBookOffer && giftBook?.imageUrl?.trim() ? resolveErpPublicUrl(giftBook.imageUrl) : "";
 
   const msgClass =
     message && (message.includes("wrong") || message.includes("not available"))
@@ -166,7 +172,14 @@ export default function Newsletter() {
       : "gift-band__msg gift-band__msg--ok";
 
   return (
-    <section className="gift-band" id="reader-gift" aria-labelledby="gift-band-heading">
+    <section
+      className="gift-band"
+      id="reader-gift"
+      aria-labelledby="gift-band-heading"
+      data-aos="fade"
+      data-aos-duration="2000"
+      data-aos-delay="250"
+    >
       <div className="gift-band__inner">
         <div className="gift-band__layout">
           <div className="gift-band__visual">
@@ -175,6 +188,10 @@ export default function Newsletter() {
             ) : noBookOffer ? (
               <div className="gift-band__coming-soon-visual" role="status">
                 Coming soon
+              </div>
+            ) : !coverSrc ? (
+              <div className="gift-band__coming-soon-visual" role="status">
+                Cover coming soon
               </div>
             ) : giftBook?.bookUrl ? (
               <a href={giftBook.bookUrl} target="_blank" rel="noopener noreferrer" className="gift-band__cover">

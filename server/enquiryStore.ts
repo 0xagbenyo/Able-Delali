@@ -1,4 +1,5 @@
 import { makeERPNextRequest } from "./erpnextAuth.js";
+import { labelForEnquiryTopic } from "../src/lib/enquiryTopics.ts";
 
 /**
  * Website form → ERPNext **Feedback** DocType.
@@ -60,17 +61,6 @@ function extractCreatedName(result: unknown): string {
   return "";
 }
 
-const TOPIC_LABELS: Record<string, string> = {
-  general: "General",
-  pastor: "Pastoral / spiritual",
-  "data-analyst": "Data & analytics",
-  writer: "Writing / editorial",
-};
-
-function labelForTopic(topic: string): string {
-  return TOPIC_LABELS[topic] ?? topic;
-}
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function submitWebsiteEnquiry(
@@ -100,7 +90,7 @@ export async function submitWebsiteEnquiry(
   const body: Record<string, unknown> = {
     docstatus: 0,
     [FIELD_NAME_ORG]: nameOrg,
-    [FIELD_FEEDBACK_TYPE]: labelForTopic(topic),
+    [FIELD_FEEDBACK_TYPE]: labelForEnquiryTopic(topic),
     [FIELD_FEEDBACK]: feedbackBody,
   };
 

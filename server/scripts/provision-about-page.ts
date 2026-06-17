@@ -81,6 +81,31 @@ async function ensureWebTemplate(): Promise<void> {
       { label: "Image2", fieldname: "image2", fieldtype: "Attach Image" },
       { label: "Image3", fieldname: "image3", fieldtype: "Attach Image" },
       { label: "Image4", fieldname: "image4", fieldtype: "Attach Image" },
+      {
+        label: "Hero subtitle (optional second line, italic)",
+        fieldname: "hero_subtitle",
+        fieldtype: "Data",
+      },
+      {
+        label: "About section heading",
+        fieldname: "about_section_heading",
+        fieldtype: "Data",
+        default: "About me",
+      },
+      { label: "Hero CTA label", fieldname: "hero_cta_label", fieldtype: "Data", default: "Read her story" },
+      { label: "Service 1 title", fieldname: "service_1_title", fieldtype: "Data" },
+      { label: "Service 1 text", fieldname: "service_1_text", fieldtype: "Text" },
+      { label: "Service 2 title", fieldname: "service_2_title", fieldtype: "Data" },
+      { label: "Service 2 text", fieldname: "service_2_text", fieldtype: "Text" },
+      { label: "Service 3 title", fieldname: "service_3_title", fieldtype: "Data" },
+      { label: "Service 3 text", fieldname: "service_3_text", fieldtype: "Text" },
+      {
+        label: "Testimonials JSON",
+        fieldname: "testimonials_json",
+        fieldtype: "Text",
+        default:
+          '[{"quote":"…","by":"…","avatar":"/files/…"}] — optional avatar = Attach path or URL. Omit for defaults.',
+      },
     ],
   });
   console.log(`Created Web Template "${TEMPLATE_NAME}".`);
