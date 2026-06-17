@@ -43,7 +43,8 @@ VITE_ERPNEXT_PUBLIC_URL=https://abledelali.l.frappe.cloud
 
 ### Deploying to Vercel
 
-1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, **`ERPNEXT_API_SECRET`**, and **`VITE_ERPNEXT_PUBLIC_URL`** (same values as local `.env`) for **Production** and **Preview**. The serverless **`/api/*`** handlers need these at runtime; missing values cause empty blog lists or failed loads.
+1. **Environment variables** — In the Vercel project, add **`ERPNEXT_API_URL`**, **`ERPNEXT_API_KEY`**, and **`ERPNEXT_API_SECRET`** for **Production** and **Preview** (required for `/api/*` at runtime). Also add **`ERPNEXT_PUBLIC_URL`** (same host as ERPNext, no trailing slash) or **`VITE_ERPNEXT_PUBLIC_URL`** so image paths resolve; the API embeds absolute image URLs when `ERPNEXT_API_URL` is set. After changing env vars, **redeploy**.
+2. **Verify** — Open `https://<your-site>/api/cms/status` — `erp_configured` should be `true`. Then `https://<your-site>/api/about/sections` should return JSON with `ok: true` and your sections (not HTML).
 2. **Routing order** — In **`vercel.json`**, **`/api/*`** is sent to **`api/index.ts`** **before** the static filesystem and **before** the SPA fallback to **`index.html`**. That way **`GET /api/blog`** returns JSON, not the React shell. If **`/api/blog`** in the browser shows HTML, the deployment root is probably wrong (Vercel **Root Directory** should be the folder that contains **`package.json`** and **`vercel.json`**, not a parent download folder).
 3. **SPA client routes** — After API and static files, **`/(.*)` → `/index.html`** so **`/blog`**, **`/blog/:slug`**, **`/about`**, **`/work-with-me`**, **`/press-kit`**, **`/speaking-and-media`** (legacy **`/public-voice`** redirects in-app), etc. work on full refresh.
 4. **Netlify** — `public/_redirects` includes an SPA fallback for hosts that honor it.

@@ -7,7 +7,8 @@ import {
   type ReactNode,
 } from "react";
 
-import { apiUrl } from "../lib/apiUrl";
+import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
+import { applyCmsApiMeta, type CmsSectionsApiResponse } from "../lib/cmsApiMeta";
 
 export type HomepageSectionPayload = {
   template: string;
@@ -15,11 +16,9 @@ export type HomepageSectionPayload = {
   values: Record<string, string>;
 };
 
-type ApiResponse = {
-  ok: boolean;
+type ApiResponse = CmsSectionsApiResponse & {
   sections: HomepageSectionPayload[];
   web_page?: { name: string; title?: string; route?: string } | null;
-  error?: string;
 };
 
 type Ctx = {
@@ -51,8 +50,10 @@ export function HomepageCMSProvider({
     (async () => {
       try {
         const res = await fetch(apiUrl(sectionsUrl), { cache: "no-store" });
+        assertApiJsonResponse(res, "Homepage sections");
         const data = (await res.json()) as ApiResponse;
         if (cancelled) return;
+        applyCmsApiMeta(data);
         const m = new Map<string, Record<string, string>>();
         for (const s of data.sections || []) {
           m.set(s.key, s.values);

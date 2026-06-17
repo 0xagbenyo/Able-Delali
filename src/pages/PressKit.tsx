@@ -5,6 +5,7 @@ import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import { pressKitData } from "../content/pressKitData";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { pickCms } from "../lib/cmsPick";
+import { applyCmsApiMeta } from "../lib/cmsApiMeta";
 import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
 import "../ui/press-kit.css";
 
@@ -132,6 +133,7 @@ export default function PressKit() {
         assertApiJsonResponse(res, "Press kit sections");
         const data = (await res.json()) as { sections?: unknown[] };
         if (cancelled) return;
+        applyCmsApiMeta(data);
         const rows = Array.isArray(data.sections) ? data.sections : [];
         setCms(mergePressKitValues(rows));
       } catch {

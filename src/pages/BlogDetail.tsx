@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import useResponsive from "../hooks/useResponsive";
 import PageChrome from "../components/PageChrome";
-import { erpnextPublicOrigin } from "../config/erpnextPublic";
+import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { COLORS, FONT } from "../config/brand";
 import { apiUrl } from "../lib/apiUrl";
 
@@ -106,11 +106,7 @@ export default function BlogDetail() {
 
   const getImageUrl = (imagePath?: string) => {
     if (!imagePath) return null;
-    if (imagePath.startsWith("http")) return imagePath;
-    if (!erpnextPublicOrigin) {
-      return imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
-    }
-    return `${erpnextPublicOrigin}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+    return resolveErpPublicUrl(imagePath) || null;
   };
 
   if (loading) {

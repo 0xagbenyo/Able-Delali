@@ -22,6 +22,7 @@ import { pickCms } from "../lib/cmsPick";
 import useResponsive from "../hooks/useResponsive";
 import { useCarouselAutoplay } from "../hooks/useCarouselAutoplay";
 import { useAos } from "../hooks/useAos";
+import { applyCmsApiMeta } from "../lib/cmsApiMeta";
 import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
 import "../ui/about-page.css";
 
@@ -292,6 +293,7 @@ export default function About() {
           error?: string;
         };
         if (cancelled) return;
+        applyCmsApiMeta(data);
         const rows = Array.isArray(data.sections) ? data.sections : [];
         try {
           setIntroValues(mergeIntroValues(rows));

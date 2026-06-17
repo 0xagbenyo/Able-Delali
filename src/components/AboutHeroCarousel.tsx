@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AboutHeroSlide } from "../content/aboutHeroSlides";
 import { useCarouselAutoplay } from "../hooks/useCarouselAutoplay";
+import { usePreloadImages } from "../hooks/usePreloadImages";
 
 type Props = {
   slides: AboutHeroSlide[];
@@ -12,11 +13,43 @@ export default function AboutHeroCarousel({ slides }: Props) {
   const safeIndex = ((index % pageCount) + pageCount) % pageCount;
   const active = slides[safeIndex] ?? slides[0]!;
 
+  const imageUrls = useMemo(
+    () => slides.map((s) => s.image).filter(Boolean),
+    [slides],
+  );
+  const imagesReady = usePreloadImages(imageUrls);
+
   const advance = useCallback(() => {
-    setIndex((p) => (p + 1) % pageCount);
-  }, [pageCount]);
+    setIndex((p) => {
+      const next = (p + 1) % pageCount;
+      if (pageCount <= 1) return next;
+      const nextImage = slides[next]?.image?.trim();
+      if (nextImage && !imagesReady.has(nextImage)) return p;
+      return next;
+    });
+  }, [pageCount, slides, imagesReady]);
 
   const { controlProps } = useCarouselAutoplay(pageCount, advance, 4500);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [slides]);
+
+  useEffect(() => {
+    const links: HTMLLinkElement[] = [];
+    for (const url of imageUrls) {
+      if (imagesReady.has(url)) continue;
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = url;
+      document.head.appendChild(link);
+      links.push(link);
+    }
+    return () => {
+      for (const link of links) link.remove();
+    };
+  }, [imageUrls, imagesReady]);
 
   const hasImage = slides.some((s) => Boolean(s.image));
 
@@ -35,7 +68,9 @@ export default function AboutHeroCarousel({ slides }: Props) {
                 className={`ad-about-page__hero-bg${i === safeIndex ? " ad-about-page__hero-bg--active" : ""}`}
                 src={slide.image}
                 alt=""
-                decoding="async"
+                loading="eager"
+                decoding={i === 0 ? "sync" : "async"}
+                fetchPriority={i <= 1 ? "high" : "low"}
               />
             ) : null,
           )}

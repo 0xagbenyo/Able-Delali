@@ -1,4 +1,9 @@
 import { getERPNextDocument, listERPNextDocuments } from "./erpnextAuth.js";
+import {
+  getErpPublicAssetOrigin,
+  isErpNextConfigured,
+  resolveCmsAssetValues,
+} from "./erpPublicAssetUrl.js";
 
 type PageBlockRow = {
   web_template?: string;
@@ -60,6 +65,8 @@ export type WebPageSectionsPayload = {
   route: string;
   web_page: { name: string; title?: string; route?: string } | null;
   sections: WebPageSectionRow[];
+  /** ERPNext site origin for `/files/...` URLs (also embedded in resolved section values). */
+  public_asset_origin?: string;
   error?: string;
 };
 
@@ -71,6 +78,19 @@ export async function getWebPageSectionsForRoute(
 ): Promise<WebPageSectionsPayload> {
   const route = routeRaw.trim().replace(/^\//, "");
   const empty = (): WebPageSectionRow[] => [];
+  const publicAssetOrigin = getErpPublicAssetOrigin();
+
+  if (!isErpNextConfigured()) {
+    return {
+      ok: false,
+      route,
+      web_page: null,
+      sections: empty(),
+      public_asset_origin: publicAssetOrigin || undefined,
+      error:
+        "Missing ERPNext configuration env vars: ERPNEXT_API_URL, ERPNEXT_API_KEY, ERPNEXT_API_SECRET",
+    };
+  }
 
   try {
     const list = await listERPNextDocuments<{ name: string; route?: string }>(
@@ -86,6 +106,7 @@ export async function getWebPageSectionsForRoute(
         route,
         web_page: null,
         sections: empty(),
+        public_asset_origin: publicAssetOrigin || undefined,
       };
     }
 
@@ -100,7 +121,7 @@ export async function getWebPageSectionsForRoute(
       sections.push({
         template: tpl,
         key: normalizeWebTemplateKey(tpl),
-        values: parseTemplateValues(row.web_template_values),
+        values: resolveCmsAssetValues(parseTemplateValues(row.web_template_values)),
       });
     }
 
@@ -113,6 +134,7 @@ export async function getWebPageSectionsForRoute(
         route: doc.route != null ? String(doc.route) : undefined,
       },
       sections,
+      public_asset_origin: publicAssetOrigin || undefined,
     };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -122,6 +144,7 @@ export async function getWebPageSectionsForRoute(
       route,
       web_page: null,
       sections: empty(),
+      public_asset_origin: publicAssetOrigin || undefined,
       error: msg,
     };
   }

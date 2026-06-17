@@ -38,6 +38,10 @@ import { getHomepageSectionsFromERPNext } from "./homepageStore.js";
 import { getAboutSectionsFromERPNext } from "./aboutPageStore.js";
 import { getPressKitSectionsFromERPNext } from "./pressKitStore.js";
 import { getPublicVoiceSectionsFromERPNext } from "./publicVoicePageStore.js";
+import {
+  getErpPublicAssetOrigin,
+  isErpNextConfigured,
+} from "./erpPublicAssetUrl.js";
 
 function applyNoStoreCache(res: Response): void {
   res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
@@ -158,6 +162,20 @@ export async function registerRoutes(
       }
 
       await streamDriveFileDownload(fileId, res);
+    }),
+  );
+
+  /** Lightweight CMS / ERPNext connectivity check (for Vercel debugging). */
+  router.get(
+    "/cms/status",
+    asyncHandler(async (_req: Request, res: Response) => {
+      applyNoStoreCache(res);
+      res.json({
+        erp_configured: isErpNextConfigured(),
+        public_asset_origin: getErpPublicAssetOrigin() || null,
+        about_route: (process.env.ERPNEXT_ABOUT_ROUTE || "about-page").trim().replace(/^\//, ""),
+        homepage_route: (process.env.ERPNEXT_HOMEPAGE_ROUTE || "homepage").trim().replace(/^\//, ""),
+      });
     }),
   );
 
