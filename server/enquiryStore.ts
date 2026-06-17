@@ -1,5 +1,5 @@
 import { makeERPNextRequest } from "./erpnextAuth.js";
-import { labelForEnquiryTopic } from "../src/lib/enquiryTopics.ts";
+import { labelForEnquiryTopic } from "../shared/enquiryTopics.js";
 
 /**
  * Website form → ERPNext **Feedback** DocType.
