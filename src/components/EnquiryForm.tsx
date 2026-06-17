@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { apiUrl } from "../lib/apiUrl";
+import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import {
   ENQUIRY_TOPICS,
   type EnquiryTopicValue,
@@ -120,8 +121,7 @@ export default function EnquiryForm() {
         let text = "Something went wrong. Please check your details and try again.";
 
         if (!contentType.includes("application/json")) {
-          text =
-            "We couldn’t send your message right now. Please refresh and try again, or email us directly.";
+          text = `We couldn’t send your message right now. Please refresh and try again, or email ${SITE_CONTACT_EMAIL}.`;
         } else if (typeof data.message === "string" && data.message && !reason) {
           text =
             import.meta.env.DEV
@@ -138,22 +138,22 @@ export default function EnquiryForm() {
         } else if (reason === "feedback_too_long") {
           text = "Your message is too long. Please shorten it and try again.";
         } else if (reason === "erpnext_not_configured") {
-          text = "We couldn’t send your message right now. Please try again later or email us directly.";
+          text = `We couldn’t send your message right now. Please try again later or email ${SITE_CONTACT_EMAIL}.`;
         } else if (reason === "erpnext_create_failed") {
-          text = "We couldn’t save your message. Please try again or email us directly.";
+          text = `We couldn’t save your message. Please try again or email ${SITE_CONTACT_EMAIL}.`;
         } else if (reason === "erpnext" && erpDetail) {
           const line = erpDetail.split("\n")[0] ?? erpDetail;
           const cleaned = line.replace(/^ERPNext API error \(\d+\):\s*/i, "").trim();
           if (import.meta.env.DEV && cleaned.length > 0 && cleaned.length < 320) {
             text = `Could not save: ${cleaned}`;
           } else {
-            text = "We couldn’t save your message. Please try again or email us directly.";
+            text = `We couldn’t save your message. Please try again or email ${SITE_CONTACT_EMAIL}.`;
           }
         } else if (reason === "server_error") {
           text =
             typeof data.hint === "string" && import.meta.env.DEV
               ? `Server error: ${data.hint}`
-              : "Something went wrong. Please try again or email us directly.";
+              : `Something went wrong. Please try again or email ${SITE_CONTACT_EMAIL}.`;
         }
 
         setStatus({ type: "err", text });
@@ -262,6 +262,11 @@ export default function EnquiryForm() {
       <button type="submit" className="ad-btn ad-btn--navy" disabled={loading}>
         {loading ? "Sending…" : "Submit"}
       </button>
+
+      <p className="ad-field-hint ad-enquiry-form__direct-email">
+        Prefer email?{" "}
+        <a href={SITE_CONTACT_MAILTO}>{SITE_CONTACT_EMAIL}</a>
+      </p>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import PageChrome from "../components/PageChrome";
+import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import { pressKitData } from "../content/pressKitData";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { pickCms } from "../lib/cmsPick";
@@ -263,7 +264,11 @@ export default function PressKit() {
 
         <footer className="pk-footer">
           <p className="pk-footer__text">
-            For media, speaking requests, and collaborations, use the{" "}
+            For media, speaking requests, and collaborations, email{" "}
+            <a href={SITE_CONTACT_MAILTO} className="pk-footer__link">
+              {SITE_CONTACT_EMAIL}
+            </a>{" "}
+            or use the{" "}
             <Link to="/contact?topic=press-kit" className="pk-footer__link">
               contact page
             </Link>

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import PageChrome from "../components/PageChrome";
+import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import { ablePortrait, patternTexture, rhodaImage1, rhodaImage2 } from "../config/brand";
 import "../ui/work-with-me.css";
 
@@ -367,6 +368,10 @@ export default function WorkWithMe() {
               <Link to="/contact?topic=general" className="ad-btn ad-btn--primary">
                 Get in touch
               </Link>
+              <p className="ad-work-page__final-email">
+                Or email{" "}
+                <a href={SITE_CONTACT_MAILTO}>{SITE_CONTACT_EMAIL}</a>
+              </p>
             </div>
           </div>
         </section>

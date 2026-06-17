@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { logoPrimaryNavy } from "../config/brand";
+import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import { socialLinks } from "../config/social";
 import { SITE_FOOTER_TAGLINE } from "../content/siteTagline";
 import { apiUrl } from "../lib/apiUrl";
@@ -55,6 +56,11 @@ export default function Footer() {
         <div className="ad-container ad-site-footer__brand-inner">
           <img className="ad-site-footer__logo" src={logoPrimaryNavy} alt="Able Delalie" decoding="async" />
           <p className="ad-site-footer__tagline">{SITE_FOOTER_TAGLINE}</p>
+          <p className="ad-site-footer__email">
+            <a className="ad-site-footer__email-link" href={SITE_CONTACT_MAILTO}>
+              {SITE_CONTACT_EMAIL}
+            </a>
+          </p>
         </div>
 
         <nav className="ad-site-footer__social-rail" aria-label="Social profiles">
@@ -130,10 +136,21 @@ export default function Footer() {
                   ))}
                 </ul>
               </nav>
+              <p className="ad-site-footer__collab-email">
+                Or email{" "}
+                <a className="ad-site-footer__email-link" href={SITE_CONTACT_MAILTO}>
+                  {SITE_CONTACT_EMAIL}
+                </a>
+              </p>
             </div>
           </div>
 
-          <p className="ad-site-footer__meta">© {new Date().getFullYear()} Able Delalie. All rights reserved.</p>
+          <p className="ad-site-footer__meta">
+            © {new Date().getFullYear()} Able Delalie. All rights reserved. ·{" "}
+            <a className="ad-site-footer__meta-link" href={SITE_CONTACT_MAILTO}>
+              {SITE_CONTACT_EMAIL}
+            </a>
+          </p>
         </div>
       </div>
     </footer>

@@ -589,8 +589,16 @@
 }
 
 @media (max-width: 639px) {
+  .ad-about-page__mission-narrative-frame {
+    gap: 0.35rem;
+    padding-inline: 2px;
+  }
+
   .ad-about-page__mission-narrative-arrow {
-    display: none;
+    width: 38px;
+    height: 38px;
+    font-size: 1.25rem;
+    flex-shrink: 0;
   }
 }
 
@@ -1014,8 +1022,23 @@
 }
 
 @media (max-width: 639px) {
+  .ad-about-page__mission-showcase-frame {
+    gap: 0.35rem;
+    padding-inline: 2px;
+  }
+
   .ad-about-page__mission-showcase-arrow {
-    display: none;
+    width: 38px;
+    height: 38px;
+    margin-top: 0;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .ad-about-page__mission-tile {
+    flex: 1 1 100%;
+    max-width: min(300px, 100%);
   }
 }
 
@@ -1121,32 +1144,34 @@
   box-sizing: border-box;
 }
 
-.ad-about-page__mission-tile-role {
+.ad-about-page__mission-showcase .ad-about-page__mission-tile-role {
   font-family: var(--about-sans);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ad-ink, #16192d);
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.ad-about-page__mission-tile-link {
+.ad-about-page__mission-showcase .ad-about-page__mission-tile-link {
   font-family: var(--about-sans);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--ad-red, #cd0b07);
-  border-bottom: 1px solid transparent;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
   transition:
     border-color 0.15s ease,
+    color 0.15s ease,
     opacity 0.15s ease;
 }
 
-.ad-about-page__mission-tile-link:hover {
+.ad-about-page__mission-showcase .ad-about-page__mission-tile-link:hover {
+  color: #fff;
   border-bottom-color: var(--ad-red, #cd0b07);
-  opacity: 0.92;
+  opacity: 0.95;
 }
 
 .ad-about-page__mission-showcase-dots {
@@ -1325,6 +1350,16 @@
   font-weight: 500;
   line-height: 1.55;
   color: var(--ad-ink-muted, rgba(22, 25, 45, 0.62));
+}
+
+.ad-about-page .ad-about-engage__email {
+  color: var(--ad-red, #cd0b07);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ad-about-page .ad-about-engage__email:hover {
+  text-decoration: underline;
 }
 
 .ad-about-page .ad-about-engage__grid {

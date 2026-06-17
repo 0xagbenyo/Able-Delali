@@ -10,6 +10,7 @@ import {
   type AboutMissionGroup,
 } from "../content/aboutMissionCards";
 import { resolveErpPublicUrl } from "../config/erpnextPublic";
+import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import { pickCms } from "../lib/cmsPick";
 import useResponsive from "../hooks/useResponsive";
 import { useAos } from "../hooks/useAos";
@@ -589,7 +590,12 @@ export default function About() {
                 Let&apos;s Build Better Health Together
               </h2>
               <p className="ad-about-engage__lede">
-                Speaking, media, partnerships, and writing — pick a path that fits what you&apos;re building.
+                Speaking, media, partnerships, and writing — pick a path that fits what you&apos;re building, or
+                email{" "}
+                <a className="ad-about-engage__email" href={SITE_CONTACT_MAILTO}>
+                  {SITE_CONTACT_EMAIL}
+                </a>
+                .
               </p>
             </header>
             <div className="ad-about-engage__grid">

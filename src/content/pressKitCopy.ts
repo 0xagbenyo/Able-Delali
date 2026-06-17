@@ -29,7 +29,7 @@ export const PRESS_KIT_FULL_BODY = [
   "**Able Delalie** is a pharmacist and advocate whose work sits at the intersection of clinical practice, public health, and public conversation. She cares deeply about how people experience care — particularly menstrual health and equity — and about how evidence is used in debates that shape policy and lives.",
   "Her story is not a list of job titles stitched together. It is years of listening in clinics and communities, reading the research, and choosing language that honours both rigour and dignity. She shows up with patience, precision, and a bias toward outcomes that actually improve lives.",
   "**Themes she is known for in her public writing include:** health systems and workforce pressures in Ghana and the region; menstrual health equity; civic and policy commentary grounded in professional ethics; and long-form essays that treat readers as thoughtful partners, not as an audience to perform for.",
-  "For press, speaking requests, and brand partnerships, use the **Contact** page on this site. Replace this paragraph with **booking and press email** from the Brand Guide PDF when available.",
+  "For press, speaking requests, and brand partnerships, email **hello@abledelalie.com** or use the **Contact** page on this site.",
 ].join("\n\n");
 
 export const PRESS_KIT_SOCIAL_HANDLES_JSON = JSON.stringify([
