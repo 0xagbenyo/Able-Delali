@@ -99,7 +99,7 @@ The React **`/about`** page loads copy from the **Web Page** whose **`route`** m
 
 | Web Template (suggested) | `key` | Fields the app uses |
 |--------------------------|--------|----------------------|
-| About Intro | `about_intro` | **`eyebrow`**, **`title`**, **`description`** (body; `\n\n` = paragraphs). **Carousel (first match wins):** **`image`**, **`image2`**, **`image3`**, **`image4`** (Attach Image paths — same resolution as blog images). If none are set, **`slide_urls`** (JSON array or newline/comma URLs). If still empty, the app uses **built-in default** slides. Aliases for attach slots: `image_2` … `image_4`. Slide list aliases: `slides_json` / `slides` / `gallery_urls`. |
+| About Intro | `about_intro` | **`eyebrow`**, **`title`**, **`description`** (body; `\n\n` = paragraphs). **Attach images (in order):** **`image`** … **`image10`** (paths resolved like blog images). If none are set, **`slide_urls`** (JSON array or newline/comma URLs). Slot map: **`image`** → arch portrait; **`image2`–`image10`** → hero carousel; **`image5`–`image7`** → “How Able works with you” cards (fallbacks to earlier slots); all slots cycle through mission / showcase cards. Aliases: `image_2` … `image_10`. Slide list aliases: `slides_json` / `slides` / `gallery_urls`. |
 
 **Provision from your machine** (creates template + Web Page if missing; requires API user with Website Manager / create on **Web Template** and **Web Page**):
 

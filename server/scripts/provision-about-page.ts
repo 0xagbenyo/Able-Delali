@@ -81,6 +81,12 @@ async function ensureWebTemplate(): Promise<void> {
       { label: "Image2", fieldname: "image2", fieldtype: "Attach Image" },
       { label: "Image3", fieldname: "image3", fieldtype: "Attach Image" },
       { label: "Image4", fieldname: "image4", fieldtype: "Attach Image" },
+      { label: "Image5", fieldname: "image5", fieldtype: "Attach Image" },
+      { label: "Image6", fieldname: "image6", fieldtype: "Attach Image" },
+      { label: "Image7", fieldname: "image7", fieldtype: "Attach Image" },
+      { label: "Image8", fieldname: "image8", fieldtype: "Attach Image" },
+      { label: "Image9", fieldname: "image9", fieldtype: "Attach Image" },
+      { label: "Image10", fieldname: "image10", fieldtype: "Attach Image" },
       {
         label: "Hero subtitle (optional second line, italic)",
         fieldname: "hero_subtitle",
@@ -93,6 +99,13 @@ async function ensureWebTemplate(): Promise<void> {
         default: "About me",
       },
       { label: "Hero CTA label", fieldname: "hero_cta_label", fieldtype: "Data", default: "Read her story" },
+      {
+        label: "Hero slides JSON",
+        fieldname: "hero_slides_json",
+        fieldtype: "Text",
+        default:
+          'Optional: [{"eyebrow":"…","title":"…","subtitle":"…","image_index":0}] — pairs copy with slide images.',
+      },
       { label: "Service 1 title", fieldname: "service_1_title", fieldtype: "Data" },
       { label: "Service 1 text", fieldname: "service_1_text", fieldtype: "Text" },
       { label: "Service 2 title", fieldname: "service_2_title", fieldtype: "Data" },

@@ -1,6 +1,13 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PageChrome from "../components/PageChrome";
+import AboutHeroCarousel from "../components/AboutHeroCarousel";
+import { buildAboutHeroSlides } from "../content/aboutHeroSlides";
+import {
+  aboutIntroArchImage,
+  aboutIntroServiceImages,
+  collectAboutIntroImagePaths,
+} from "../content/aboutIntroImages";
 import aboutContent from "../content/aboutintro.json";
 import {
   aboutMissionSection,
@@ -13,6 +20,7 @@ import { resolveErpPublicUrl } from "../config/erpnextPublic";
 import { SITE_CONTACT_EMAIL, SITE_CONTACT_MAILTO } from "../config/siteContact";
 import { pickCms } from "../lib/cmsPick";
 import useResponsive from "../hooks/useResponsive";
+import { useCarouselAutoplay } from "../hooks/useCarouselAutoplay";
 import { useAos } from "../hooks/useAos";
 import { apiUrl, assertApiJsonResponse } from "../lib/apiUrl";
 import "../ui/about-page.css";
@@ -63,25 +71,6 @@ function parseSlideUrls(raw: string | undefined): string[] {
     .filter(Boolean);
 }
 
-/**
- * ERPNext Web Template **About Intro** — Attach Image fields (order = carousel / slots).
- * React maps: image → arch portrait; image2 → hero background (fallback: image); image3–4 → service cards.
- * Optional: add `image5`… in ERPNext and extend this list when you need more slots.
- */
-function collectAttachImagePaths(values: Record<string, string>): string[] {
-  const keys = [["image"], ["image2", "image_2"], ["image3", "image_3"], ["image4", "image_4"]] as const;
-  const out: string[] = [];
-  for (const group of keys) {
-    let raw: string | undefined;
-    for (const k of group) {
-      raw = pickCms(values, k);
-      if (raw) break;
-    }
-    if (raw) out.push(raw);
-  }
-  return out;
-}
-
 function mergeIntroValues(sections: unknown[]): Record<string, string> {
   const m = new Map<string, Record<string, string>>();
   for (const row of sections) {
@@ -108,14 +97,53 @@ function MissionIntroGroup({ group }: { group: AboutMissionGroup }) {
     setBinderIndex((i) => Math.min(i, narrativePageCount - 1));
   }, [narrativePageCount]);
 
-  function renderIntroArticle(card: AboutMissionCard, _idx: number, useBinderSkin: boolean) {
+  function renderNarrativeSlide(card: AboutMissionCard) {
+    const isLead = card.variant === "lead";
+    const hasMedia = Boolean(card.image);
+
+    return (
+      <article
+        className={`ad-about-page__mission-split${hasMedia ? "" : " ad-about-page__mission-split--text-only"}`}
+      >
+        {hasMedia ? (
+          <div className="ad-about-page__mission-split-media">
+            <img src={card.image} alt="" loading="lazy" decoding="async" />
+          </div>
+        ) : null}
+        {hasMedia ? <div className="ad-about-page__mission-split-rule" aria-hidden /> : null}
+        <div className="ad-about-page__mission-split-main">
+          {card.title ? <h4 className="ad-about-page__mission-card-title">{card.title}</h4> : null}
+          <p
+            className={`ad-about-page__mission-body${isLead ? " ad-about-page__mission-body--lead" : ""}`}
+          >
+            {card.body}
+          </p>
+          {card.externalUrl ? (
+            <a
+              href={card.externalUrl}
+              className="ad-about-page__mission-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {card.linkLabel ?? "Learn more"}
+            </a>
+          ) : card.to ? (
+            <Link to={card.to} className="ad-about-page__mission-link">
+              {card.linkLabel ?? "Learn more"}
+            </Link>
+          ) : null}
+        </div>
+      </article>
+    );
+  }
+
+  function renderIntroArticle(card: AboutMissionCard, _idx: number) {
     const isLead = card.variant === "lead";
     const hasMedia = Boolean(card.image);
     const cardClass = [
       "ad-about-page__mission-card",
       isLead ? "ad-about-page__mission-card--lead" : "",
       hasMedia ? "ad-about-page__mission-card--has-media" : "",
-      useBinderSkin ? "ad-about-page__mission-card--binder" : "",
     ]
       .filter(Boolean)
       .join(" ");
@@ -158,7 +186,7 @@ function MissionIntroGroup({ group }: { group: AboutMissionGroup }) {
         className={["ad-about-page__mission-grid", "ad-about-page__mission-grid--intro"].filter(Boolean).join(" ")}
       >
         {group.cards.map((card, idx) => (
-          <Fragment key={`${group.id}-${idx}`}>{renderIntroArticle(card, idx, false)}</Fragment>
+          <Fragment key={`${group.id}-${idx}`}>{renderIntroArticle(card, idx)}</Fragment>
         ))}
       </div>
     );
@@ -173,17 +201,36 @@ function MissionIntroGroup({ group }: { group: AboutMissionGroup }) {
   const safeIndex = ((binderIndex % narrativePageCount) + narrativePageCount) % narrativePageCount;
   const activeCard = group.cards[safeIndex]!;
 
+  const advanceNarrative = useCallback(() => {
+    setBinderIndex((p) => (p + 1) % narrativePageCount);
+  }, [narrativePageCount]);
+
+  const { restart: restartNarrativeAutoplay, controlProps: narrativeAutoplayProps } = useCarouselAutoplay(
+    narrativePageCount,
+    advanceNarrative,
+  );
+
+  const goToNarrative = (index: number) => {
+    setBinderIndex(index);
+    restartNarrativeAutoplay();
+  };
+
+  const stepNarrative = (delta: number) => {
+    setBinderIndex((p) => (p + delta + narrativePageCount) % narrativePageCount);
+    restartNarrativeAutoplay();
+  };
+
   return (
     <div className="ad-about-page__mission-group ad-about-page__mission-group--intro">
       {headingBlock}
-      <div className="ad-about-page__mission-binder">
+      <div className="ad-about-page__mission-narrative" {...narrativeAutoplayProps}>
         <div className="ad-about-page__mission-narrative-frame">
           <button
             type="button"
             className="ad-about-page__mission-narrative-arrow ad-about-page__mission-narrative-arrow--prev"
             aria-label="Previous story"
             disabled={narrativePageCount <= 1}
-            onClick={() => setBinderIndex((p) => (p - 1 + narrativePageCount) % narrativePageCount)}
+            onClick={() => stepNarrative(-1)}
           >
             ‹
           </button>
@@ -195,22 +242,14 @@ function MissionIntroGroup({ group }: { group: AboutMissionGroup }) {
             aria-label={`Story ${safeIndex + 1} of ${narrativePageCount}`}
             aria-live="polite"
           >
-            <div className="ad-about-page__mission-grid ad-about-page__mission-grid--intro ad-about-page__mission-grid--binder">
-              <div className="ad-about-page__mission-deck">
-                <span className="ad-about-page__mission-deck-layer" aria-hidden />
-                <span className="ad-about-page__mission-deck-layer" aria-hidden />
-                <span className="ad-about-page__mission-deck-layer" aria-hidden />
-                <span className="ad-about-page__mission-deck-layer" aria-hidden />
-                {renderIntroArticle(activeCard, safeIndex, true)}
-              </div>
-            </div>
+            {renderNarrativeSlide(activeCard)}
           </div>
           <button
             type="button"
             className="ad-about-page__mission-narrative-arrow ad-about-page__mission-narrative-arrow--next"
             aria-label="Next story"
             disabled={narrativePageCount <= 1}
-            onClick={() => setBinderIndex((p) => (p + 1) % narrativePageCount)}
+            onClick={() => stepNarrative(1)}
           >
             ›
           </button>
@@ -225,7 +264,7 @@ function MissionIntroGroup({ group }: { group: AboutMissionGroup }) {
                 aria-selected={i === safeIndex}
                 aria-label={`Story ${i + 1}`}
                 className={`ad-about-page__mission-narrative-dot${i === safeIndex ? " ad-about-page__mission-narrative-dot--active" : ""}`}
-                onClick={() => setBinderIndex(i)}
+                onClick={() => goToNarrative(i)}
               />
             ))}
           </div>
@@ -270,20 +309,16 @@ export default function About() {
     };
   }, []);
 
-  const eyebrow = pickCms(introValues, "eyebrow", "kicker", "label") || "About";
-  const title = pickCms(introValues, "title", "heading", "h1") || "Who she is";
-  const heroLine2 = (pickCms(introValues, "hero_subtitle", "hero_line_2", "subtitle") ?? "").trim();
   const bodyRaw =
     pickCms(introValues, "description", "body", "text", "copy", "family_intro") || DEFAULT_FAMILY_INTRO;
   const body = typeof bodyRaw === "string" ? bodyRaw : String(bodyRaw);
   const aboutSectionHeading = pickCms(introValues, "about_section_heading", "section_heading") || "About me";
-  const heroCtaLabel = pickCms(introValues, "hero_cta_label", "primary_cta") || "Read her story";
 
   const slides = useMemo(() => {
-    const fromAttach = collectAttachImagePaths(introValues)
-      .map((u) => resolveErpPublicUrl(u))
-      .filter(Boolean);
-    if (fromAttach.length > 0) return fromAttach;
+    const fromAttach = collectAboutIntroImagePaths(introValues).map((u) =>
+      u ? resolveErpPublicUrl(u) : "",
+    );
+    if (fromAttach.some(Boolean)) return fromAttach;
 
     const raw = pickCms(introValues, "slide_urls", "slides_json", "slides", "gallery_urls");
     const urls = parseSlideUrls(raw)
@@ -294,12 +329,13 @@ export default function About() {
     return [];
   }, [introValues]);
 
-  const archImage = slides[0] ?? "";
-  const heroImage = slides[1] ?? slides[0] ?? "";
-  const serviceImages = [slides[2] ?? "", slides[3] ?? "", slides[0] ?? ""] as const;
+  const heroSlides = useMemo(() => buildAboutHeroSlides(slides, introValues), [slides, introValues]);
+
+  const archImage = aboutIntroArchImage(slides);
+  const serviceImages = aboutIntroServiceImages(slides);
 
   const missionGroups = useMemo(
-    () => applyErpSlidesToMissionGroups(aboutMissionSection.groups, slides),
+    () => applyErpSlidesToMissionGroups(aboutMissionSection.groups, slides.filter(Boolean)),
     [slides],
   );
 
@@ -352,6 +388,25 @@ export default function About() {
     missionVisibleStart + missionPerPage,
   );
 
+  const advanceShowcase = useCallback(() => {
+    setMissionCarouselPage((p) => (p + 1) % missionPageCount);
+  }, [missionPageCount]);
+
+  const { restart: restartShowcaseAutoplay, controlProps: showcaseAutoplayProps } = useCarouselAutoplay(
+    missionPageCount,
+    advanceShowcase,
+  );
+
+  const goToShowcasePage = (index: number) => {
+    setMissionCarouselPage(index);
+    restartShowcaseAutoplay();
+  };
+
+  const stepShowcase = (delta: number) => {
+    setMissionCarouselPage((p) => (p + delta + missionPageCount) % missionPageCount);
+    restartShowcaseAutoplay();
+  };
+
   const engageCards = [
     {
       to: "/contact?topic=speaking",
@@ -378,30 +433,7 @@ export default function About() {
   return (
     <PageChrome>
       <div className="ad-about-page">
-        <section
-          className={`ad-about-page__hero${heroImage ? "" : " ad-about-page__hero--no-image"}`}
-          aria-labelledby="about-hero-heading"
-        >
-          {heroImage ? (
-            <img className="ad-about-page__hero-bg" src={heroImage} alt="" decoding="async" />
-          ) : null}
-          <div className="ad-about-page__hero-scrim" aria-hidden />
-          <div className="ad-container ad-about-page__hero-inner">
-            <p className="ad-about-page__hero-eyebrow">{eyebrow}</p>
-            <h1 id="about-hero-heading" className="ad-about-page__hero-title">
-              {title}
-              {heroLine2 ? (
-                <>
-                  {" "}
-                  <em>{heroLine2}</em>
-                </>
-              ) : null}
-            </h1>
-            <Link className="ad-about-page__hero-cta" to="#about-story">
-              {heroCtaLabel}
-            </Link>
-          </div>
-        </section>
+        <AboutHeroCarousel slides={heroSlides} />
 
         <section
           id="about-story"
@@ -446,35 +478,6 @@ export default function About() {
         </section>
 
         <section
-          className="ad-about-page__services"
-          aria-labelledby="about-services-heading"
-          data-aos="fade"
-          data-aos-duration="2000"
-        >
-          <div className="ad-about-page__services-head">
-            <h2 id="about-services-heading">How Able works with you</h2>
-          </div>
-          <div className="ad-about-page__services-grid">
-            {serviceCards.map((card) => (
-              <Link key={card.to} to={card.to} className="ad-about-page__service-card">
-                {card.img ? (
-                  <div className="ad-about-page__service-arch">
-                    <img src={card.img} alt="" loading="lazy" decoding="async" />
-                  </div>
-                ) : null}
-                <div className="ad-about-page__service-body">
-                  <h3>{card.title}</h3>
-                  <p>{card.text}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div className="ad-about-page__services-foot">
-            <Link to="/work-with-me">Learn more</Link>
-          </div>
-        </section>
-
-        <section
           className="ad-about-page__mission"
           id={aboutMissionSection.sectionId}
           aria-labelledby="about-mission-heading"
@@ -502,6 +505,7 @@ export default function About() {
             data-aos="fade"
             data-aos-duration="2000"
             data-aos-delay="250"
+            {...showcaseAutoplayProps}
           >
             <span className="ad-about-page__mission-showcase-letter" aria-hidden>
               M
@@ -516,9 +520,7 @@ export default function About() {
                   className="ad-about-page__mission-showcase-arrow ad-about-page__mission-showcase-arrow--prev"
                   aria-label="Previous"
                   disabled={missionPageCount <= 1}
-                  onClick={() =>
-                    setMissionCarouselPage((p) => (p - 1 + missionPageCount) % missionPageCount)
-                  }
+                  onClick={() => stepShowcase(-1)}
                 >
                   ‹
                 </button>
@@ -552,7 +554,7 @@ export default function About() {
                   className="ad-about-page__mission-showcase-arrow ad-about-page__mission-showcase-arrow--next"
                   aria-label="Next"
                   disabled={missionPageCount <= 1}
-                  onClick={() => setMissionCarouselPage((p) => (p + 1) % missionPageCount)}
+                  onClick={() => stepShowcase(1)}
                 >
                   ›
                 </button>
@@ -567,12 +569,72 @@ export default function About() {
                       aria-selected={i === missionCarouselPage}
                       aria-label={`Page ${i + 1}`}
                       className={`ad-about-page__mission-showcase-dot${i === missionCarouselPage ? " ad-about-page__mission-showcase-dot--active" : ""}`}
-                      onClick={() => setMissionCarouselPage(i)}
+                      onClick={() => goToShowcasePage(i)}
                     />
                   ))}
                 </div>
               ) : null}
             </div>
+          </div>
+        </section>
+
+        <section
+          className="ad-about-works"
+          aria-labelledby="about-services-heading"
+          data-aos="fade"
+          data-aos-duration="2000"
+        >
+          <div className="ad-about-works__inner">
+            <header className="ad-about-works__head">
+              <p className="ad-about-works__eyebrow">Collaborate</p>
+              <h2 id="about-services-heading" className="ad-about-works__title">
+                How Able works with you
+              </h2>
+              <p className="ad-about-works__lede">
+                Speaking, writing, and partnerships — built around evidence, clarity, and the outcomes your
+                audience needs.
+              </p>
+            </header>
+
+            <div className="ad-about-works__list">
+              {serviceCards.map((card, index) => (
+                <Link key={card.to} to={card.to} className="ad-about-works__card">
+                  <div className="ad-about-works__card-media">
+                    <span className="ad-about-works__index" aria-hidden>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    {card.img ? (
+                      <div className="ad-about-works__frame">
+                        <div className="ad-about-works__frame-accent" aria-hidden />
+                        <div className="ad-about-works__frame-photo">
+                          <img src={card.img} alt="" loading="lazy" decoding="async" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="ad-about-works__frame ad-about-works__frame--empty" aria-hidden>
+                        <span>{card.title.charAt(0)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="ad-about-works__card-copy">
+                    <h3 className="ad-about-works__card-title">{card.title}</h3>
+                    <p className="ad-about-works__card-text">{card.text}</p>
+                    <span className="ad-about-works__card-cta">
+                      Learn more
+                      <span className="ad-about-works__card-arrow" aria-hidden>
+                        →
+                      </span>
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <footer className="ad-about-works__foot">
+              <Link className="ad-about-works__foot-link" to="/work-with-me">
+                Explore all ways to work together
+              </Link>
+            </footer>
           </div>
         </section>
 
@@ -583,30 +645,39 @@ export default function About() {
           data-aos-duration="2000"
           data-aos-delay="500"
         >
-          <div className="ad-container ad-about-engage__inner">
+          <div className="ad-about-engage__inner">
             <header className="ad-about-engage__head">
               <p className="ad-about-engage__eyebrow">Ways to connect</p>
               <h2 id="about-engage-heading" className="ad-about-engage__title">
                 Let&apos;s Build Better Health Together
               </h2>
               <p className="ad-about-engage__lede">
-                Speaking, media, partnerships, and writing — pick a path that fits what you&apos;re building, or
-                email{" "}
-                <a className="ad-about-engage__email" href={SITE_CONTACT_MAILTO}>
-                  {SITE_CONTACT_EMAIL}
-                </a>
-                .
+                Pick the path that fits — speaking, media, partnerships, or writing.
               </p>
             </header>
-            <div className="ad-about-engage__grid">
+
+            <ul className="ad-about-engage__list">
               {engageCards.map((card) => (
-                <Link key={card.to} to={card.to} className="ad-about-engage-card">
-                  <h3 className="ad-about-engage-card__heading">{card.title}</h3>
-                  <p className="ad-about-engage-card__text">{card.text}</p>
-                  <span className="ad-about-engage-card__cta">Learn more</span>
-                </Link>
+                <li key={card.to} className="ad-about-engage__item-wrap">
+                  <Link to={card.to} className="ad-about-engage__item">
+                    <span className="ad-about-engage__item-copy">
+                      <span className="ad-about-engage__item-title">{card.title}</span>
+                      <span className="ad-about-engage__item-text">{card.text}</span>
+                    </span>
+                    <span className="ad-about-engage__item-arrow" aria-hidden>
+                      →
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
+
+            <p className="ad-about-engage__contact">
+              Or email{" "}
+              <a className="ad-about-engage__email" href={SITE_CONTACT_MAILTO}>
+                {SITE_CONTACT_EMAIL}
+              </a>
+            </p>
           </div>
         </section>
       </div>
